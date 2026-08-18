@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blossom Classifieds</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f4f6f9; padding: 20px; color: #333; }
+        .container { max-width: 950px; margin: 0 auto; }
+        header { text-align: center; background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .form-card, .ads-section { background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        input, select, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .submit-btn { background-color: #27ae60; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .ad-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
+        .ad-card { border: 1px solid #eee; padding: 15px; border-radius: 10px; background: #fff; }
+        .delete-btn { background-color: #e74c3c; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header><h1>🌸 Blossom Classifieds</h1></header>
+
+        <div class="form-card">
+            <h2>අලුත් දැන්වීමක් දමන්න</h2>
+            <input type="text" id="adTitle" placeholder="ශීර්ෂය">
+            <select id="adCategory">
+                <option value="Vehicles">වාහන</option>
+                <option value="Electronics">ඉලෙක්ට්‍රොනික</option>
+                <option value="Property">ඉඩම් / ගෙවල්</option>
+            </select>
+            <input type="number" id="adPrice" placeholder="මිළ (Rs)">
+            <textarea id="adDesc" placeholder="විස්තරය"></textarea>
+            <button class="submit-btn" onclick="postAd()">දැන්වීම Publish කරන්න</button>
+        </div>
+
+        <div class="ads-section">
+            <h2>දැන්වීම්</h2>
+            <div id="adGrid" class="ad-grid"></div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ඔයා දුන්නු නිවැරදි Firebase Configuration එක:
+        const firebaseConfig = {
+          apiKey: "AIzaSyA0huAGXtGHRsRHtVivcLnG-yS3CD6t8Jo",
+          authDomain: "blossom-classifieds.firebaseapp.com",
+          projectId: "blossom-classifieds",
+          storageBucket: "blossom-classifieds.firebasestorage.app",
+          messagingSenderId: "774487261814",
+          appId: "1:774487261814:web:f1f9abb145d63b86edd557",
+          measurementId: "G-VBVWGK1LQT"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.postAd = async function() {
+            const title = document.getElementById('adTitle').value;
+            const category = document.getElementById('adCategory').value;
+            const price = document.getElementById('adPrice').value;
+            const desc = document.getElementById('adDesc').value;
+
+            if(!title || !price) return alert("කරුණාකර සියල්ල පුරවන්න");
+
+            await addDoc(collection(db, "ads"), { title, category, price, desc, createdAt: Date.now() });
+            alert("සාර්ථකයි!");
+            location.reload();
+        }
+
+        async function loadAds() {
+            const querySnapshot = await getDocs(collection(db, "ads"));
+            const grid = document.getElementById('adGrid');
+            grid.innerHTML = "";
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                grid.innerHTML += `<div class="ad-card">
+                    <h3>${data.title}</h3>
+                    <p><b>Rs. ${data.price}</b></p>
+                    <p>${data.desc}</p>
+                    <button class="delete-btn" onclick="deleteAd('${docSnap.id}')">Delete</button>
+                </div>`;
+            });
+        }
+
+        window.deleteAd = async function(id) {
+            await deleteDoc(doc(db, "ads", id));
+            location.reload();
+        }
+
+        loadAds();
+    </script>
+</body>
+</html>
