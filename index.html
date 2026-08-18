@@ -1,50 +1,130 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blossom Classifieds</title>
+    <title>BlueAD</title>
     <style>
-        body { font-family: sans-serif; background-color: #f4f6f9; padding: 20px; color: #333; }
-        .container { max-width: 950px; margin: 0 auto; }
-        header { text-align: center; background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .form-card, .ads-section { background: white; padding: 25px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        input, select, textarea { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
-        .submit-btn { background-color: #27ae60; color: white; border: none; padding: 12px; width: 100%; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .ad-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; }
-        .ad-card { border: 1px solid #eee; padding: 15px; border-radius: 10px; background: #fff; }
-        .delete-btn { background-color: #e74c3c; color: white; border: none; padding: 5px 10px; cursor: pointer; border-radius: 4px; }
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 32px;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+        .container {
+            padding: 20px;
+            max-width: 800px;
+            margin: auto;
+        }
+        /* Form එකේ විලාසය */
+        .ad-form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        .ad-form h2 {
+            margin-top: 0;
+            color: #333;
+            font-size: 20px;
+        }
+        .ad-form input, .ad-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .submit-btn {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+        .ad-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .ad-card {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        .delete-btn:hover {
+            background-color: #cc0000;
+        }
     </style>
 </head>
 <body>
 
+    <!-- නිල් පාට උඩ කොටුව -->
+    <div class="header">
+        <h1>BlueAD</h1>
+    </div>
+
     <div class="container">
-        <header><h1>🌸 Blossom Classifieds</h1></header>
+        <!-- නව දැන්වීමක් එකතු කිරීමේ Form එක -->
+        <div class="ad-form">
+            <h2>Add New Ad</h2>
+            <form id="adForm">
+                <label>Your Name:</label>
+                <input type="text" id="name" required placeholder="Enter your name">
 
-        <div class="form-card">
-            <h2>අලුත් දැන්වීමක් දමන්න</h2>
-            <input type="text" id="adTitle" placeholder="ශීර්ෂය">
-            <select id="adCategory">
-                <option value="Vehicles">වාහන</option>
-                <option value="Electronics">ඉලෙක්ට්‍රොනික</option>
-                <option value="Property">ඉඩම් / ගෙවල්</option>
-            </select>
-            <input type="number" id="adPrice" placeholder="මිළ (Rs)">
-            <textarea id="adDesc" placeholder="විස්තරය"></textarea>
-            <button class="submit-btn" onclick="postAd()">දැන්වීම Publish කරන්න</button>
+                <label>Ad Title:</label>
+                <input type="text" id="title" required placeholder="Enter ad title">
+
+                <label>Price (Rs.):</label>
+                <input type="number" id="price" required placeholder="Enter price">
+
+                <label>Description:</label>
+                <textarea id="desc" rows="3" required placeholder="Enter description"></textarea>
+
+                <button type="submit" class="submit-btn">Post Ad</button>
+            </form>
         </div>
 
-        <div class="ads-section">
-            <h2>දැන්වීම්</h2>
-            <div id="adGrid" class="ad-grid"></div>
-        </div>
+        <h2>All Ads</h2>
+        <!-- දැන්වීම් පෙන්නන කොටස -->
+        <div id="adGrid" class="ad-grid">Loading ads...</div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // ඔයා දුන්නු නිවැරදි Firebase Configuration එක:
         const firebaseConfig = {
           apiKey: "AIzaSyA0huAGXtGHRsRHtVivcLnG-yS3CD6t8Jo",
           authDomain: "blossom-classifieds.firebaseapp.com",
@@ -58,37 +138,69 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        window.postAd = async function() {
-            const title = document.getElementById('adTitle').value;
-            const category = document.getElementById('adCategory').value;
-            const price = document.getElementById('adPrice').value;
-            const desc = document.getElementById('adDesc').value;
+        // අලුත් ad එකක් submit කළ විට database එකට save වීම
+        const adForm = document.getElementById('adForm');
+        adForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const title = document.getElementById('title').value;
+            const price = document.getElementById('price').value;
+            const desc = document.getElementById('desc').value;
 
-            if(!title || !price) return alert("කරුණාකර සියල්ල පුරවන්න");
+            try {
+                await addDoc(collection(db, "ads"), {
+                    name: name,
+                    title: title,
+                    price: price,
+                    desc: desc,
+                    createdAt: new Date()
+                });
+                alert("Ad posted successfully!");
+                location.reload();
+            } catch (error) {
+                console.error("Error adding ad: ", error);
+                alert("Error posting ad!");
+            }
+        });
 
-            await addDoc(collection(db, "ads"), { title, category, price, desc, createdAt: Date.now() });
-            alert("සාර්ථකයි!");
-            location.reload();
-        }
-
+        // Ads load කරගැනීම
         async function loadAds() {
-            const querySnapshot = await getDocs(collection(db, "ads"));
-            const grid = document.getElementById('adGrid');
-            grid.innerHTML = "";
-            querySnapshot.forEach((docSnap) => {
-                const data = docSnap.data();
-                grid.innerHTML += `<div class="ad-card">
-                    <h3>${data.title}</h3>
-                    <p><b>Rs. ${data.price}</b></p>
-                    <p>${data.desc}</p>
-                    <button class="delete-btn" onclick="deleteAd('${docSnap.id}')">Delete</button>
-                </div>`;
-            });
+            try {
+                const querySnapshot = await getDocs(collection(db, "ads"));
+                const grid = document.getElementById('adGrid');
+                grid.innerHTML = "";
+                
+                if (querySnapshot.empty) {
+                    grid.innerHTML = "<p>No ads found in database.</p>";
+                    return;
+                }
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    grid.innerHTML += `<div class="ad-card">
+                        <p style="color: #007bff; font-weight: bold; margin-bottom: 5px;">BlueAD: ${data.name || ''}</p>
+                        <h3>${data.title || 'No Title'}</h3>
+                        <p><b>Rs. ${data.price || '0'}</b></p>
+                        <p>${data.desc || 'No Description'}</p>
+                        <button class="delete-btn" onclick="deleteAd('${docSnap.id}')">Delete</button>
+                    </div>`;
+                });
+            } catch (error) {
+                console.error("Error loading ads: ", error);
+                document.getElementById('adGrid').innerHTML = "<p style='color: red;'>Error loading ads. Check console.</p>";
+            }
         }
 
         window.deleteAd = async function(id) {
-            await deleteDoc(doc(db, "ads", id));
-            location.reload();
+            if(confirm("Are you sure you want to delete this ad?")) {
+                try {
+                    await deleteDoc(doc(db, "ads", id));
+                    location.reload();
+                } catch (error) {
+                    console.error("Error deleting ad: ", error);
+                }
+            }
         }
 
         loadAds();
