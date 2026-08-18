@@ -1,140 +1,103 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="si">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlueAD</title>
+    <title>Blossom Classifieds - Ads</title>
+    <!-- Google Search Console Verification Tag -->
+    <meta name="google-site-verification" content="google6210cf40908b700b" />
+    
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            margin: 0;
-            padding: 0;
+            margin: 20px;
+            background-color: #f4f6f9;
         }
-        .header {
-            background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
-            padding: 25px;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 32px;
-            letter-spacing: 1px;
-            font-weight: bold;
-        }
-        .container {
-            padding: 20px;
-            max-width: 800px;
-            margin: auto;
-        }
-        /* Form එකේ විලාසය */
-        .ad-form {
+        .form-container, .ads-container {
             background: #fff;
             padding: 20px;
+            margin-bottom: 20px;
             border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .ad-form h2 {
-            margin-top: 0;
-            color: #333;
-            font-size: 20px;
-        }
-        .ad-form input, .ad-form textarea {
+        input, textarea, button {
+            display: block;
             width: 100%;
+            margin-bottom: 10px;
             padding: 10px;
-            margin: 8px 0 15px 0;
+            box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
-            box-sizing: border-box;
         }
-        .submit-btn {
-            background-color: #28a745;
+        button {
+            background-color: #007bff;
             color: white;
             border: none;
-            padding: 10px 15px;
-            border-radius: 4px;
             cursor: pointer;
-            font-size: 16px;
-            width: 100%;
+            font-weight: bold;
         }
-        .submit-btn:hover {
-            background-color: #218838;
+        button:hover {
+            background-color: #0056b3;
         }
         .ad-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
+            gap: 15px;
         }
         .ad-card {
             background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 6px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
         .delete-btn {
-            background-color: #ff4d4d;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 4px;
-            cursor: pointer;
+            background-color: #dc3545;
             margin-top: 10px;
         }
         .delete-btn:hover {
-            background-color: #cc0000;
+            background-color: #c82333;
         }
     </style>
 </head>
 <body>
 
-    <!-- නිල් පාට උඩ කොටුව -->
-    <div class="header">
-        <h1>BlueAD</h1>
+    <!-- Ad දමන Form එක -->
+    <div class="form-container">
+        <h2>Post a New Ad</h2>
+        <form id="adForm">
+            <input type="text" id="name" placeholder="Your Name" required>
+            <input type="text" id="title" placeholder="Ad Title" required>
+            <input type="number" id="price" placeholder="Price (Rs.)" required>
+            <textarea id="desc" placeholder="Description" rows="4" required></textarea>
+            <button type="submit">Post Ad</button>
+        </form>
     </div>
 
-    <div class="container">
-        <!-- නව දැන්වීමක් එකතු කිරීමේ Form එක -->
-        <div class="ad-form">
-            <h2>Add New Ad</h2>
-            <form id="adForm">
-                <label>Your Name:</label>
-                <input type="text" id="name" required placeholder="Enter your name">
-
-                <label>Ad Title:</label>
-                <input type="text" id="title" required placeholder="Enter ad title">
-
-                <label>Price (Rs.):</label>
-                <input type="number" id="price" required placeholder="Enter price">
-
-                <label>Description:</label>
-                <textarea id="desc" rows="3" required placeholder="Enter description"></textarea>
-
-                <button type="submit" class="submit-btn">Post Ad</button>
-            </form>
-        </div>
-
+    <!-- Ads පෙන්වන තැන -->
+    <div class="ads-container">
         <h2>All Ads</h2>
-        <!-- දැන්වීම් පෙන්නන කොටස -->
-        <div id="adGrid" class="ad-grid">Loading ads...</div>
+        <div id="adGrid" class="ad-grid">
+            <p>Loading ads...</p>
+        </div>
     </div>
 
+    <!-- Firebase Scripts (Modular CDN) -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
-          apiKey: "AIzaSyA0huAGXtGHRsRHtVivcLnG-yS3CD6t8Jo",
-          authDomain: "blossom-classifieds.firebaseapp.com",
-          projectId: "blossom-classifieds",
-          storageBucket: "blossom-classifieds.firebasestorage.app",
-          messagingSenderId: "774487261814",
-          appId: "1:774487261814:web:f1f9abb145d63b86edd557",
-          measurementId: "G-VBVWGK1LQT"
+            apiKey: "AIzaSyA0huAGXtGHRsRHtVivcLnG-yS3CD6t8Jo",
+            authDomain: "blossom-classifieds.firebaseapp.com",
+            projectId: "blossom-classifieds",
+            storageBucket: "blossom-classifieds.firebasestorage.app",
+            messagingSenderId: "774487261814",
+            appId: "1:774487261814:web:f1f9abb145d63b86edd557",
+            measurementId: "G-VBVWGK1LQT"
         };
 
+        // Firebase සහ Firestore Initialize කිරීම
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -207,3 +170,4 @@
     </script>
 </body>
 </html>
+
