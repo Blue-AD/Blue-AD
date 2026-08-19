@@ -22,7 +22,7 @@
             z-index: 1000;
             background-color: #007bff;
             color: white;
-            padding: 18px 20px;
+            padding: 16px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -32,7 +32,7 @@
         }
         .brand-header h1 {
             margin: 0;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
             letter-spacing: 1px;
             flex-grow: 1;
@@ -43,7 +43,7 @@
             border: none;
             color: white;
             cursor: pointer;
-            font-size: 24px;
+            font-size: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -58,32 +58,31 @@
             box-sizing: border-box;
         }
 
-        /* Admin Login Box */
         .login-card {
             background: #fff;
-            padding: 30px;
+            padding: 25px;
             border-radius: 12px;
             box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            max-width: 420px;
+            max-width: 400px;
             margin: 60px auto;
             box-sizing: border-box;
         }
 
         .category-pills {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 15px;
             border-bottom: 2px solid #e0e0e0;
-            padding-bottom: 10px;
+            padding-bottom: 8px;
         }
         .cat-pill {
             background-color: #fff;
             color: #555;
             border: 1px solid #ddd;
-            padding: 10px 22px;
+            padding: 8px 18px;
             border-radius: 20px;
             cursor: pointer;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
@@ -102,7 +101,7 @@
         .ad-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .dashboard-card {
@@ -110,42 +109,100 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 20px;
+            padding: 14px 18px;
             box-sizing: border-box;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             border: 1px solid #eaeaea;
         }
 
-        .ad-title {
-            font-size: 18px;
-            font-weight: bold;
+        .dashboard-card.new-ad-highlight {
+            background-color: #fffde7;
+            border: 2px solid #ffc107;
+        }
+
+        /* VIP Card Red Theme Design for Admin */
+        .dashboard-card.vip-ad-highlight {
+            background-color: #fff5f5;
+            border: 2px solid #dc3545;
+            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.15);
+        }
+
+        .new-badge {
+            background: #ffc107;
             color: #000;
-            margin: 0 0 5px 0;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 3px;
+        }
+
+        .vip-badge {
+            background: #dc3545;
+            color: #fff;
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 5px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 3px;
+        }
+
+        .ad-title {
+            font-size: 17px;
+            font-weight: bold;
+            color: #111;
+            margin: 0 0 3px 0;
         }
 
         .ad-price {
-            font-size: 16px;
+            font-size: 14px;
             font-weight: bold;
             color: #007bff; 
             margin: 0;
+        }
+
+        .time-badge {
+            font-size: 11px;
+            color: #666;
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
+            display: inline-block;
+            margin-top: 3px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         .action-btn {
             background: none;
             border: none;
             cursor: pointer;
-            font-size: 13px;
-            padding: 8px 14px;
+            font-size: 12px;
+            padding: 6px 12px;
             border-radius: 4px;
             font-weight: bold;
+        }
+        .vip-action {
+            color: #28a745;
+            background-color: #e8f5e9;
+        }
+        .vip-action.remove-vip {
+            color: #fff;
+            background-color: #dc3545;
         }
         .delete-action {
             color: #dc3545;
             background-color: #f8d7da;
-        }
-        .delete-action:hover {
-            background-color: #f5c6cb;
         }
 
         .hidden {
@@ -155,12 +212,12 @@
         input, button.form-submit {
             display: block;
             width: 100%;
-            margin-bottom: 14px;
-            padding: 12px;
+            margin-bottom: 12px;
+            padding: 10px 12px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 6px;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         button.form-submit {
@@ -180,25 +237,22 @@
     <div class="brand-header">
         <a href="index.html" class="home-link-btn" title="Back to Website">🏠</a>
         <h1>BlueAD Admin</h1>
-        <div style="width: 32px;"></div>
+        <div style="width: 28px;"></div>
     </div>
 
-    <!-- Admin Login Screen -->
     <div id="adminLoginScreen" class="login-card">
-        <h2 style="margin-top: 0; color: #007bff; text-align: center; margin-bottom: 20px;">🛡️ Admin Login</h2>
+        <h2 style="margin-top: 0; color: #007bff; text-align: center; margin-bottom: 18px; font-size: 20px;">🛡️ Admin Login</h2>
         <form id="adminLoginForm">
             <input type="text" id="adminUser" placeholder="Admin Username" required>
-            <!-- මෙතැනදී type="text" දමා ඇත, එබැවින් පාස්වර්ඩ් එක අකුරු ලෙස පෙනේ -->
             <input type="text" id="adminPass" placeholder="Admin Password" required>
             <button type="submit" class="form-submit">Login Panel</button>
         </form>
     </div>
 
-    <!-- Admin Control Panel Screen -->
     <div id="adminPanelScreen" class="main-container hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-            <h2 style="margin: 0; color: #333; font-size: 22px;">Control Dashboard</h2>
-            <button type="button" id="adminLogoutBtn" class="form-submit" style="background-color: #dc3545; width: auto; padding: 8px 18px; margin: 0;">Logout</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+            <h2 style="margin: 0; color: #333; font-size: 20px;">Control Dashboard</h2>
+            <button type="button" id="adminLogoutBtn" class="form-submit" style="background-color: #dc3545; width: auto; padding: 6px 16px; margin: 0;">Logout</button>
         </div>
 
         <div class="category-pills">
@@ -206,14 +260,12 @@
             <button type="button" id="tabUsersBtn" class="cat-pill">Manage Users</button>
         </div>
 
-        <!-- Ads Tab View -->
         <div id="adsSection" class="ads-container">
             <div id="adminAdsContainer" class="ad-list">
                 <p style="text-align: center; color: #777; padding: 20px;">Loading all ads...</p>
             </div>
         </div>
 
-        <!-- Users Tab View -->
         <div id="usersSection" class="ads-container hidden">
             <div id="adminUsersContainer" class="ad-list">
                 <p style="text-align: center; color: #777; padding: 20px;">Loading registered users...</p>
@@ -223,7 +275,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA0huAGXtGHRsRHtVivcLnG-yS3CD6t8Jo",
@@ -252,6 +304,28 @@
         const usersSection = document.getElementById('usersSection');
 
         let isAdminLoggedIn = localStorage.getItem('bluead_admin_logged') === 'true';
+
+        function timeAgo(jsDate) {
+            if (!jsDate) return 'Just now';
+            const seconds = Math.floor((new Date() - jsDate) / 1000);
+            
+            let interval = seconds / 31536000;
+            if (interval > 1) return Math.floor(interval) + "y ago";
+            
+            interval = seconds / 2592000;
+            if (interval > 1) return Math.floor(interval) + "mo ago";
+            
+            interval = seconds / 86400;
+            if (interval > 1) return Math.floor(interval) + "d ago";
+            
+            interval = seconds / 3600;
+            if (interval > 1) return Math.floor(interval) + "h ago";
+            
+            interval = seconds / 60;
+            if (interval > 1) return Math.floor(interval) + "m ago";
+            
+            return "Just now";
+        }
 
         if (isAdminLoggedIn) {
             adminLoginScreen.classList.add('hidden');
@@ -306,9 +380,25 @@
                 const querySnapshot = await getDocs(collection(db, "ads"));
                 let allAds = [];
                 querySnapshot.forEach((docSnap) => {
-                    allAds.push({ id: docSnap.id, ...docSnap.data() });
+                    const data = docSnap.data();
+                    let jsDate = null;
+                    if (data.createdAt && typeof data.createdAt.toDate === 'function') {
+                        jsDate = data.createdAt.toDate();
+                    } else if (data.createdAt) {
+                        jsDate = new Date(data.createdAt);
+                    }
+                    allAds.push({ id: docSnap.id, ...data, jsDate: jsDate });
                 });
-                allAds.reverse();
+                
+                // VIP ads first, then sort by newest date
+                allAds.sort((a, b) => {
+                    if (a.isVip && !b.isVip) return -1;
+                    if (!a.isVip && b.isVip) return 1;
+
+                    const timeA = a.jsDate ? a.jsDate.getTime() : 0;
+                    const timeB = b.jsDate ? b.jsDate.getTime() : 0;
+                    return timeB - timeA;
+                });
 
                 adminAdsContainer.innerHTML = "";
                 if (allAds.length === 0) {
@@ -316,22 +406,65 @@
                     return;
                 }
 
+                const nowTime = new Date().getTime();
+                const twentyFourHoursMs = 24 * 60 * 60 * 1000;
+
                 allAds.forEach((data) => {
                     let formattedPrice = Number(data.price || 0).toLocaleString();
+                    let timeAgoText = timeAgo(data.jsDate);
+                    
+                    let isVip = data.isVip === true;
+                    let isNewAd = false;
+                    if (!isVip && data.jsDate) {
+                        const diffMs = nowTime - data.jsDate.getTime();
+                        if (diffMs < twentyFourHoursMs && diffMs >= 0) {
+                            isNewAd = true;
+                        }
+                    }
+
+                    let cardClass = '';
+                    let badgeHtml = '';
+                    if (isVip) {
+                        cardClass = 'vip-ad-highlight';
+                        badgeHtml = '<span class="vip-badge">🔥 VIP AD</span> ';
+                    } else if (isNewAd) {
+                        cardClass = 'new-ad-highlight';
+                        badgeHtml = '<span class="new-badge">⭐ New</span> ';
+                    }
+
+                    let vipBtnText = isVip ? 'Remove VIP' : 'Make VIP';
+                    let vipBtnClass = isVip ? 'action-btn vip-action remove-vip' : 'action-btn vip-action';
+
                     adminAdsContainer.innerHTML += `
-                        <div class="dashboard-card">
+                        <div class="dashboard-card ${cardClass}">
                             <div>
-                                <h4 class="ad-title">${data.title || 'No Title'}</h4>
-                                <p class="ad-price">Rs ${formattedPrice} <span style="font-size:13px; color:#666; font-weight:normal;">(By: ${data.username || 'Anonymous'})</span></p>
+                                <h4 class="ad-title">${badgeHtml}${data.title || 'No Title'}</h4>
+                                <p class="ad-price">Rs ${formattedPrice} <span style="font-size:12px; color:#666; font-weight:normal;">(By: ${data.username || 'Anonymous'})</span></p>
+                                <p style="font-size: 11px; color: #555; margin: 3px 0 0 0;">👁️ ${data.views || 0} | ❤️ ${data.likes || 0}</p>
+                                <div class="time-badge">${timeAgoText}</div>
                             </div>
-                            <div>
-                                <button class="action-btn delete-action" onclick="adminDeleteAd('${data.id}')">Delete Ad</button>
+                            <div class="card-actions">
+                                <button class="${vipBtnClass}" onclick="toggleVipStatus('${data.id}', ${!isVip})">${vipBtnText}</button>
+                                <button class="action-btn delete-action" onclick="adminDeleteAd('${data.id}')">Delete</button>
                             </div>
                         </div>
                     `;
                 });
             } catch (error) {
                 console.error("Error loading admin ads:", error);
+            }
+        }
+
+        window.toggleVipStatus = async function(id, makeVip) {
+            try {
+                const adRef = doc(db, "ads", id);
+                await updateDoc(adRef, {
+                    isVip: makeVip
+                });
+                loadAdminAds();
+            } catch (error) {
+                console.error("Error updating VIP status:", error);
+                alert("VIP තත්ත්වය වෙනස් කිරීමේදී දෝෂයක් ඇති විය.");
             }
         }
 
@@ -354,8 +487,8 @@
                     adminUsersContainer.innerHTML += `
                         <div class="dashboard-card">
                             <div>
-                                <h4 class="ad-title">👤 ${user.username}</h4>
-                                <p style="margin: 0; color: #666; font-size: 13px;">Password: ${user.password}</p>
+                                <h4 class="ad-title" style="font-size: 15px;">👤 ${user.username}</h4>
+                                <p style="margin: 0; color: #666; font-size: 12px;">Password: ${user.password}</p>
                             </div>
                             <div>
                                 <button class="action-btn delete-action" onclick="adminDeleteUser('${user.id}', '${user.username}')">Delete User</button>
@@ -369,7 +502,7 @@
         }
 
         window.adminDeleteAd = async function(id) {
-            if(confirm("⚠️ Admin Warning: Are you sure you want to permanently delete this ad?")) {
+            if(confirm("⚠️ Are you sure you want to permanently delete this ad?")) {
                 try {
                     await deleteDoc(doc(db, "ads", id));
                     loadAdminAds();
@@ -380,7 +513,7 @@
         }
 
         window.adminDeleteUser = async function(userId, username) {
-            if(confirm(`⚠️ Admin Warning: Are you sure you want to delete user "${username}"? This will also delete ALL ads posted by this user!`)) {
+            if(confirm(`⚠️ Are you sure you want to delete user "${username}"? This will also delete ALL ads posted by this user!`)) {
                 try {
                     await deleteDoc(doc(db, "users", userId));
 
