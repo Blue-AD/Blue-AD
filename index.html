@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlueWay - Chat Portal</title>
+    <title>Nexus - Chat Portal</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; box-sizing: border-box; width: 100vw; min-height: 100vh; display: flex; flex-direction: column; }
         .brand-header { position: sticky; top: 0; z-index: 1000; background-color: #007bff; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
@@ -17,8 +17,15 @@
         button.form-submit { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
         .auth-switch { text-align: center; margin-top: 12px; font-size: 13px; color: #007bff; cursor: pointer; font-weight: bold; }
         
-        /* Chat UI */
-        .chat-user-item { padding: 12px 15px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: bold; color: #333; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        /* Chat UI - Larger WhatsApp Style Contact List */
+        .chat-user-item { padding: 16px 20px; background: #fff; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s; }
+        .chat-user-item:hover { background: #f1f5f9; }
+        .user-avatar { width: 58px; height: 58px; border-radius: 50%; background-color: #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #fff; margin-right: 16px; flex-shrink: 0; overflow: hidden; }
+        .user-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .user-name { font-weight: bold; color: #111; font-size: 18px; margin: 0 0 4px 0; }
+        .user-status { font-size: 14px; color: #555; margin: 0; }
+        .contact-badge { font-size: 12px; font-weight: bold; color: #666; background: #e2e8f0; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
         .chat-box-container { display: flex; flex-direction: column; height: 75vh; border: 1px solid #ddd; border-radius: 8px; background: #fff; overflow: hidden; margin-top: 10px; }
         .chat-header-bar { background: #e9ecef; padding: 10px 15px; display: flex; align-items: center; gap: 10px; font-weight: bold; border-bottom: 1px solid #ddd; }
         .back-to-list-btn { background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
@@ -33,16 +40,16 @@
 
     <div class="brand-header">
         <span id="loggedInUserDisplay" style="font-size: 14px; font-weight: bold;">👤 Guest</span>
-        <h1>BlueWay Chat</h1>
+        <h1>Nexus Chat</h1>
         <button id="logoutBtn" class="logout-btn hidden">Logout</button>
     </div>
 
     <div class="main-container">
         <!-- Chat List View -->
         <div id="chatSectionList">
-            <h3 style="color: #333; margin-top: 5px;">Select a user to chat:</h3>
-            <div id="chatUserListContainer">
-                <p style="text-align: center; color: #777;">Loading users...</p>
+            <h3 style="color: #333; margin-top: 5px;">Contacts</h3>
+            <div id="chatUserListContainer" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff;">
+                <p style="text-align: center; color: #777; padding: 20px;">Loading users...</p>
             </div>
         </div>
 
@@ -90,7 +97,7 @@
         };
         const db = getFirestore(initializeApp(firebaseConfig));
 
-        let currentUsername = localStorage.getItem('blueway_logged_user') || null;
+        let currentUsername = localStorage.getItem('nexus_logged_user') || null;
         let isRegistering = true;
         let activeChatReceiver = null;
         let unsubscribeChat = null;
@@ -102,13 +109,33 @@
         const chatSectionList = document.getElementById('chatSectionList');
         const chatRoomView = document.getElementById('chatRoomView');
 
-        // Check authentication state on load
-        function checkAuthState() {
+        async function checkAuthState() {
             if (!currentUsername) {
                 authOverlay.classList.remove('hidden');
                 logoutBtn.classList.add('hidden');
                 loggedInUserDisplay.textContent = "👤 Guest";
             } else {
+                const usersSnap = await getDocs(collection(db, "users"));
+                let exists = false;
+                usersSnap.forEach(d => {
+                    if (d.data().username === currentUsername) {
+                        exists = true;
+                    }
+                });
+
+                if (!exists) {
+                    alert("Your account has been deleted by an administrator.");
+                    currentUsername = null;
+                    localStorage.removeItem('nexus_logged_user');
+                    if(unsubscribeChat) unsubscribeChat();
+                    chatRoomView.classList.add('hidden');
+                    chatSectionList.classList.remove('hidden');
+                    authOverlay.classList.remove('hidden');
+                    logoutBtn.classList.add('hidden');
+                    loggedInUserDisplay.textContent = "👤 Guest";
+                    return;
+                }
+
                 authOverlay.classList.add('hidden');
                 logoutBtn.classList.remove('hidden');
                 loggedInUserDisplay.textContent = `👤 ${currentUsername}`;
@@ -142,7 +169,7 @@
                 } else {
                     await addDoc(collection(db, "users"), { username, password, createdAt: serverTimestamp() });
                     currentUsername = username; 
-                    localStorage.setItem('blueway_logged_user', currentUsername);
+                    localStorage.setItem('nexus_logged_user', currentUsername);
                     checkAuthState();
                     alert("Registered successfully!");
                 }
@@ -151,7 +178,7 @@
                     alert("Invalid username or password!");
                 } else {
                     currentUsername = username; 
-                    localStorage.setItem('blueway_logged_user', currentUsername);
+                    localStorage.setItem('nexus_logged_user', currentUsername);
                     checkAuthState();
                     alert("Logged in successfully!");
                 }
@@ -160,13 +187,13 @@
 
         logoutBtn.addEventListener('click', () => {
             currentUsername = null; 
-            localStorage.removeItem('blueway_logged_user');
+            localStorage.removeItem('nexus_logged_user');
             if(unsubscribeChat) unsubscribeChat();
             checkAuthState();
         });
 
         async function loadChatUsers() {
-            chatUserListContainer.innerHTML = "<p style='text-align: center; color: #777;'>Loading users...</p>";
+            chatUserListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>Loading users...</p>";
             const snap = await getDocs(collection(db, "users"));
             chatUserListContainer.innerHTML = "";
             let count = 0;
@@ -176,13 +203,17 @@
                     count++;
                     chatUserListContainer.innerHTML += `
                         <div class="chat-user-item" onclick="openChatRoom('${u}')">
-                            <span>👤 ${u}</span>
-                            <span style="color:#007bff; font-size:13px;">Chat →</span>
+                            <div class="user-avatar">👤</div>
+                            <div class="user-info">
+                                <h4 class="user-name">${u}</h4>
+                                <p class="user-status">Hey there! I am using Nexus.</p>
+                            </div>
+                            <span class="contact-badge">MOBILE</span>
                         </div>`;
                 }
             });
             if (count === 0) {
-                chatUserListContainer.innerHTML = "<p style='text-align: center; color: #777;'>No other users found to chat.</p>";
+                chatUserListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>No other users found to chat.</p>";
             }
         }
 
