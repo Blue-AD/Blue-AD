@@ -3,626 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlueAD - Classifieds</title>
-    
+    <title>BlueWay - Chat Portal</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f6f9;
-            box-sizing: border-box;
-            width: 100vw;
-            min-height: 100vh;
-            padding-bottom: 80px;
-        }
-        .brand-header {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            background-color: #007bff;
-            color: white;
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-            box-sizing: border-box;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
-        }
-        .brand-header h1 {
-            margin: 0;
-            font-size: 26px;
-            font-weight: bold;
-            letter-spacing: 1px;
-            flex-grow: 1;
-            text-align: center;
-        }
-        .profile-icon-btn {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-size: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 5px;
-            text-decoration: none;
-        }
-
-        .main-container {
-            padding: 15px;
-            max-width: 900px;
-            margin: 0 auto;
-            box-sizing: border-box;
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; box-sizing: border-box; width: 100vw; min-height: 100vh; display: flex; flex-direction: column; }
+        .brand-header { position: sticky; top: 0; z-index: 1000; background-color: #007bff; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
+        .brand-header h1 { margin: 0; font-size: 22px; font-weight: bold; flex-grow: 1; text-align: center; }
+        .profile-icon-btn, .logout-btn { background: none; border: none; color: white; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; padding: 5px 10px; background: rgba(255,255,255,0.2); border-radius: 4px; }
+        .main-container { padding: 15px; max-width: 600px; margin: 0 auto; box-sizing: border-box; width: 100%; flex-grow: 1; display: flex; flex-direction: column; }
+        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
+        .fullscreen-form-box { background: #fff; padding: 22px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); width: 100%; max-width: 400px; position: relative; }
+        .hidden { display: none !important; }
+        input, button.form-submit { display: block; width: 100%; margin-bottom: 12px; padding: 10px 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        button.form-submit { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .auth-switch { text-align: center; margin-top: 12px; font-size: 13px; color: #007bff; cursor: pointer; font-weight: bold; }
         
-        .filter-section {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .search-box {
-            display: flex;
-            align-items: center;
-            background: #fff;
-            border-radius: 30px;
-            padding: 6px 18px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            border: 1px solid #e0e0e0;
-        }
-        .search-icon {
-            font-size: 16px;
-            color: #888;
-            margin-right: 12px;
-        }
-        .search-input {
-            width: 100%;
-            border: none !important;
-            outline: none !important;
-            font-size: 15px;
-            padding: 8px 0;
-            background: transparent;
-            margin: 0 !important;
-        }
-
-        .category-pills {
-            display: flex;
-            overflow-x: auto;
-            gap: 8px;
-            padding-bottom: 5px;
-            scrollbar-width: none;
-        }
-        .category-pills::-webkit-scrollbar {
-            display: none;
-        }
-        .cat-pill {
-            background-color: #fff;
-            color: #555;
-            border: 1px solid #ddd;
-            padding: 7px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: bold;
-            white-space: nowrap;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-        .cat-pill.active {
-            background-color: #007bff;
-            color: #fff;
-            border-color: #007bff;
-            box-shadow: 0 2px 6px rgba(0,123,255,0.3);
-        }
-
-        .ads-container {
-            width: 100%;
-            box-sizing: border-box;
-        }
-        
-        .ad-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .ad-item {
-            background: #fff;
-            display: flex;
-            padding: 14px;
-            gap: 14px;
-            box-sizing: border-box;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid #eaeaea;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-            position: relative;
-        }
-        
-        .ad-item.new-ad-highlight {
-            background-color: #fffde7;
-            border: 2px solid #ffc107;
-        }
-
-        /* VIP Ad Red Theme Design */
-        .ad-item.vip-ad-highlight {
-            background-color: #fff5f5;
-            border: 2px solid #dc3545;
-            box-shadow: 0 3px 10px rgba(220, 53, 69, 0.15);
-        }
-
-        .new-badge {
-            background: #ffc107;
-            color: #000;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            display: inline-block;
-            margin-bottom: 4px;
-        }
-
-        .vip-badge {
-            background: #dc3545;
-            color: #fff;
-            font-size: 10px;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 4px;
-            text-transform: uppercase;
-            display: inline-block;
-            margin-bottom: 4px;
-        }
-
-        .ad-item img {
-            width: 130px;
-            height: 105px;
-            object-fit: cover;
-            border-radius: 6px;
-            flex-shrink: 0;
-            background-color: #eee;
-        }
-
-        .ad-details {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .ad-title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 8px;
-        }
-
-        .ad-title {
-            font-size: 17px;
-            font-weight: bold;
-            color: #111;
-            margin: 0 0 4px 0;
-        }
-
-        .time-badge {
-            font-size: 11px;
-            color: #666;
-            background: #f1f3f5;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .ad-subtitle {
-            font-size: 13px;
-            color: #666;
-            margin: 0 0 6px 0;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .ad-meta-bottom {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 12px;
-            color: #777;
-            margin-top: 4px;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .stats-badge {
-            display: inline-flex;
-            gap: 10px;
-            font-size: 12px;
-            color: #555;
-            background: #f8f9fa;
-            padding: 3px 8px;
-            border-radius: 10px;
-            align-items: center;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .action-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            font-size: 12px;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-        .edit-action {
-            color: #007bff;
-            background-color: #e7f1ff;
-        }
-        .delete-action {
-            color: #dc3545;
-            background-color: #f8d7da;
-        }
-
-        .pagination-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 6px;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-        .page-btn {
-            background-color: #fff;
-            color: #007bff;
-            border: 1px solid #007bff;
-            width: 35px;
-            height: 35px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 15px;
-        }
-        .page-btn.active {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .bottom-floating-btn-container {
-            position: fixed;
-            bottom: 25px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 1500;
-            text-align: center;
-            width: 100%;
-            pointer-events: none;
-        }
-        .floating-post-btn {
-            pointer-events: auto;
-            background-color: #007bff;
-            color: #fff;
-            font-size: 16px;
-            padding: 12px 28px;
-            border: none;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            box-shadow: 0 4px 12px rgba(0,123,255,0.35);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .fullscreen-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 2000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 15px;
-            box-sizing: border-box;
-            overflow-y: auto;
-        }
-        .fullscreen-form-box {
-            position: relative;
-            background: #fff;
-            padding: 22px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            width: 100%;
-            max-width: 500px;
-            box-sizing: border-box;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .top-back-btn {
-            background-color: #6c757d;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 13px;
-            margin-bottom: 12px;
-        }
-
-        .hidden {
-            display: none !important;
-        }
-        
-        input, select, textarea, button.form-submit {
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-            padding: 10px 12px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 15px;
-        }
-        
-        .photo-upload-label {
-            display: block;
-            background-color: #17a2b8;
-            color: white;
-            text-align: center;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 14px;
-            margin-bottom: 10px;
-        }
-        #photo {
-            display: none;
-        }
-        .preview-img {
-            max-width: 100%;
-            height: 130px;
-            object-fit: cover;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            display: none;
-        }
-
-        button.form-submit {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .auth-switch {
-            text-align: center;
-            margin-top: 12px;
-            font-size: 13px;
-            color: #007bff;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .dashboard-card {
-            background: #f8f9fa;
-            border: 1px solid #e9ecef;
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .detail-img {
-            width: 100%;
-            height: 230px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            background-color: #eee;
-        }
-        .detail-price {
-            font-size: 20px;
-            font-weight: bold;
-            color: #007bff;
-            margin-bottom: 10px;
-        }
-        .detail-desc {
-            font-size: 15px;
-            color: #444;
-            line-height: 1.4;
-            margin-bottom: 12px;
-            white-space: pre-wrap;
-        }
-        .detail-phone {
-            font-size: 16px;
-            font-weight: bold;
-            color: #28a745;
-            background: #e8f5e9;
-            padding: 10px;
-            border-radius: 6px;
-            text-align: center;
-            margin-top: 12px;
-        }
-        
-        .detail-actions-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #eee;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .like-btn {
-            background: linear-gradient(135deg, #ff416c, #ff4b2b);
-            color: #ffffff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 30px;
-            cursor: pointer;
-            font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 14px;
-            box-shadow: 0 3px 10px rgba(255, 65, 108, 0.3);
-        }
-        .like-btn svg {
-            width: 16px;
-            height: 16px;
-            fill: #ffffff;
-        }
+        /* Chat UI */
+        .chat-user-item { padding: 12px 15px; background: #fff; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer; font-weight: bold; color: #333; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .chat-box-container { display: flex; flex-direction: column; height: 75vh; border: 1px solid #ddd; border-radius: 8px; background: #fff; overflow: hidden; margin-top: 10px; }
+        .chat-header-bar { background: #e9ecef; padding: 10px 15px; display: flex; align-items: center; gap: 10px; font-weight: bold; border-bottom: 1px solid #ddd; }
+        .back-to-list-btn { background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8f9fa; }
+        .chat-msg { max-width: 75%; padding: 10px 14px; border-radius: 10px; font-size: 14px; word-break: break-word; }
+        .chat-msg.sent { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .chat-msg.received { background-color: #e2e8f0; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
+        .chat-input-area { display: flex; padding: 10px; background: #fff; border-top: 1px solid #ddd; gap: 8px; }
     </style>
 </head>
 <body>
 
     <div class="brand-header">
-        <button id="profileBtn" class="profile-icon-btn" title="Dashboard / Profile">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-        </button>
-        <h1>BlueAD</h1>
-        <div style="width: 28px;"></div>
+        <span id="loggedInUserDisplay" style="font-size: 14px; font-weight: bold;">👤 Guest</span>
+        <h1>BlueWay Chat</h1>
+        <button id="logoutBtn" class="logout-btn hidden">Logout</button>
     </div>
 
     <div class="main-container">
-        <div class="filter-section">
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" class="search-input" placeholder="Search ads...">
-            </div>
-            
-            <div class="category-pills">
-                <button class="cat-pill active" data-val="">All Ads</button>
-                <button class="cat-pill" data-val="Motorbikes">Motorbikes</button>
-                <button class="cat-pill" data-val="Vehicles">Vehicles</button>
-                <button class="cat-pill" data-val="Electronics">Electronics</button>
-                <button class="cat-pill" data-val="Property">Property</button>
-                <button class="cat-pill" data-val="Jobs">Jobs</button>
-                <button class="cat-pill" data-val="Services">Services</button>
-                <button class="cat-pill" data-val="Home & Garden">Home & Garden</button>
-                <button class="cat-pill" data-val="Fashion">Fashion</button>
-                <button class="cat-pill" data-val="Other">Other</button>
+        <!-- Chat List View -->
+        <div id="chatSectionList">
+            <h3 style="color: #333; margin-top: 5px;">Select a user to chat:</h3>
+            <div id="chatUserListContainer">
+                <p style="text-align: center; color: #777;">Loading users...</p>
             </div>
         </div>
 
-        <div class="ads-container">
-            <div id="adGrid" class="ad-list">
-                <p style="padding: 20px; text-align: center;">Loading ads...</p>
+        <!-- Chat Room View -->
+        <div id="chatRoomView" class="hidden">
+            <div class="chat-box-container">
+                <div class="chat-header-bar">
+                    <button type="button" class="back-to-list-btn" id="backToListBtn">← Back</button>
+                    <span id="chatRoomTitle">Chat</span>
+                </div>
+                <div id="chatMessagesBox" class="chat-messages"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chatMessageInput" placeholder="Type a message..." style="margin-bottom:0;">
+                    <button type="button" id="sendChatBtn" class="form-submit" style="width:auto; margin-bottom:0; padding: 10px 20px;">Send</button>
+                </div>
             </div>
-            <div id="paginationContainer" class="pagination-container"></div>
         </div>
     </div>
 
-    <div class="bottom-floating-btn-container">
-        <button id="showFormBtn" class="floating-post-btn">
-            <span>➕</span> POST YOUR AD
-        </button>
-    </div>
-
-    <div id="adDetailOverlay" class="fullscreen-overlay hidden">
-        <div class="fullscreen-form-box">
-            <button type="button" id="detailBackBtn" class="top-back-btn">← Back</button>
-            <h2 id="detailTitle" style="margin-top: 0; margin-bottom: 12px; font-size: 20px;"></h2>
-            <div id="detailContent"></div>
-        </div>
-    </div>
-
-    <div id="formOverlay" class="fullscreen-overlay hidden">
-        <div class="fullscreen-form-box">
-            <button type="button" id="topBackBtn" class="top-back-btn">← Back</button>
-            <h2 id="formHeading" style="margin-top: 0; font-size: 20px;">Post a New Ad</h2>
-            <form id="adForm">
-                <input type="text" id="name" placeholder="Your Name" required>
-                <input type="text" id="title" placeholder="Ad Title" required>
-                
-                <select id="category" required>
-                    <option value="" disabled selected>Select Category</option>
-                    <option value="Motorbikes">Motorbikes</option>
-                    <option value="Vehicles">Vehicles</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Property">Property</option>
-                    <option value="Jobs">Jobs</option>
-                    <option value="Services">Services</option>
-                    <option value="Home & Garden">Home & Garden</option>
-                    <option value="Fashion">Fashion</option>
-                    <option value="Other">Other</option>
-                </select>
-
-                <input type="number" id="price" placeholder="Price (Rs.)" required>
-                <input type="tel" id="phone" placeholder="Phone Number (10 digits)" maxlength="10" required>
-                
-                <label for="photo" class="photo-upload-label">📷 Upload Ad Photo</label>
-                <input type="file" id="photo" accept="image/*">
-                <img id="previewImg" class="preview-img" alt="Preview">
-
-                <textarea id="desc" placeholder="Location & Description" rows="3" required></textarea>
-                
-                <button type="submit" id="submitBtn" class="form-submit">Post Ad</button>
-            </form>
-        </div>
-    </div>
-
+    <!-- Auth Overlay (Login / Register) -->
     <div id="authOverlay" class="fullscreen-overlay hidden">
         <div class="fullscreen-form-box">
-            <button type="button" id="authBackBtn" class="top-back-btn">← Back</button>
-            <h2 id="authHeading" style="margin-top: 0; font-size: 20px;">Register to BlueAD</h2>
+            <h2 id="authHeading" style="margin-top:0; color:#007bff; text-align:center;">Register</h2>
             <form id="authForm">
                 <input type="text" id="authUsername" placeholder="Username" required>
-                <input type="text" id="authPassword" placeholder="Password" required>
+                <input type="password" id="authPassword" placeholder="Password" required>
                 <button type="submit" id="authSubmitBtn" class="form-submit">Register</button>
             </form>
-            <div id="authSwitchText" class="auth-switch">Already have an account? Login here</div>
-        </div>
-    </div>
-
-    <div id="dashboardOverlay" class="fullscreen-overlay hidden">
-        <div class="fullscreen-form-box" style="max-width: 600px;">
-            <button type="button" id="dashboardBackBtn" class="top-back-btn">← Back</button>
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 12px;">
-                <h2 style="margin: 0; color: #007bff; font-size: 20px;">User Dashboard</h2>
-                <button type="button" id="logoutBtn" class="form-submit" style="background-color: #dc3545; width: auto; padding: 6px 14px; margin: 0;">Logout</button>
-            </div>
-            <div style="margin-bottom: 15px;">
-                <p style="margin: 3px 0; color: #555; font-size: 14px;">Welcome back,</p>
-                <h3 id="dashboardUsername" style="margin: 0; color: #333; font-size: 16px;"></h3>
-            </div>
-            <h4 style="margin-bottom: 8px; color: #444; font-size: 15px;">My Posted Ads:</h4>
-            <div id="userAdsContainer" style="max-height: 50vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
-                <p style="text-align: center; color: #777;">Loading your ads...</p>
-            </div>
+            <div id="authSwitchText" class="auth-switch">Already have an account? Login</div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, doc, deleteDoc, updateDoc, increment, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA0huAGXtGHRsRHtVivcLnG-yS3CD6t8Jo",
@@ -633,568 +88,143 @@
             appId: "1:774487261814:web:f1f9abb145d63b86edd557",
             measurementId: "G-VBVWGK1LQT"
         };
+        const db = getFirestore(initializeApp(firebaseConfig));
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        const adForm = document.getElementById('adForm');
-        const submitBtn = document.getElementById('submitBtn');
-        const showFormBtn = document.getElementById('showFormBtn');
-        const topBackBtn = document.getElementById('topBackBtn');
-        const formOverlay = document.getElementById('formOverlay');
-        const formHeading = document.getElementById('formHeading');
-        const photoInput = document.getElementById('photo');
-        const previewImg = document.getElementById('previewImg');
-        
-        const profileBtn = document.getElementById('profileBtn');
-        const authOverlay = document.getElementById('authOverlay');
-        const authBackBtn = document.getElementById('authBackBtn');
-        const authForm = document.getElementById('authForm');
-        const authHeading = document.getElementById('authHeading');
-        const authSubmitBtn = document.getElementById('authSubmitBtn');
-        const authSwitchText = document.getElementById('authSwitchText');
-        const authPassword = document.getElementById('authPassword');
-        
-        const dashboardOverlay = document.getElementById('dashboardOverlay');
-        const dashboardBackBtn = document.getElementById('dashboardBackBtn');
-        const dashboardUsername = document.getElementById('dashboardUsername');
-        const userAdsContainer = document.getElementById('userAdsContainer');
-        const logoutBtn = document.getElementById('logoutBtn');
-
-        const adDetailOverlay = document.getElementById('adDetailOverlay');
-        const detailBackBtn = document.getElementById('detailBackBtn');
-        const detailTitle = document.getElementById('detailTitle');
-        const detailContent = document.getElementById('detailContent');
-
-        const searchInput = document.getElementById('searchInput');
-        const categoryPills = document.querySelectorAll('.cat-pill');
-
-        let currentUsername = localStorage.getItem('bluead_logged_user') || null;
+        let currentUsername = localStorage.getItem('blueway_logged_user') || null;
         let isRegistering = true;
-        let editingId = null;
-        let currentPhotoUrl = "";
+        let activeChatReceiver = null;
+        let unsubscribeChat = null;
 
-        let allAdsData = [];
-        let currentPage = 1;
-        const adsPerPage = 5;
-        let selectedCategory = "";
+        const authOverlay = document.getElementById('authOverlay');
+        const loggedInUserDisplay = document.getElementById('loggedInUserDisplay');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const chatUserListContainer = document.getElementById('chatUserListContainer');
+        const chatSectionList = document.getElementById('chatSectionList');
+        const chatRoomView = document.getElementById('chatRoomView');
 
-        function timeAgo(jsDate) {
-            if (!jsDate) return 'Just now';
-            const seconds = Math.floor((new Date() - jsDate) / 1000);
-            
-            let interval = seconds / 31536000;
-            if (interval > 1) return Math.floor(interval) + "y ago";
-            
-            interval = seconds / 2592000;
-            if (interval > 1) return Math.floor(interval) + "mo ago";
-            
-            interval = seconds / 86400;
-            if (interval > 1) return Math.floor(interval) + "d ago";
-            
-            interval = seconds / 3600;
-            if (interval > 1) return Math.floor(interval) + "h ago";
-            
-            interval = seconds / 60;
-            if (interval > 1) return Math.floor(interval) + "m ago";
-            
-            return "Just now";
+        // Check authentication state on load
+        function checkAuthState() {
+            if (!currentUsername) {
+                authOverlay.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                loggedInUserDisplay.textContent = "👤 Guest";
+            } else {
+                authOverlay.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                loggedInUserDisplay.textContent = `👤 ${currentUsername}`;
+                loadChatUsers();
+            }
+        }
+        checkAuthState();
+
+        function updateAuthUI() {
+            document.getElementById('authHeading').textContent = isRegistering ? "Register" : "Login";
+            document.getElementById('authSubmitBtn').textContent = isRegistering ? "Register" : "Login";
+            document.getElementById('authSwitchText').textContent = isRegistering ? "Already have an account? Login" : "Don't have an account? Register";
         }
 
-        searchInput.addEventListener('input', () => {
-            currentPage = 1;
-            renderAdsPage(currentPage);
+        document.getElementById('authSwitchText').addEventListener('click', () => { 
+            isRegistering = !isRegistering; 
+            updateAuthUI(); 
         });
 
-        categoryPills.forEach(pill => {
-            pill.addEventListener('click', () => {
-                categoryPills.forEach(p => p.classList.remove('active'));
-                pill.classList.add('active');
-                
-                selectedCategory = pill.getAttribute('data-val');
-                currentPage = 1;
-                renderAdsPage(currentPage);
-            });
-        });
-
-        showFormBtn.addEventListener('click', () => {
-            if (!currentUsername) {
-                isRegistering = true;
-                updateAuthFormUI();
-                authOverlay.classList.remove('hidden');
-            } else {
-                editingId = null;
-                currentPhotoUrl = "";
-                adForm.reset();
-                photoInput.value = "";
-                previewImg.style.display = 'none';
-                previewImg.src = "";
-                formHeading.textContent = "Post a New Ad";
-                submitBtn.textContent = "Post Ad";
-                formOverlay.classList.remove('hidden');
-            }
-        });
-
-        profileBtn.addEventListener('click', () => {
-            if (!currentUsername) {
-                isRegistering = true;
-                updateAuthFormUI();
-                authOverlay.classList.remove('hidden');
-            } else {
-                dashboardUsername.textContent = currentUsername;
-                loadUserDashboardAds();
-                dashboardOverlay.classList.remove('hidden');
-            }
-        });
-
-        authSwitchText.addEventListener('click', () => {
-            isRegistering = !isRegistering;
-            updateAuthFormUI();
-        });
-
-        function updateAuthFormUI() {
-            if (isRegistering) {
-                authHeading.textContent = "Register to BlueAD";
-                authSubmitBtn.textContent = "Register";
-                authSwitchText.textContent = "Already have an account? Login here";
-            } else {
-                authHeading.textContent = "Login to BlueAD";
-                authSubmitBtn.textContent = "Login";
-                authSwitchText.textContent = "Don't have an account? Register here";
-            }
-            document.getElementById('authUsername').value = '';
-            authPassword.value = '';
-        }
-
-        authForm.addEventListener('submit', async (e) => {
+        document.getElementById('authForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('authUsername').value.trim().toLowerCase();
-            const password = authPassword.value;
+            const password = document.getElementById('authPassword').value;
+            const usersSnap = await getDocs(collection(db, "users"));
+            let userFound = null;
+            usersSnap.forEach(d => { if (d.data().username === username) userFound = d.data(); });
 
-            authSubmitBtn.textContent = "Please wait...";
-            authSubmitBtn.disabled = true;
-
-            try {
-                const usersSnap = await getDocs(collection(db, "users"));
-                let userDocFound = null;
-                usersSnap.forEach((docSnap) => {
-                    if (docSnap.data().username === username) {
-                        userDocFound = docSnap.data();
-                    }
-                });
-
-                if (isRegistering) {
-                    if (userDocFound) {
-                        alert("This username is already taken. Please choose another.");
-                    } else {
-                        await addDoc(collection(db, "users"), {
-                            username: username,
-                            password: password,
-                            createdAt: serverTimestamp()
-                        });
-                        currentUsername = username;
-                        localStorage.setItem('bluead_logged_user', currentUsername);
-                        alert("Registration successful!");
-                        authOverlay.classList.add('hidden');
-                    }
+            if (isRegistering) {
+                if (userFound) {
+                    alert("Username already taken!");
                 } else {
-                    if (!userDocFound) {
-                        alert("User not found! Please register first.");
-                    } else if (userDocFound.password !== password) {
-                        alert("Incorrect password!");
-                    } else {
-                        currentUsername = username;
-                        localStorage.setItem('bluead_logged_user', currentUsername);
-                        alert("Login successful!");
-                        authOverlay.classList.add('hidden');
-                    }
+                    await addDoc(collection(db, "users"), { username, password, createdAt: serverTimestamp() });
+                    currentUsername = username; 
+                    localStorage.setItem('blueway_logged_user', currentUsername);
+                    checkAuthState();
+                    alert("Registered successfully!");
                 }
-            } catch (error) {
-                alert("Error: " + error.message);
-            } finally {
-                authSubmitBtn.textContent = isRegistering ? "Register" : "Login";
-                authSubmitBtn.disabled = false;
+            } else {
+                if (!userFound || userFound.password !== password) {
+                    alert("Invalid username or password!");
+                } else {
+                    currentUsername = username; 
+                    localStorage.setItem('blueway_logged_user', currentUsername);
+                    checkAuthState();
+                    alert("Logged in successfully!");
+                }
             }
         });
 
         logoutBtn.addEventListener('click', () => {
-            currentUsername = null;
-            localStorage.removeItem('bluead_logged_user');
-            dashboardOverlay.classList.add('hidden');
-            alert("Logged out successfully!");
-            loadAds();
+            currentUsername = null; 
+            localStorage.removeItem('blueway_logged_user');
+            if(unsubscribeChat) unsubscribeChat();
+            checkAuthState();
         });
 
-        authBackBtn.addEventListener('click', () => authOverlay.classList.add('hidden'));
-        dashboardBackBtn.addEventListener('click', () => dashboardOverlay.classList.add('hidden'));
-        topBackBtn.addEventListener('click', () => formOverlay.classList.add('hidden'));
-        detailBackBtn.addEventListener('click', () => adDetailOverlay.classList.add('hidden'));
-
-        photoInput.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    currentPhotoUrl = event.target.result;
-                    previewImg.src = currentPhotoUrl;
-                    previewImg.style.display = 'block';
+        async function loadChatUsers() {
+            chatUserListContainer.innerHTML = "<p style='text-align: center; color: #777;'>Loading users...</p>";
+            const snap = await getDocs(collection(db, "users"));
+            chatUserListContainer.innerHTML = "";
+            let count = 0;
+            snap.forEach(d => {
+                let u = d.data().username;
+                if (u && u !== currentUsername) {
+                    count++;
+                    chatUserListContainer.innerHTML += `
+                        <div class="chat-user-item" onclick="openChatRoom('${u}')">
+                            <span>👤 ${u}</span>
+                            <span style="color:#007bff; font-size:13px;">Chat →</span>
+                        </div>`;
                 }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        adForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const phoneVal = document.getElementById('phone').value.trim();
-            if (phoneVal.length !== 10 || isNaN(phoneVal)) {
-                alert("කරුණාකර නිවැරදි ඉලක්කම් 10 ක දුරකථන අංකයක් ඇතුළත් කරන්න!");
-                return;
-            }
-
-            submitBtn.textContent = "Saving...";
-            submitBtn.disabled = true;
-
-            const name = document.getElementById('name').value;
-            const title = document.getElementById('title').value;
-            const category = document.getElementById('category').value;
-            const price = document.getElementById('price').value;
-            const phone = phoneVal;
-            const desc = document.getElementById('desc').value;
-
-            try {
-                if (editingId) {
-                    await updateDoc(doc(db, "ads", editingId), {
-                        name: name,
-                        title: title,
-                        category: category,
-                        price: price,
-                        phone: phone,
-                        desc: desc,
-                        photoUrl: currentPhotoUrl
-                    });
-                    alert("Ad updated successfully!");
-                    editingId = null;
-                } else {
-                    await addDoc(collection(db, "ads"), {
-                        name: name,
-                        title: title,
-                        category: category,
-                        price: price,
-                        phone: phone,
-                        desc: desc,
-                        photoUrl: currentPhotoUrl,
-                        username: currentUsername || '',
-                        views: 0,
-                        likes: 0,
-                        isVip: false,
-                        createdAt: serverTimestamp()
-                    });
-                    alert("Ad posted successfully!");
-                }
-                
-                adForm.reset();
-                photoInput.value = "";
-                previewImg.style.display = 'none';
-                currentPhotoUrl = "";
-                formOverlay.classList.add('hidden');
-                loadAds();
-            } catch (error) {
-                console.error("Error saving ad: ", error);
-                alert("Error saving ad!");
-            } finally {
-                submitBtn.textContent = editingId ? "Update Ad" : "Post Ad";
-                submitBtn.disabled = false;
-            }
-        });
-
-        async function loadAds() {
-            try {
-                const querySnapshot = await getDocs(collection(db, "ads"));
-                allAdsData = [];
-                querySnapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    let jsDate = null;
-                    if (data.createdAt && typeof data.createdAt.toDate === 'function') {
-                        jsDate = data.createdAt.toDate();
-                    } else if (data.createdAt) {
-                        jsDate = new Date(data.createdAt);
-                    }
-                    allAdsData.push({ id: docSnap.id, ...data, jsDate: jsDate });
-                });
-                
-                // VIP ads first, then sort by newest date
-                allAdsData.sort((a, b) => {
-                    if (a.isVip && !b.isVip) return -1;
-                    if (!a.isVip && b.isVip) return 1;
-
-                    const timeA = a.jsDate ? a.jsDate.getTime() : 0;
-                    const timeB = b.jsDate ? b.jsDate.getTime() : 0;
-                    return timeB - timeA;
-                });
-
-                renderAdsPage(currentPage);
-            } catch (error) {
-                console.error("Error loading ads: ", error);
-            }
-        }
-
-        window.renderAdsPage = function(page) {
-            currentPage = page;
-            const grid = document.getElementById('adGrid');
-            const paginationContainer = document.getElementById('paginationContainer');
-            grid.innerHTML = "";
-            paginationContainer.innerHTML = "";
-
-            const searchTerm = searchInput.value.toLowerCase().trim();
-
-            const filteredAds = allAdsData.filter(data => {
-                const titleMatch = (data.title || '').toLowerCase().includes(searchTerm);
-                const descMatch = (data.desc || '').toLowerCase().includes(searchTerm);
-                const matchesSearch = titleMatch || descMatch;
-                const matchesCategory = selectedCategory === "" || data.category === selectedCategory;
-                return matchesSearch && matchesCategory;
             });
-
-            if (filteredAds.length === 0) {
-                grid.innerHTML = "<p style='padding: 20px; text-align: center;'>No ads found.</p>";
-                return;
-            }
-
-            const totalPages = Math.ceil(filteredAds.length / adsPerPage);
-            if (currentPage > totalPages) currentPage = totalPages;
-            if (currentPage < 1) currentPage = 1;
-
-            const startIndex = (currentPage - 1) * adsPerPage;
-            const endIndex = startIndex + adsPerPage;
-            const currentAdsSlice = filteredAds.slice(startIndex, endIndex);
-
-            const nowTime = new Date().getTime();
-            const twentyFourHoursMs = 24 * 60 * 60 * 1000;
-
-            currentAdsSlice.forEach((data) => {
-                let imgTag = (data.photoUrl && data.photoUrl.trim() !== "") ? `<img src="${data.photoUrl}" alt="Ad Image">` : `<img src="https://via.placeholder.com/130x105?text=No+Photo" alt="No Image">`;
-
-                let viewsCount = data.views || 0;
-                let likesCount = data.likes || 0;
-                let timeAgoText = timeAgo(data.jsDate);
-
-                let isVip = data.isVip === true;
-                let isNewAd = false;
-                if (!isVip && data.jsDate) {
-                    const diffMs = nowTime - data.jsDate.getTime();
-                    if (diffMs < twentyFourHoursMs && diffMs >= 0) {
-                        isNewAd = true;
-                    }
-                }
-
-                let cardClass = '';
-                let badgeHtml = '';
-                if (isVip) {
-                    cardClass = 'vip-ad-highlight';
-                    badgeHtml = '<span class="vip-badge">🔥 VIP AD</span> ';
-                } else if (isNewAd) {
-                    cardClass = 'new-ad-highlight';
-                    badgeHtml = '<span class="new-badge">⭐ New</span> ';
-                }
-
-                let ownerControls = "";
-                if (currentUsername && data.username === currentUsername) {
-                    ownerControls = `
-                        <div class="action-buttons" onclick="event.stopPropagation()">
-                            <button class="action-btn edit-action" onclick="editAd('${data.id}', '${encodeURIComponent(data.name || '')}', '${encodeURIComponent(data.title || '')}', '${data.category || ''}', '${data.price || 0}', '${data.phone || ''}', '${encodeURIComponent(data.desc || '')}', '${encodeURIComponent(data.photoUrl || '')}')">Edit</button>
-                            <button class="action-btn delete-action" onclick="deleteAd('${data.id}')">Delete</button>
-                        </div>
-                    `;
-                }
-
-                grid.innerHTML += `
-                    <div class="ad-item ${cardClass}" onclick="openAdDetail('${data.id}')">
-                        ${imgTag}
-                        <div class="ad-details">
-                            <div>
-                                <div class="ad-title-row">
-                                    <h2 class="ad-title">${badgeHtml}${data.title || 'No Title'}</h2>
-                                    <span class="time-badge">${timeAgoText}</span>
-                                </div>
-                                <div class="ad-subtitle">${data.desc || ''}</div>
-                            </div>
-                            <div>
-                                <div class="stats-badge">
-                                    <span>👁️ ${viewsCount}</span>
-                                    <span>❤️ ${likesCount}</span>
-                                </div>
-                                <div class="ad-meta-bottom">
-                                    <span><b>${data.category || 'General'}</b></span>
-                                    ${ownerControls}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            if (totalPages > 1) {
-                for (let i = 1; i <= totalPages; i++) {
-                    let activeClass = (i === currentPage) ? 'active' : '';
-                    paginationContainer.innerHTML += `
-                        <button class="page-btn ${activeClass}" onclick="renderAdsPage(${i})">${i}</button>
-                    `;
-                }
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        window.openAdDetail = async function(id) {
-            const data = allAdsData.find(ad => ad.id === id);
-            if (!data) return;
-
-            try {
-                const adRef = doc(db, "ads", id);
-                await updateDoc(adRef, {
-                    views: increment(1)
-                });
-                data.views = (data.views || 0) + 1;
-            } catch (err) {
-                console.error("Error updating view count:", err);
-            }
-
-            detailTitle.textContent = data.title || 'No Title';
-
-            let imgTag = (data.photoUrl && data.photoUrl.trim() !== "") ? `<img src="${data.photoUrl}" class="detail-img" alt="Ad Image">` : `<img src="https://via.placeholder.com/500x230?text=No+Photo" class="detail-img" alt="No Image">`;
-            let formattedPrice = Number(data.price || 0).toLocaleString();
-            let timeAgoText = timeAgo(data.jsDate);
-
-            detailContent.innerHTML = `
-                ${imgTag}
-                
-                <div class="detail-actions-bar">
-                    <div class="stats-badge" style="font-size: 13px; padding: 4px 10px;">
-                        <span>👁️ <b id="detailViewsCount">${data.views || 0}</b> Views</span>
-                        <span>❤️ <b id="detailLikesCount">${data.likes || 0}</b> Likes</span>
-                        <span class="time-badge">${timeAgoText}</span>
-                    </div>
-                    <button class="like-btn" onclick="likeAd('${data.id}')">
-                        <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                        Like
-                    </button>
-                </div>
-
-                <div class="detail-price">Rs ${formattedPrice}</div>
-                <div class="detail-desc">${data.desc || 'No description provided.'}</div>
-                <div class="detail-phone">📞 Phone: ${data.phone || 'Not Available'}</div>
-            `;
-
-            adDetailOverlay.classList.remove('hidden');
-        }
-
-        window.likeAd = async function(id) {
-            try {
-                const adRef = doc(db, "ads", id);
-                await updateDoc(adRef, {
-                    likes: increment(1)
-                });
-                
-                let adObj = allAdsData.find(a => a.id === id);
-                if (adObj) {
-                    adObj.likes = (adObj.likes || 0) + 1;
-                    const badge = document.getElementById('detailLikesCount');
-                    if (badge) badge.textContent = adObj.likes;
-                }
-                alert("ස්තූතියි! ඔබ මෙම දැන්වීම කැමති (Like) කළා.");
-                loadAds();
-            } catch (error) {
-                console.error("Error liking ad:", error);
-                alert("Like කිරීමේදී දෝෂයක් ඇති විය.");
+            if (count === 0) {
+                chatUserListContainer.innerHTML = "<p style='text-align: center; color: #777;'>No other users found to chat.</p>";
             }
         }
 
-        async function loadUserDashboardAds() {
-            userAdsContainer.innerHTML = "<p style='text-align: center; color: #777;'>Loading your ads...</p>";
-            try {
-                const userAds = allAdsData.filter(ad => ad.username === currentUsername);
-                userAdsContainer.innerHTML = "";
-
-                if (userAds.length === 0) {
-                    userAdsContainer.innerHTML = "<p style='text-align: center; color: #777;'>You haven't posted any ads yet.</p>";
-                    return;
-                }
-
-                userAds.forEach((data) => {
-                    let formattedPrice = Number(data.price || 0).toLocaleString();
-                    let timeAgoText = timeAgo(data.jsDate);
-                    userAdsContainer.innerHTML += `
-                        <div class="dashboard-card">
-                            <div>
-                                <h4 style="margin: 0 0 3px 0; color: #000; font-size: 15px;">${data.title || 'No Title'} <span class="time-badge" style="font-size:10px;">${timeAgoText}</span></h4>
-                                <p style="margin: 0 0 3px 0; color: #007bff; font-weight: bold; font-size: 14px;">Rs ${formattedPrice}</p>
-                                <span style="font-size: 11px; color: #555;">👁️ ${data.views || 0} | ❤️ ${data.likes || 0}</span>
-                            </div>
-                            <div class="action-buttons">
-                                <button class="action-btn edit-action" onclick="dashboardEdit('${data.id}', '${encodeURIComponent(data.name || '')}', '${encodeURIComponent(data.title || '')}', '${data.category || ''}', '${data.price || 0}', '${data.phone || ''}', '${encodeURIComponent(data.desc || '')}', '${encodeURIComponent(data.photoUrl || '')}')">Edit</button>
-                                <button class="action-btn delete-action" onclick="dashboardDelete('${data.id}')">Delete</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            } catch (error) {
-                console.error("Error loading user dashboard ads:", error);
-            }
-        }
-
-        window.dashboardEdit = function(id, name, title, category, price, phone, desc, photoUrl) {
-            dashboardOverlay.classList.add('hidden');
-            editAd(id, name, title, category, price, phone, desc, photoUrl);
-        }
-
-        window.dashboardDelete = async function(id) {
-            if(confirm("Are you sure you want to delete this ad?")) {
-                try {
-                    await deleteDoc(doc(db, "ads", id));
-                    loadAds();
-                    loadUserDashboardAds();
-                } catch (error) {
-                    console.error("Error deleting ad: ", error);
-                }
-            }
-        }
-
-        window.editAd = function(id, name, title, category, price, phone, desc, photoUrl) {
-            editingId = id;
-            document.getElementById('name').value = decodeURIComponent(name);
-            document.getElementById('title').value = decodeURIComponent(title);
-            document.getElementById('category').value = category;
-            document.getElementById('price').value = price;
-            document.getElementById('phone').value = phone || '';
-            document.getElementById('desc').value = decodeURIComponent(desc);
+        window.openChatRoom = function(receiver) {
+            activeChatReceiver = receiver;
+            document.getElementById('chatRoomTitle').textContent = `Chat with ${receiver}`;
+            chatSectionList.classList.add('hidden');
+            chatRoomView.classList.remove('hidden');
             
-            currentPhotoUrl = decodeURIComponent(photoUrl);
-            if (currentPhotoUrl && currentPhotoUrl !== "undefined" && currentPhotoUrl !== "null" && currentPhotoUrl !== "NaN" && currentPhotoUrl.trim() !== "") {
-                previewImg.src = currentPhotoUrl;
-                previewImg.style.display = 'block';
-            } else {
-                currentPhotoUrl = "";
-                previewImg.style.display = 'none';
-                previewImg.src = "";
-            }
-
-            formHeading.textContent = "Edit Ad";
-            submitBtn.textContent = "Update Ad";
-            formOverlay.classList.remove('hidden');
+            if(unsubscribeChat) unsubscribeChat();
+            unsubscribeChat = onSnapshot(query(collection(db, "chats"), orderBy("createdAt", "asc")), (snapshot) => {
+                let box = document.getElementById('chatMessagesBox');
+                box.innerHTML = "";
+                snapshot.forEach(d => {
+                    let m = d.data();
+                    if ((m.sender === currentUsername && m.receiver === receiver) || (m.sender === receiver && m.receiver === currentUsername)) {
+                        box.innerHTML += `<div class="chat-msg ${m.sender === currentUsername ? 'sent' : 'received'}">${m.text}</div>`;
+                    }
+                });
+                box.scrollTop = box.scrollHeight;
+            });
         }
 
-        window.deleteAd = async function(id) {
-            if(confirm("Are you sure you want to delete this ad?")) {
-                try {
-                    await deleteDoc(doc(db, "ads", id));
-                    loadAds();
-                } catch (error) {
-                    console.error("Error deleting ad: ", error);
-                }
-            }
-        }
+        document.getElementById('backToListBtn').addEventListener('click', () => {
+            activeChatReceiver = null;
+            if(unsubscribeChat) unsubscribeChat();
+            chatRoomView.classList.add('hidden');
+            chatSectionList.classList.remove('hidden');
+            loadChatUsers();
+        });
 
-        loadAds();
+        document.getElementById('sendChatBtn').addEventListener('click', async () => {
+            let text = document.getElementById('chatMessageInput').value.trim();
+            if (!text || !activeChatReceiver) return;
+            document.getElementById('chatMessageInput').value = "";
+            await addDoc(collection(db, "chats"), { 
+                sender: currentUsername, 
+                receiver: activeChatReceiver, 
+                text, 
+                createdAt: serverTimestamp() 
+            });
+        });
     </script>
 </body>
 </html>
