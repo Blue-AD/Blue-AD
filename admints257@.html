@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BlueWay - Admin Control Panel</title>
+    <title>Nexus - Admin Control Panel</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; box-sizing: border-box; width: 100vw; min-height: 100vh; padding: 20px; }
         .admin-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -22,7 +22,7 @@
     <!-- Admin Login Overlay -->
     <div id="adminAuthOverlay" class="fullscreen-overlay">
         <div class="fullscreen-form-box">
-            <h2 style="color:#007bff; text-align:center;">Admin Login</h2>
+            <h2 style="color:#007bff; text-align:center;">Nexus Admin Login</h2>
             <form id="adminAuthForm">
                 <input type="text" id="adminUser" placeholder="Admin Username (admin)" required>
                 <input type="password" id="adminPass" placeholder="Password" required>
@@ -34,7 +34,7 @@
     <!-- Main Admin Dashboard -->
     <div id="adminMainPanel" class="admin-container hidden">
         <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2>🛡️ Admin Control Panel</h2>
+            <h2>🛡️ Nexus Admin Panel</h2>
             <button id="adminLogoutBtn" class="delete-btn" style="background-color: #6c757d;">Logout</button>
         </div>
         <p style="font-size: 13px; color: #666;">මෙම පැනලය හරහා ඔබට පද්ධතියේ ලියාපදිංචි වී ඇති පරිශීලකයින් (Users) බලා ඔවුන්ගේ ගිණුම් ඉවත් කළ හැක.</p>
@@ -60,7 +60,7 @@
         };
         const db = getFirestore(initializeApp(firebaseConfig));
 
-        let currentAdmin = localStorage.getItem('blueway_admin_user') || null;
+        let currentAdmin = localStorage.getItem('nexus_admin_user') || null;
 
         const adminAuthOverlay = document.getElementById('adminAuthOverlay');
         const adminMainPanel = document.getElementById('adminMainPanel');
@@ -88,7 +88,7 @@
 
                 if (foundAdmin || password === "12345") {
                     currentAdmin = username;
-                    localStorage.setItem('blueway_admin_user', currentAdmin);
+                    localStorage.setItem('nexus_admin_user', currentAdmin);
                     adminAuthOverlay.classList.add('hidden');
                     adminMainPanel.classList.remove('hidden');
                     loadAdminUsers();
@@ -102,7 +102,7 @@
         });
 
         document.getElementById('adminLogoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('blueway_admin_user');
+            localStorage.removeItem('nexus_admin_user');
             location.reload();
         });
 
@@ -158,3 +158,4 @@
     </script>
 </body>
 </html>
+
