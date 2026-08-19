@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlueAD - Admin Panel</title>
+    
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f6f9;
+            box-sizing: border-box;
+            width: 100vw;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+        .brand-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: #007bff;
+            color: white;
+            padding: 18px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+        }
+        .brand-header h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            flex-grow: 1;
+            text-align: center;
+        }
+        .home-link-btn {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px;
+            text-decoration: none;
+        }
+
+        .main-container {
+            padding: 20px 15px;
+            max-width: 900px;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+
+        /* Admin Login Box */
+        .login-card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            max-width: 420px;
+            margin: 60px auto;
+            box-sizing: border-box;
+        }
+
+        .category-pills {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+        .cat-pill {
+            background-color: #fff;
+            color: #555;
+            border: 1px solid #ddd;
+            padding: 10px 22px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .cat-pill.active {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+            box-shadow: 0 2px 6px rgba(0,123,255,0.3);
+        }
+
+        .ads-container {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .ad-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .dashboard-card {
+            background: #fff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            box-sizing: border-box;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.06);
+            border: 1px solid #eaeaea;
+        }
+
+        .ad-title {
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            margin: 0 0 5px 0;
+        }
+
+        .ad-price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #007bff; 
+            margin: 0;
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 8px 14px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .delete-action {
+            color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .delete-action:hover {
+            background-color: #f5c6cb;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+        
+        input, button.form-submit {
+            display: block;
+            width: 100%;
+            margin-bottom: 14px;
+            padding: 12px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+
+        button.form-submit {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button.form-submit:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="brand-header">
+        <a href="index.html" class="home-link-btn" title="Back to Website">🏠</a>
+        <h1>BlueAD Admin</h1>
+        <div style="width: 32px;"></div>
+    </div>
+
+    <!-- Admin Login Screen -->
+    <div id="adminLoginScreen" class="login-card">
+        <h2 style="margin-top: 0; color: #007bff; text-align: center; margin-bottom: 20px;">🛡️ Admin Login</h2>
+        <form id="adminLoginForm">
+            <input type="text" id="adminUser" placeholder="Admin Username" required>
+            <!-- මෙතැනදී type="text" දමා ඇත, එබැවින් පාස්වර්ඩ් එක අකුරු ලෙස පෙනේ -->
+            <input type="text" id="adminPass" placeholder="Admin Password" required>
+            <button type="submit" class="form-submit">Login Panel</button>
+        </form>
+    </div>
+
+    <!-- Admin Control Panel Screen -->
+    <div id="adminPanelScreen" class="main-container hidden">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2 style="margin: 0; color: #333; font-size: 22px;">Control Dashboard</h2>
+            <button type="button" id="adminLogoutBtn" class="form-submit" style="background-color: #dc3545; width: auto; padding: 8px 18px; margin: 0;">Logout</button>
+        </div>
+
+        <div class="category-pills">
+            <button type="button" id="tabAdsBtn" class="cat-pill active">Manage Ads</button>
+            <button type="button" id="tabUsersBtn" class="cat-pill">Manage Users</button>
+        </div>
+
+        <!-- Ads Tab View -->
+        <div id="adsSection" class="ads-container">
+            <div id="adminAdsContainer" class="ad-list">
+                <p style="text-align: center; color: #777; padding: 20px;">Loading all ads...</p>
+            </div>
+        </div>
+
+        <!-- Users Tab View -->
+        <div id="usersSection" class="ads-container hidden">
+            <div id="adminUsersContainer" class="ad-list">
+                <p style="text-align: center; color: #777; padding: 20px;">Loading registered users...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA0huAGXtGHRsRHtVivcLnG-yS3CD6t8Jo",
+            authDomain: "blossom-classifieds.firebaseapp.com",
+            projectId: "blossom-classifieds",
+            storageBucket: "blossom-classifieds.firebasestorage.app",
+            messagingSenderId: "774487261814",
+            appId: "1:774487261814:web:f1f9abb145d63b86edd557",
+            measurementId: "G-VBVWGK1LQT"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        const adminLoginScreen = document.getElementById('adminLoginScreen');
+        const adminPanelScreen = document.getElementById('adminPanelScreen');
+        const adminLoginForm = document.getElementById('adminLoginForm');
+        const adminAdsContainer = document.getElementById('adminAdsContainer');
+        const adminUsersContainer = document.getElementById('adminUsersContainer');
+        const adminLogoutBtn = document.getElementById('adminLogoutBtn');
+        const adminPass = document.getElementById('adminPass');
+
+        const tabAdsBtn = document.getElementById('tabAdsBtn');
+        const tabUsersBtn = document.getElementById('tabUsersBtn');
+        const adsSection = document.getElementById('adsSection');
+        const usersSection = document.getElementById('usersSection');
+
+        let isAdminLoggedIn = localStorage.getItem('bluead_admin_logged') === 'true';
+
+        if (isAdminLoggedIn) {
+            adminLoginScreen.classList.add('hidden');
+            adminPanelScreen.classList.remove('hidden');
+            loadAdminAds();
+            loadAdminUsers();
+        }
+
+        adminLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const u = document.getElementById('adminUser').value.trim();
+            const p = adminPass.value;
+
+            if (u === "admin" && p === "admin123") {
+                localStorage.setItem('bluead_admin_logged', 'true');
+                adminLoginScreen.classList.add('hidden');
+                adminPanelScreen.classList.remove('hidden');
+                loadAdminAds();
+                loadAdminUsers();
+            } else {
+                alert("Invalid Admin Username or Password!");
+            }
+        });
+
+        adminLogoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('bluead_admin_logged');
+            adminPanelScreen.classList.add('hidden');
+            adminLoginScreen.classList.remove('hidden');
+            document.getElementById('adminUser').value = '';
+            adminPass.value = '';
+        });
+
+        tabAdsBtn.addEventListener('click', () => {
+            tabAdsBtn.classList.add('active');
+            tabUsersBtn.classList.remove('active');
+            adsSection.classList.remove('hidden');
+            usersSection.classList.add('hidden');
+            loadAdminAds();
+        });
+
+        tabUsersBtn.addEventListener('click', () => {
+            tabUsersBtn.classList.add('active');
+            tabAdsBtn.classList.remove('active');
+            usersSection.classList.remove('hidden');
+            adsSection.classList.add('hidden');
+            loadAdminUsers();
+        });
+
+        async function loadAdminAds() {
+            adminAdsContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>Loading all system ads...</p>";
+            try {
+                const querySnapshot = await getDocs(collection(db, "ads"));
+                let allAds = [];
+                querySnapshot.forEach((docSnap) => {
+                    allAds.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                allAds.reverse();
+
+                adminAdsContainer.innerHTML = "";
+                if (allAds.length === 0) {
+                    adminAdsContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>No ads available in the system.</p>";
+                    return;
+                }
+
+                allAds.forEach((data) => {
+                    let formattedPrice = Number(data.price || 0).toLocaleString();
+                    adminAdsContainer.innerHTML += `
+                        <div class="dashboard-card">
+                            <div>
+                                <h4 class="ad-title">${data.title || 'No Title'}</h4>
+                                <p class="ad-price">Rs ${formattedPrice} <span style="font-size:13px; color:#666; font-weight:normal;">(By: ${data.username || 'Anonymous'})</span></p>
+                            </div>
+                            <div>
+                                <button class="action-btn delete-action" onclick="adminDeleteAd('${data.id}')">Delete Ad</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Error loading admin ads:", error);
+            }
+        }
+
+        async function loadAdminUsers() {
+            adminUsersContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>Loading registered users...</p>";
+            try {
+                const querySnapshot = await getDocs(collection(db, "users"));
+                let allUsers = [];
+                querySnapshot.forEach((docSnap) => {
+                    allUsers.push({ id: docSnap.id, ...docSnap.data() });
+                });
+
+                adminUsersContainer.innerHTML = "";
+                if (allUsers.length === 0) {
+                    adminUsersContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>No registered users in the system.</p>";
+                    return;
+                }
+
+                allUsers.forEach((user) => {
+                    adminUsersContainer.innerHTML += `
+                        <div class="dashboard-card">
+                            <div>
+                                <h4 class="ad-title">👤 ${user.username}</h4>
+                                <p style="margin: 0; color: #666; font-size: 13px;">Password: ${user.password}</p>
+                            </div>
+                            <div>
+                                <button class="action-btn delete-action" onclick="adminDeleteUser('${user.id}', '${user.username}')">Delete User</button>
+                            </div>
+                        </div>
+                    `;
+                });
+            } catch (error) {
+                console.error("Error loading users:", error);
+            }
+        }
+
+        window.adminDeleteAd = async function(id) {
+            if(confirm("⚠️ Admin Warning: Are you sure you want to permanently delete this ad?")) {
+                try {
+                    await deleteDoc(doc(db, "ads", id));
+                    loadAdminAds();
+                } catch (error) {
+                    console.error("Error deleting ad: ", error);
+                }
+            }
+        }
+
+        window.adminDeleteUser = async function(userId, username) {
+            if(confirm(`⚠️ Admin Warning: Are you sure you want to delete user "${username}"? This will also delete ALL ads posted by this user!`)) {
+                try {
+                    await deleteDoc(doc(db, "users", userId));
+
+                    const adsSnap = await getDocs(collection(db, "ads"));
+                    const deletePromises = [];
+                    adsSnap.forEach((adSnap) => {
+                        if (adSnap.data().username === username) {
+                            deletePromises.push(deleteDoc(doc(db, "ads", adSnap.id)));
+                        }
+                    });
+                    await Promise.all(deletePromises);
+
+                    alert(`User "${username}" and all their ads were deleted successfully.`);
+                    loadAdminUsers();
+                    loadAdminAds();
+                } catch (error) {
+                    console.error("Error deleting user and their ads: ", error);
+                    alert("Error deleting user!");
+                }
+            }
+        }
+    </script>
+</body>
+</html>
