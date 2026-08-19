@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BlueAD - Classifieds</title>
-    <meta name="google-site-verification" content="0FXFCJytz6qsnsFHNOr70sQmoaqCsx8UbkQYnPMoaMo" />
     
     <style>
         body {
@@ -49,9 +48,7 @@
             align-items: center;
             justify-content: center;
             padding: 5px;
-        }
-        .header-placeholder {
-            width: 34px;
+            text-decoration: none;
         }
 
         .main-container {
@@ -61,10 +58,67 @@
             box-sizing: border-box;
         }
         
-        .ads-container {
-            background: transparent;
-            padding: 0;
+        .filter-section {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             margin-bottom: 20px;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border-radius: 30px;
+            padding: 6px 18px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            border: 1px solid #e0e0e0;
+        }
+        .search-icon {
+            font-size: 18px;
+            color: #888;
+            margin-right: 12px;
+        }
+        .search-input {
+            width: 100%;
+            border: none !important;
+            outline: none !important;
+            font-size: 16px;
+            padding: 10px 0;
+            background: transparent;
+            margin: 0 !important;
+        }
+
+        .category-pills {
+            display: flex;
+            overflow-x: auto;
+            gap: 10px;
+            padding-bottom: 5px;
+            scrollbar-width: none;
+        }
+        .category-pills::-webkit-scrollbar {
+            display: none;
+        }
+        .cat-pill {
+            background-color: #fff;
+            color: #555;
+            border: 1px solid #ddd;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .cat-pill.active {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+            box-shadow: 0 2px 6px rgba(0,123,255,0.3);
+        }
+
+        .ads-container {
             width: 100%;
             box-sizing: border-box;
         }
@@ -80,18 +134,10 @@
             display: flex;
             padding: 16px;
             gap: 16px;
-            position: relative;
-            cursor: pointer;
-            text-decoration: none;
-            color: inherit;
             box-sizing: border-box;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.06);
             border: 1px solid #eaeaea;
-        }
-        .ad-item:hover {
-            background-color: #fafafa;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
         }
 
         .ad-item img {
@@ -115,7 +161,6 @@
             font-weight: bold;
             color: #000;
             margin: 0 0 5px 0;
-            line-height: 1.3;
         }
 
         .ad-subtitle {
@@ -127,7 +172,7 @@
         .ad-price {
             font-size: 18px;
             font-weight: bold;
-            color: #00a652;
+            color: #007bff; 
             margin: 0;
         }
 
@@ -163,7 +208,6 @@
             background-color: #f8d7da;
         }
 
-        /* Pagination Styles (1, 2, 3 podi kotu) */
         .pagination-container {
             display: flex;
             justify-content: center;
@@ -185,11 +229,6 @@
             cursor: pointer;
             font-weight: bold;
             font-size: 16px;
-            transition: all 0.2s;
-            box-sizing: border-box;
-        }
-        .page-btn:hover {
-            background-color: #e7f1ff;
         }
         .page-btn.active {
             background-color: #007bff;
@@ -220,10 +259,6 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            transition: background 0.2s;
-        }
-        .floating-post-btn:hover {
-            background-color: #0056b3;
         }
         
         .fullscreen-overlay {
@@ -264,11 +299,6 @@
             font-weight: bold;
             font-size: 14px;
             margin-bottom: 15px;
-            display: inline-block;
-            width: auto;
-        }
-        .top-back-btn:hover {
-            background-color: #5a6268;
         }
 
         .hidden {
@@ -297,9 +327,6 @@
             font-weight: bold;
             margin-bottom: 12px;
         }
-        .photo-upload-label:hover {
-            background-color: #138496;
-        }
         #photo {
             display: none;
         }
@@ -319,9 +346,6 @@
             cursor: pointer;
             font-weight: bold;
         }
-        button.form-submit:hover {
-            background-color: #0056b3;
-        }
 
         .auth-switch {
             text-align: center;
@@ -330,9 +354,6 @@
             color: #007bff;
             cursor: pointer;
             font-weight: bold;
-        }
-        .auth-switch:hover {
-            text-decoration: underline;
         }
 
         .dashboard-card {
@@ -357,10 +378,30 @@
             </svg>
         </button>
         <h1>BlueAD</h1>
-        <div class="header-placeholder"></div>
+        <div style="width: 32px;"></div>
     </div>
 
     <div class="main-container">
+        <div class="filter-section">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" class="search-input" placeholder="Search ads...">
+            </div>
+            
+            <div class="category-pills">
+                <button class="cat-pill active" data-val="">All Ads</button>
+                <button class="cat-pill" data-val="Motorbikes">Motorbikes</button>
+                <button class="cat-pill" data-val="Vehicles">Vehicles</button>
+                <button class="cat-pill" data-val="Electronics">Electronics</button>
+                <button class="cat-pill" data-val="Property">Property</button>
+                <button class="cat-pill" data-val="Jobs">Jobs</button>
+                <button class="cat-pill" data-val="Services">Services</button>
+                <button class="cat-pill" data-val="Home & Garden">Home & Garden</button>
+                <button class="cat-pill" data-val="Fashion">Fashion</button>
+                <button class="cat-pill" data-val="Other">Other</button>
+            </div>
+        </div>
+
         <div class="ads-container">
             <div id="adGrid" class="ad-list">
                 <p style="padding: 20px; text-align: center;">Loading ads...</p>
@@ -377,16 +418,15 @@
 
     <!-- Ad Form Overlay -->
     <div id="formOverlay" class="fullscreen-overlay hidden">
-        <div class="fullscreen-form-box" id="formBox">
+        <div class="fullscreen-form-box">
             <button type="button" id="topBackBtn" class="top-back-btn">← Back</button>
-            
             <h2 id="formHeading" style="margin-top: 0;">Post a New Ad</h2>
             <form id="adForm">
                 <input type="text" id="name" placeholder="Your Name" required>
-                <input type="text" id="title" placeholder="Ad Title (e.g. Bajaj Pulsar NS200)" required>
+                <input type="text" id="title" placeholder="Ad Title" required>
                 
                 <select id="category" required>
-                    <option value="" disabled selected>Select Category / Location</option>
+                    <option value="" disabled selected>Select Category</option>
                     <option value="Motorbikes">Motorbikes</option>
                     <option value="Vehicles">Vehicles</option>
                     <option value="Electronics">Electronics</option>
@@ -404,7 +444,7 @@
                 <input type="file" id="photo" accept="image/*">
                 <img id="previewImg" class="preview-img" alt="Preview">
 
-                <textarea id="desc" placeholder="Location & Description (e.g. Kurunegala, 56,230 km | Used)" rows="3" required></textarea>
+                <textarea id="desc" placeholder="Location & Description" rows="3" required></textarea>
                 
                 <button type="submit" id="submitBtn" class="form-submit">Post Ad</button>
             </form>
@@ -417,8 +457,9 @@
             <button type="button" id="authBackBtn" class="top-back-btn">← Back</button>
             <h2 id="authHeading" style="margin-top: 0;">Register to BlueAD</h2>
             <form id="authForm">
-                <input type="text" id="authUsername" placeholder="Username (e.g. nimesh)" required>
-                <input type="password" id="authPassword" placeholder="Password" required>
+                <input type="text" id="authUsername" placeholder="Username" required>
+                <!-- මෙතැනදී type="text" දමා ඇත, එබැවින් පාස්වර්ඩ් එක අකුරු ලෙස පෙනේ -->
+                <input type="text" id="authPassword" placeholder="Password" required>
                 <button type="submit" id="authSubmitBtn" class="form-submit">Register</button>
             </form>
             <div id="authSwitchText" class="auth-switch">Already have an account? Login here</div>
@@ -429,17 +470,14 @@
     <div id="dashboardOverlay" class="fullscreen-overlay hidden">
         <div class="fullscreen-form-box" style="max-width: 650px;">
             <button type="button" id="dashboardBackBtn" class="top-back-btn">← Back</button>
-            
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px;">
                 <h2 style="margin: 0; color: #007bff;">User Dashboard</h2>
                 <button type="button" id="logoutBtn" class="form-submit" style="background-color: #dc3545; width: auto; padding: 8px 16px; margin: 0;">Logout</button>
             </div>
-
             <div style="margin-bottom: 20px;">
                 <p style="margin: 5px 0; color: #555;">Welcome back,</p>
                 <h3 id="dashboardUsername" style="margin: 0; color: #333;"></h3>
             </div>
-
             <h4 style="margin-bottom: 10px; color: #444;">My Posted Ads:</h4>
             <div id="userAdsContainer" style="max-height: 50vh; overflow-y: auto; display: flex; flex-direction: column; gap: 10px;">
                 <p style="text-align: center; color: #777;">Loading your ads...</p>
@@ -480,12 +518,16 @@
         const authHeading = document.getElementById('authHeading');
         const authSubmitBtn = document.getElementById('authSubmitBtn');
         const authSwitchText = document.getElementById('authSwitchText');
+        const authPassword = document.getElementById('authPassword');
         
         const dashboardOverlay = document.getElementById('dashboardOverlay');
         const dashboardBackBtn = document.getElementById('dashboardBackBtn');
         const dashboardUsername = document.getElementById('dashboardUsername');
         const userAdsContainer = document.getElementById('userAdsContainer');
         const logoutBtn = document.getElementById('logoutBtn');
+
+        const searchInput = document.getElementById('searchInput');
+        const categoryPills = document.querySelectorAll('.cat-pill');
 
         let currentUsername = localStorage.getItem('bluead_logged_user') || null;
         let isRegistering = true;
@@ -495,6 +537,23 @@
         let allAdsData = [];
         let currentPage = 1;
         const adsPerPage = 5;
+        let selectedCategory = "";
+
+        searchInput.addEventListener('input', () => {
+            currentPage = 1;
+            renderAdsPage(currentPage);
+        });
+
+        categoryPills.forEach(pill => {
+            pill.addEventListener('click', () => {
+                categoryPills.forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                
+                selectedCategory = pill.getAttribute('data-val');
+                currentPage = 1;
+                renderAdsPage(currentPage);
+            });
+        });
 
         showFormBtn.addEventListener('click', () => {
             if (!currentUsername) {
@@ -542,13 +601,13 @@
                 authSwitchText.textContent = "Don't have an account? Register here";
             }
             document.getElementById('authUsername').value = '';
-            document.getElementById('authPassword').value = '';
+            authPassword.value = '';
         }
 
         authForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('authUsername').value.trim().toLowerCase();
-            const password = document.getElementById('authPassword').value;
+            const password = authPassword.value;
 
             authSubmitBtn.textContent = "Please wait...";
             authSubmitBtn.disabled = true;
@@ -601,21 +660,12 @@
             localStorage.removeItem('bluead_logged_user');
             dashboardOverlay.classList.add('hidden');
             alert("Logged out successfully!");
+            loadAds();
         });
 
         authBackBtn.addEventListener('click', () => authOverlay.classList.add('hidden'));
         dashboardBackBtn.addEventListener('click', () => dashboardOverlay.classList.add('hidden'));
         topBackBtn.addEventListener('click', () => formOverlay.classList.add('hidden'));
-
-        formOverlay.addEventListener('click', (e) => {
-            if (e.target === formOverlay) formOverlay.classList.add('hidden');
-        });
-        authOverlay.addEventListener('click', (e) => {
-            if (e.target === authOverlay) authOverlay.classList.add('hidden');
-        });
-        dashboardOverlay.addEventListener('click', (e) => {
-            if (e.target === dashboardOverlay) dashboardOverlay.classList.add('hidden');
-        });
 
         photoInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
@@ -632,7 +682,6 @@
 
         adForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            
             submitBtn.textContent = "Saving...";
             submitBtn.disabled = true;
 
@@ -687,16 +736,13 @@
             try {
                 const querySnapshot = await getDocs(collection(db, "ads"));
                 allAdsData = [];
-                
                 querySnapshot.forEach((docSnap) => {
                     allAdsData.push({ id: docSnap.id, ...docSnap.data() });
                 });
-
                 allAdsData.reverse();
                 renderAdsPage(currentPage);
             } catch (error) {
                 console.error("Error loading ads: ", error);
-                document.getElementById('adGrid').innerHTML = "<p style='color: red; padding: 20px; text-align: center;'>Error loading ads.</p>";
             }
         }
 
@@ -707,26 +753,45 @@
             grid.innerHTML = "";
             paginationContainer.innerHTML = "";
 
-            if (allAdsData.length === 0) {
-                grid.innerHTML = "<p style='padding: 20px; text-align: center;'>No ads found in database.</p>";
+            const searchTerm = searchInput.value.toLowerCase().trim();
+
+            const filteredAds = allAdsData.filter(data => {
+                const titleMatch = (data.title || '').toLowerCase().includes(searchTerm);
+                const descMatch = (data.desc || '').toLowerCase().includes(searchTerm);
+                const matchesSearch = titleMatch || descMatch;
+                const matchesCategory = selectedCategory === "" || data.category === selectedCategory;
+                return matchesSearch && matchesCategory;
+            });
+
+            if (filteredAds.length === 0) {
+                grid.innerHTML = "<p style='padding: 20px; text-align: center;'>No ads found.</p>";
                 return;
             }
 
-            const totalPages = Math.ceil(allAdsData.length / adsPerPage);
-            
+            const totalPages = Math.ceil(filteredAds.length / adsPerPage);
             if (currentPage > totalPages) currentPage = totalPages;
             if (currentPage < 1) currentPage = 1;
 
             const startIndex = (currentPage - 1) * adsPerPage;
             const endIndex = startIndex + adsPerPage;
-            const currentAdsSlice = allAdsData.slice(startIndex, endIndex);
+            const currentAdsSlice = filteredAds.slice(startIndex, endIndex);
 
             currentAdsSlice.forEach((data) => {
                 let imgTag = (data.photoUrl && data.photoUrl.trim() !== "") ? `<img src="${data.photoUrl}" alt="Ad Image">` : `<img src="https://via.placeholder.com/135x110?text=No+Photo" alt="No Image">`;
                 let formattedPrice = Number(data.price || 0).toLocaleString();
 
+                let ownerControls = "";
+                if (currentUsername && data.username === currentUsername) {
+                    ownerControls = `
+                        <div class="action-buttons">
+                            <button class="action-btn edit-action" onclick="editAd('${data.id}', '${encodeURIComponent(data.name || '')}', '${encodeURIComponent(data.title || '')}', '${data.category || ''}', '${data.price || 0}', '${encodeURIComponent(data.desc || '')}', '${encodeURIComponent(data.photoUrl || '')}')">Edit</button>
+                            <button class="action-btn delete-action" onclick="deleteAd('${data.id}')">Delete</button>
+                        </div>
+                    `;
+                }
+
                 grid.innerHTML += `
-                    <div class="ad-item" id="card-${data.id}">
+                    <div class="ad-item">
                         ${imgTag}
                         <div class="ad-details">
                             <div>
@@ -736,11 +801,8 @@
                             <div>
                                 <div class="ad-price">Rs ${formattedPrice}</div>
                                 <div class="ad-meta-bottom">
-                                    <span>${data.category || 'General'}</span>
-                                    <div class="action-buttons">
-                                        <button class="action-btn edit-action" onclick="editAd('${data.id}', '${encodeURIComponent(data.name || '')}', '${encodeURIComponent(data.title || '')}', '${data.category || ''}', '${data.price || 0}', '${encodeURIComponent(data.desc || '')}', '${encodeURIComponent(data.photoUrl || '')}')">Edit</button>
-                                        <button class="action-btn delete-action" onclick="deleteAd('${data.id}')">Delete</button>
-                                    </div>
+                                    <span>Category: <b>${data.category || 'General'}</b> | By: ${data.username || 'Anonymous'}</span>
+                                    ${ownerControls}
                                 </div>
                             </div>
                         </div>
@@ -756,7 +818,6 @@
                     `;
                 }
             }
-
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -777,7 +838,7 @@
                         <div class="dashboard-card">
                             <div>
                                 <h4 style="margin: 0 0 5px 0; color: #000;">${data.title || 'No Title'}</h4>
-                                <p style="margin: 0; color: #00a652; font-weight: bold;">Rs ${formattedPrice}</p>
+                                <p style="margin: 0; color: #007bff; font-weight: bold;">Rs ${formattedPrice}</p>
                             </div>
                             <div class="action-buttons">
                                 <button class="action-btn edit-action" onclick="dashboardEdit('${data.id}', '${encodeURIComponent(data.name || '')}', '${encodeURIComponent(data.title || '')}', '${data.category || ''}', '${data.price || 0}', '${encodeURIComponent(data.desc || '')}', '${encodeURIComponent(data.photoUrl || '')}')">Edit</button>
@@ -788,7 +849,6 @@
                 });
             } catch (error) {
                 console.error("Error loading user dashboard ads:", error);
-                userAdsContainer.innerHTML = "<p style='text-align: center; color: red;'>Error loading your ads.</p>";
             }
         }
 
