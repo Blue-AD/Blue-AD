@@ -227,7 +227,7 @@
         };
         const db = getFirestore(initializeApp(firebaseConfig));
 
-        let currentUsername = localStorage.getItem('nexus_logged_user') || null;
+        let currentUsername = null;
         let currentUserDocId = null;
         let currentUserData = null;
         let isRegistering = true;
@@ -244,7 +244,6 @@
         let globalUsersSnap = null;
         let globalChatsSnap = null;
         let globalGroupChatsSnap = null;
-        let typingTimeout = null;
 
         const authOverlay = document.getElementById('authOverlay');
         const profileEditOverlay = document.getElementById('profileEditOverlay');
@@ -289,12 +288,15 @@
         setInterval(updateLastSeenStatus, 30000);
 
         async function checkAuthState() {
-            if (!currentUsername) {
+            let savedUser = localStorage.getItem('nexus_logged_user');
+
+            if (!savedUser) {
                 authOverlay.classList.remove('hidden');
                 headerUsernameText.textContent = "Guest";
                 searchBarContainer.classList.add('hidden');
                 bottomNav.classList.add('hidden');
             } else {
+                currentUsername = savedUser;
                 const usersSnap = await getDocs(collection(db, "users"));
                 let exists = false;
                 usersSnap.forEach(d => { 
@@ -519,7 +521,6 @@
                     </div>`;
             }
 
-            let count = 0;
             let activeInboxUsers = new Set();
             chatsSnap.forEach(docSnap => {
                 let m = docSnap.data();
@@ -540,7 +541,6 @@
                 if (u && u !== currentUsername) {
                     if (searchQuery && !u.toLowerCase().includes(searchQuery.toLowerCase())) return;
                     if (activeInboxUsers.has(u)) return;
-                    count++;
 
                     let tagsHtml = '';
                     if (gender) tagsHtml += `<span class="item-meta-tag">${gender}</span>`;
