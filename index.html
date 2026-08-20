@@ -84,16 +84,15 @@
     </div>  
 
     <div class="main-container">
+        <!-- Contacts Section -->
         <div id="contactsSection" class="section-view">
-            <h3 style="color: #333; margin: 6px 0 10px 0; font-size: 16px;">Contacts</h3>
             <div id="contactsListContainer" class="scrollable-list">
                 <p style="text-align: center; color: #777; padding: 20px;">Loading contacts...</p>
             </div>
         </div>
 
+        <!-- Inbox Section -->
         <div id="inboxSection" class="section-view hidden">
-            <h3 style="color: #333; margin: 6px 0 4px 0; font-size: 16px;">Inbox Chats</h3>
-            <p style="font-size: 12px; color: #666; margin: 0 0 8px 0;">💡 Tip: Press & hold item for 2s to delete.</p>
             <div id="inboxListContainer" class="scrollable-list">
                 <p style="text-align: center; color: #777; padding: 20px;">No messages in inbox.</p>
             </div>
@@ -241,9 +240,11 @@
 
         let unsubscribeChat = null;
         let unsubscribeGlobal = null;
+        let unsubscribeTyping = null;
         let globalUsersSnap = null;
         let globalChatsSnap = null;
         let globalGroupChatsSnap = null;
+        let typingTimeout = null;
 
         const authOverlay = document.getElementById('authOverlay');
         const profileEditOverlay = document.getElementById('profileEditOverlay');
@@ -310,6 +311,7 @@
                     localStorage.removeItem('nexus_logged_user');
                     if(unsubscribeChat) unsubscribeChat();
                     if(unsubscribeGlobal) unsubscribeGlobal();
+                    if(unsubscribeTyping) unsubscribeTyping();
                     location.reload();
                     return;
                 }
@@ -362,6 +364,7 @@
             localStorage.removeItem('nexus_logged_user');
             if(unsubscribeChat) unsubscribeChat();
             if(unsubscribeGlobal) unsubscribeGlobal();
+            if(unsubscribeTyping) unsubscribeTyping();
             location.reload();
         });
 
@@ -510,7 +513,7 @@
                                 <h4 class="item-title" style="color: #007bff;">Nexus Community Group</h4>
                                 <span class="item-meta-tag" style="background: #007bff; color: white;">Public</span>
                             </div>
-                            <p class="item-sub" style="font-weight: bold; color: #333;">Anonymous Public Group Chat (Tap to join)</p>
+                            <p class="item-sub" style="font-weight: bold; color: #333;">Public Group Chat (Tap to join)</p>
                         </div>
                         <div class="unread-dot ${hasUnreadGroupMsg ? 'show' : ''}" id="groupUnreadDot"></div>
                     </div>`;
@@ -567,7 +570,8 @@
                 userInfoMap[d.data().username] = {
                     avatar: d.data().avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix",
                     gender: d.data().gender || "",
-                    country: d.data().country || ""
+                    country: d.data().country || "",
+                    lastSeen: d.data().lastSeen
                 };
             });
 
@@ -606,7 +610,7 @@
                                 <h4 class="item-title">${partner}</h4>
                                 ${tagsHtml}
                             </div>
-                            <p class="item-sub">${item.lastText}</p>
+                            <p class="item-sub">${formatLastSeen(pInfo.lastSeen)}</p>
                         </div>
                     </div>
                     <button class="delete-chat-btn" style="margin-left: 8px;">Delete</button>`;
@@ -656,6 +660,7 @@
             activeChatReceiver = receiver;
             document.getElementById('chatRoomTitle').textContent = receiver;
             document.getElementById('chatHeaderAvatar').src = avatarUrl;
+            
             chatRoomView.classList.remove('hidden');
             
             if(unsubscribeChat) unsubscribeChat();
@@ -682,6 +687,8 @@
                 if (batchUpdates.length > 0) await Promise.all(batchUpdates);
                 box.scrollTop = box.scrollHeight;
             });
+
+            startTypingListener();
         }
 
         window.openGroupChatRoom = function() {
@@ -689,7 +696,7 @@
             activeChatReceiver = null;
             document.getElementById('chatRoomTitle').textContent = "Nexus Community Group";
             document.getElementById('chatHeaderAvatar').src = "https://api.dicebear.com/7.x/identicon/svg?seed=NexusCommunity";
-            document.getElementById('chatReceiverLastSeen').textContent = "Anonymous Group";
+            document.getElementById('chatReceiverLastSeen').textContent = "Public Group Chat";
             chatRoomView.classList.remove('hidden');
 
             localStorage.setItem(`nexus_group_last_seen_${currentUsername}`, Date.now());
@@ -706,19 +713,101 @@
                     let isMyMsg = m.sender === currentUsername;
                     box.innerHTML += `
                         <div class="chat-msg ${isMyMsg ? 'sent' : 'received'}">
-                            <span style="font-size: 11px; opacity: 0.8; font-style: italic; margin-bottom: 2px;">${isMyMsg ? 'You (Anonymous)' : 'Anonymous Member'}</span>
+                            <span style="font-size: 11px; opacity: 0.8; font-weight: bold; margin-bottom: 2px;">${m.sender}</span>
                             <span>${m.text}</span>
                             ${isMyMsg ? `<button class="chat-msg-delete-btn" onclick="deleteSingleChatMessage('${d.id}', true)">Delete</button>` : ''}
                         </div>`;
                 });
                 box.scrollTop = box.scrollHeight;
             });
+
+            startTypingListener();
         }
+
+        function startTypingListener() {
+            if(unsubscribeTyping) unsubscribeTyping();
+            unsubscribeTyping = onSnapshot(collection(db, "typingStatus"), (snapshot) => {
+                let isTypingFound = false;
+                let typingGroupUser = null;
+
+                snapshot.forEach(docSnap => {
+                    let data = docSnap.data();
+                    let updatedAt = data.updatedAt ? data.updatedAt.toMillis() : 0;
+                    let now = Date.now();
+                    
+                    if (now - updatedAt < 3000) { // Active within 3 seconds
+                        if (!isGroupChatActive && activeChatReceiver) {
+                            if (data.user === activeChatReceiver && data.target === currentUsername) {
+                                isTypingFound = true;
+                            }
+                        } else if (isGroupChatActive) {
+                            if (data.isGroup && data.user !== currentUsername) {
+                                typingGroupUser = data.user;
+                            }
+                        }
+                    }
+                });
+
+                let lastSeenElem = document.getElementById('chatReceiverLastSeen');
+                if (!isGroupChatActive) {
+                    if (isTypingFound) {
+                        lastSeenElem.textContent = "typing...";
+                        lastSeenElem.style.color = "#00e5ff";
+                        lastSeenElem.style.fontWeight = "bold";
+                    } else {
+                        lastSeenElem.style.color = "#e2e8f0";
+                        lastSeenElem.style.fontWeight = "normal";
+                        let receiverLastSeenTime = null;
+                        if(globalUsersSnap) {
+                            globalUsersSnap.forEach(d => {
+                                if(d.data().username === activeChatReceiver) {
+                                    receiverLastSeenTime = d.data().lastSeen;
+                                }
+                            });
+                        }
+                        lastSeenElem.textContent = formatLastSeen(receiverLastSeenTime);
+                    }
+                } else {
+                    if (typingGroupUser) {
+                        lastSeenElem.textContent = `${typingGroupUser} is typing...`;
+                        lastSeenElem.style.color = "#00e5ff";
+                        lastSeenElem.style.fontWeight = "bold";
+                    } else {
+                        lastSeenElem.textContent = "Public Group Chat";
+                        lastSeenElem.style.color = "#e2e8f0";
+                        lastSeenElem.style.fontWeight = "normal";
+                    }
+                }
+            });
+        }
+
+        document.getElementById('chatMessageInput').addEventListener('input', async () => {
+            if (!currentUsername) return;
+            const typingDocId = isGroupChatActive ? `group_${currentUsername}` : `${currentUsername}_${activeChatReceiver}`;
+            
+            await updateDoc(doc(db, "typingStatus", typingDocId), {
+                user: currentUsername,
+                target: isGroupChatActive ? "group" : activeChatReceiver,
+                isGroup: isGroupChatActive,
+                updatedAt: serverTimestamp()
+            }).catch(async () => {
+                // If doc doesn't exist yet, create via set or addDoc setup (using setDoc equivalent via addDoc or standard handle)
+                // We can use direct update/set with docId:
+                const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                await setDoc(doc(db, "typingStatus", typingDocId), {
+                    user: currentUsername,
+                    target: isGroupChatActive ? "group" : activeChatReceiver,
+                    isGroup: isGroupChatActive,
+                    updatedAt: serverTimestamp()
+                });
+            });
+        });
 
         document.getElementById('backToListBtn').addEventListener('click', () => {
             activeChatReceiver = null;
             isGroupChatActive = false;
             if(unsubscribeChat) unsubscribeChat();
+            if(unsubscribeTyping) unsubscribeTyping();
             chatRoomView.classList.add('hidden');
             renderCurrentView();
         });
