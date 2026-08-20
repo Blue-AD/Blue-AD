@@ -105,7 +105,6 @@
             const u = document.getElementById('adminUser').value.trim();
             const p = document.getElementById('adminPass').value;
 
-            // මෙහි ඔබට අවශ්‍ය ඇඩ්මින්ගේ Username සහ Password වෙනස් කරගත හැක (දැන් admin / admin123 ලෙස ඇත)
             if (u === 'admin' && p === 'admin123') {
                 localStorage.setItem('nexus_admin_logged', 'true');
                 checkAdminSession();
