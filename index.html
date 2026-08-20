@@ -1,13 +1,50 @@
 <!DOCTYPE html>
-<html lang="si">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus - Chat Portal</title>
+    <title>Nexus Chat - Connect & Chat</title>
     <style>
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; flex-direction: column; }
         
+        /* Enhanced Modern Bright Blue Theme Landing Page */
+        #landingPageView { 
+            width: 100vw; height: 100vh; height: 100dvh; 
+            background: linear-gradient(135deg, #007bff 0%, #004085 100%); 
+            display: flex; flex-direction: column; justify-content: center; align-items: center; 
+            padding: 20px; text-align: center; color: white; position: fixed; top: 0; left: 0; z-index: 3000; 
+            overflow-y: auto;
+        }
+        .landing-container { max-width: 460px; width: 100%; display: flex; flex-direction: column; align-items: center; margin: auto; padding: 15px 0; }
+        
+        .nexus-brand-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 3px; background: rgba(255, 255, 255, 0.2); padding: 6px 16px; border-radius: 20px; margin-bottom: 12px; font-weight: bold; border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; }
+        .landing-title { font-size: 32px; margin: 0 0 8px 0; font-weight: 900; letter-spacing: 0.5px; color: #ffffff; }
+        .landing-desc { font-size: 14px; margin: 0 0 16px 0; opacity: 0.9; line-height: 1.5; color: #e9ecef; }
+
+        /* Feature Highlights Badges */
+        .landing-features { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+        .feature-badge { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; color: #fff; }
+
+        /* Clean White Card Matching the App UI */
+        .landing-card { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 24px 22px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.25); text-align: left; color: #333333; }
+        
+        .landing-input, .landing-select { width: 100%; padding: 12px 14px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; background: #f8f9fa; color: #333; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+        .landing-input::placeholder { color: #8d99ae; }
+        .landing-input:focus, .landing-select:focus { border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,0.2); background: #ffffff; }
+        .landing-select option { background: #ffffff; color: #333; }
+
+        .landing-avatar-grid { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 15px; }
+        .landing-avatar-item { width: 48px; height: 48px; border-radius: 50%; cursor: pointer; border: 2px solid #cbd5e1; object-fit: cover; background: #f1f5f9; transition: transform 0.2s, border-color 0.2s; }
+        .landing-avatar-item.selected { border-color: #007bff; transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
+
+        .landing-submit-btn { width: 100%; padding: 13px; background: #007bff; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,123,255,0.4); transition: transform 0.2s, background 0.2s; }
+        .landing-submit-btn:hover { background: #0056b3; transform: translateY(-1px); }
+
+        .landing-switch-text { text-align: center; margin-top: 15px; font-size: 13px; color: #64748b; cursor: pointer; font-weight: 500; }
+        .landing-switch-text span { color: #007bff; text-decoration: underline; font-weight: bold; }
+
+        /* Brand Header */
         .brand-header { flex-shrink: 0; background-color: #007bff; color: white; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 12px rgba(0,0,0,0.25); z-index: 100; }
         .brand-top-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .brand-header h1 { margin: 0; font-size: 26px; font-weight: bold; letter-spacing: 0.8px; }
@@ -19,7 +56,7 @@
         .search-bar-container { flex: 1; }
         .search-input { width: 100%; padding: 12px 18px; border-radius: 24px; border: none; font-size: 15px; outline: none; background: rgba(255, 255, 255, 0.95); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         
-        /* Professional Gender Filter Icon & Dropdown */
+        /* Gender Filter Button & Dropdown */
         .gender-filter-btn { background: rgba(255, 255, 255, 0.25); border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; flex-shrink: 0; transition: background 0.2s; position: relative; }
         .gender-filter-btn:hover { background: rgba(255, 255, 255, 0.4); }
         .gender-filter-btn svg { width: 20px; height: 20px; fill: currentColor; }
@@ -39,7 +76,7 @@
         .nav-item { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 12px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; }
         .nav-item.active { color: white; }
         .nav-icon { width: 22px; height: 22px; fill: currentColor; }
-        .nav-notification-dot { position: absolute; top: 0; right: 28%; width: 9px; height: 9px; background-color: #00e5ff; border-radius: 50%; display: none; }
+        .nav-notification-dot { position: absolute; top: 0; right: 28%; width: 9px; height: 9px; background-color: #ff3366; border-radius: 50%; display: none; }
         .nav-notification-dot.show { display: block; }
 
         .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0, 0, 0, 0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 15px; }
@@ -65,7 +102,7 @@
         .unread-dot.show { display: block; }
 
         .delete-chat-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; display: none; }
-        .list-card-item.show-delete .delete-chat-btn { display: block; }
+        .list-card-item.show-delete .delete-chat_btn { display: block; }
 
         #chatRoomView { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: #fff; z-index: 1500; display: flex; flex-direction: column; overflow: hidden; }
         .chat-header-bar { background: #007bff; color: white; padding: 22px 18px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
@@ -80,6 +117,58 @@
     </style>
 </head>
 <body>
+
+    <!-- Modern English Landing Page -->
+    <div id="landingPageView">
+        <div class="landing-container">
+            <div class="nexus-brand-tag">Welcome to Nexus Chat</div>
+            <h1 class="landing-title" id="landingMainHeading">Create Account</h1>
+            <p class="landing-desc" id="landingMainDesc">Connect with friends instantly, chat in real-time, and join global community spaces effortlessly.</p>
+            
+            <div class="landing-features">
+                <span class="feature-badge">⚡ Real-time Messaging</span>
+                <span class="feature-badge">🌍 Global Community</span>
+                <span class="feature-badge">🔒 Secure & Fast</span>
+            </div>
+
+            <div class="landing-card">
+                <form id="landingAuthForm">
+                    <input type="text" id="landingUsername" class="landing-input" placeholder="Username" required>
+                    <input type="password" id="landingPassword" class="landing-input" placeholder="Password" required>
+                    
+                    <div id="landingRegisterExtraFields">
+                        <select id="landingGender" class="landing-select" required>
+                            <option value="" disabled selected>Select Gender</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                            <option value="Other">Other</option>
+                        </select>
+                        <select id="landingCountry" class="landing-select" required>
+                            <option value="" disabled selected>Select Country</option>
+                            <option value="Sri Lanka">Sri Lanka</option>
+                            <option value="India">India</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Other">Other</option>
+                        </select>
+
+                        <label style="font-size: 12px; font-weight: bold; margin-bottom: 6px; display: block; color: #475569;">Choose Avatar:</label>
+                        <div class="landing-avatar-grid" id="landingAvatarOptionsGrid">
+                            <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="landing-avatar-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Av1">
+                            <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="landing-avatar-item" data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Av2">
+                            <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" class="landing-avatar-item" data-url="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" alt="Av3">
+                            <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" class="landing-avatar-item" data-url="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" alt="Av4">
+                        </div>
+                    </div>
+
+                    <button type="submit" id="landingSubmitBtn" class="landing-submit-btn">Register Now</button>
+                </form>
+                <div class="landing-switch-text" id="landingSwitchText">Already have an account? <span>Login</span></div>
+            </div>
+        </div>
+    </div>
 
     <div class="brand-header">
         <div class="brand-top-row">
@@ -149,48 +238,6 @@
         </button>
     </div>
 
-    <!-- Auth Modal -->
-    <div id="authOverlay" class="fullscreen-overlay hidden">
-        <div class="fullscreen-form-box">
-            <h2 id="authHeading" style="margin-top:0; color:#007bff; text-align:center; font-size: 22px;">Register</h2>
-            <form id="authForm">
-                <input type="text" id="authUsername" class="auth-input" placeholder="Username" required>
-                <input type="password" id="authPassword" class="auth-input" placeholder="Password" required>
-                
-                <div id="registerExtraFields">
-                    <select id="authGender" class="auth-input" required>
-                        <option value="" disabled selected>Select Gender</option>
-                        <option value="Male">Male</option>
-                        <option value="Female">Female</option>
-                        <option value="Other">Other</option>
-                    </select>
-                    <select id="authCountry" class="auth-input" required>
-                        <option value="" disabled selected>Select Country</option>
-                        <option value="Sri Lanka">Sri Lanka</option>
-                        <option value="India">India</option>
-                        <option value="United States">United States</option>
-                        <option value="United Kingdom">United Kingdom</option>
-                        <option value="Australia">Australia</option>
-                        <option value="Canada">Canada</option>
-                        <option value="Other">Other</option>
-                    </select>
-                </div>
-
-                <div id="avatarSelectionContainer">
-                    <label style="font-size: 13px; font-weight: bold; color: #444; margin-bottom: 6px; display: block;">Choose Avatar:</label>
-                    <div class="avatar-options-grid" id="avatarOptionsGrid">
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="avatar-option-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Av1">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Av2">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" alt="Av3">
-                        <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" alt="Av4">
-                    </div>
-                </div>
-                <button type="submit" id="authSubmitBtn" class="form-submit">Register</button>
-            </form>
-            <div id="authSwitchText" style="text-align: center; margin-top: 12px; font-size: 13px; color: #007bff; cursor: pointer; font-weight: bold;">Already have an account? Login</div>
-        </div>
-    </div>
-
     <!-- Profile Edit Modal -->
     <div id="profileEditOverlay" class="fullscreen-overlay hidden">
         <div class="fullscreen-form-box">
@@ -251,12 +298,12 @@
         let currentUsername = null;
         let currentUserDocId = null;
         let currentUserData = null;
-        let isRegistering = true;
+        let isLandingRegistering = true;
         let activeChatReceiver = null;
         let isGroupChatActive = false;
         let currentTab = 'contacts';
         let searchQuery = '';
-        let selectedGenderFilter = 'All'; // Gender Filter State
+        let selectedGenderFilter = 'All';
         let selectedAvatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
         let editSelectedAvatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
 
@@ -267,7 +314,7 @@
         let globalChatsSnap = null;
         let globalGroupChatsSnap = null;
 
-        const authOverlay = document.getElementById('authOverlay');
+        const landingPageView = document.getElementById('landingPageView');
         const profileEditOverlay = document.getElementById('profileEditOverlay');
         const loggedInUserDisplay = document.getElementById('loggedInUserDisplay');
         const headerUsernameText = document.getElementById('headerUsernameText');
@@ -280,9 +327,54 @@
         const searchBarContainer = document.getElementById('searchBarContainer');
         const bottomNav = document.getElementById('bottomNav');
         const inboxNotificationDot = document.getElementById('inboxNotificationDot');
-        const registerExtraFields = document.getElementById('registerExtraFields');
+        
+        const landingRegisterExtraFields = document.getElementById('landingRegisterExtraFields');
+        const landingMainHeading = document.getElementById('landingMainHeading');
+        const landingMainDesc = document.getElementById('landingMainDesc');
+        const landingSubmitBtn = document.getElementById('landingSubmitBtn');
+        const landingSwitchText = document.getElementById('landingSwitchText');
 
-        // Gender Filter Dropdown Toggle Logic
+        landingSwitchText.addEventListener('click', () => {
+            isLandingRegistering = !isLandingRegistering;
+            updateLandingFormState();
+        });
+
+        function updateLandingFormState() {
+            if (isLandingRegistering) {
+                landingMainHeading.textContent = "Create Account";
+                landingMainDesc.textContent = "Connect with friends instantly, chat in real-time, and join global community spaces effortlessly.";
+                landingSubmitBtn.textContent = "Register Now";
+                landingRegisterExtraFields.classList.remove('hidden');
+                document.getElementById('landingGender').setAttribute('required', 'true');
+                document.getElementById('landingCountry').setAttribute('required', 'true');
+                landingSwitchText.innerHTML = "Already have an account? <span>Login</span>";
+            } else {
+                landingMainHeading.textContent = "Welcome Back";
+                landingMainDesc.textContent = "Log in to your account and continue your conversations seamlessly.";
+                landingSubmitBtn.textContent = "Login Now";
+                landingRegisterExtraFields.classList.add('hidden');
+                document.getElementById('landingGender').removeAttribute('required');
+                document.getElementById('landingCountry').removeAttribute('required');
+                landingSwitchText.innerHTML = "Don't have an account? <span>Register</span>";
+            }
+        }
+
+        document.querySelectorAll('#landingAvatarOptionsGrid .landing-avatar-item').forEach(img => {
+            img.addEventListener('click', (e) => {
+                document.querySelectorAll('#landingAvatarOptionsGrid .landing-avatar-item').forEach(i => i.classList.remove('selected'));
+                e.target.classList.add('selected');
+                selectedAvatarUrl = e.target.getAttribute('data-url');
+            });
+        });
+
+        document.querySelectorAll('#editAvatarOptionsGrid .edit-avatar-option-item').forEach(img => {
+            img.addEventListener('click', (e) => {
+                document.querySelectorAll('#editAvatarOptionsGrid .edit-avatar-option-item').forEach(i => i.classList.remove('selected'));
+                e.target.classList.add('selected');
+                editSelectedAvatarUrl = e.target.getAttribute('data-url');
+            });
+        });
+
         const genderFilterToggleBtn = document.getElementById('genderFilterToggleBtn');
         const genderDropdownMenu = document.getElementById('genderDropdownMenu');
 
@@ -303,22 +395,6 @@
             });
         });
 
-        document.querySelectorAll('#avatarOptionsGrid .avatar-option-item').forEach(img => {
-            img.addEventListener('click', (e) => {
-                document.querySelectorAll('#avatarOptionsGrid .avatar-option-item').forEach(i => i.classList.remove('selected'));
-                e.target.classList.add('selected');
-                selectedAvatarUrl = e.target.getAttribute('data-url');
-            });
-        });
-
-        document.querySelectorAll('#editAvatarOptionsGrid .edit-avatar-option-item').forEach(img => {
-            img.addEventListener('click', (e) => {
-                document.querySelectorAll('#editAvatarOptionsGrid .edit-avatar-option-item').forEach(i => i.classList.remove('selected'));
-                e.target.classList.add('selected');
-                editSelectedAvatarUrl = e.target.getAttribute('data-url');
-            });
-        });
-
         async function updateLastSeenStatus() {
             if (!currentUsername) return;
             const usersSnap = await getDocs(collection(db, "users"));
@@ -334,11 +410,12 @@
             let savedUser = localStorage.getItem('nexus_logged_user');
 
             if (!savedUser) {
-                authOverlay.classList.remove('hidden');
+                landingPageView.classList.remove('hidden');
                 headerUsernameText.textContent = "Guest";
                 searchBarContainer.classList.add('hidden');
                 bottomNav.classList.add('hidden');
             } else {
+                landingPageView.classList.add('hidden');
                 currentUsername = savedUser;
                 const usersSnap = await getDocs(collection(db, "users"));
                 let exists = false;
@@ -361,7 +438,6 @@
                     return;
                 }
 
-                authOverlay.classList.add('hidden');
                 headerUsernameText.textContent = currentUsername;
                 searchBarContainer.classList.remove('hidden');
                 bottomNav.classList.remove('hidden');
@@ -370,6 +446,46 @@
             }
         }
         checkAuthState();
+
+        document.getElementById('landingAuthForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('landingUsername').value.trim().toLowerCase();
+            const password = document.getElementById('landingPassword').value;
+
+            const usersSnap = await getDocs(collection(db, "users"));
+            let userFound = null;
+            usersSnap.forEach(d => { if (d.data().username === username) userFound = d.data(); });
+
+            if (isLandingRegistering) {
+                const gender = document.getElementById('landingGender').value;
+                const country = document.getElementById('landingCountry').value;
+
+                if (userFound) {
+                    alert("Username already taken!");
+                } else {
+                    await addDoc(collection(db, "users"), { 
+                        username, 
+                        password, 
+                        gender, 
+                        country, 
+                        avatarUrl: selectedAvatarUrl, 
+                        createdAt: serverTimestamp(), 
+                        lastSeen: serverTimestamp() 
+                    });
+                    currentUsername = username; 
+                    localStorage.setItem('nexus_logged_user', currentUsername);
+                    checkAuthState();
+                }
+            } else {
+                if (!userFound || userFound.password !== password) {
+                    alert("Invalid username or password!");
+                } else {
+                    currentUsername = username; 
+                    localStorage.setItem('nexus_logged_user', currentUsername);
+                    checkAuthState();
+                }
+            }
+        });
 
         loggedInUserDisplay.addEventListener('click', async () => {
             if (!currentUsername) return;
@@ -431,63 +547,6 @@
             alert("Profile updated successfully!");
             profileEditOverlay.classList.add('hidden');
             location.reload();
-        });
-
-        document.getElementById('authSwitchText').addEventListener('click', () => { 
-            isRegistering = !isRegistering; 
-            document.getElementById('authHeading').textContent = isRegistering ? "Register" : "Login";
-            document.getElementById('authSubmitBtn').textContent = isRegistering ? "Register" : "Login";
-            document.getElementById('authSwitchText').textContent = isRegistering ? "Already have an account? Login" : "Don't have an account? Register";
-            
-            if (isRegistering) {
-                registerExtraFields.classList.remove('hidden');
-                document.getElementById('authGender').setAttribute('required', 'true');
-                document.getElementById('authCountry').setAttribute('required', 'true');
-            } else {
-                registerExtraFields.classList.add('hidden');
-                document.getElementById('authGender').removeAttribute('required');
-                document.getElementById('authCountry').removeAttribute('required');
-            }
-        });
-
-        document.getElementById('authForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('authUsername').value.trim().toLowerCase();
-            const password = document.getElementById('authPassword').value;
-
-            const usersSnap = await getDocs(collection(db, "users"));
-            let userFound = null;
-            usersSnap.forEach(d => { if (d.data().username === username) userFound = d.data(); });
-
-            if (isRegistering) {
-                const gender = document.getElementById('authGender').value;
-                const country = document.getElementById('authCountry').value;
-
-                if (userFound) {
-                    alert("Username already taken!");
-                } else {
-                    await addDoc(collection(db, "users"), { 
-                        username, 
-                        password, 
-                        gender, 
-                        country, 
-                        avatarUrl: selectedAvatarUrl, 
-                        createdAt: serverTimestamp(), 
-                        lastSeen: serverTimestamp() 
-                    });
-                    currentUsername = username; 
-                    localStorage.setItem('nexus_logged_user', currentUsername);
-                    checkAuthState();
-                }
-            } else {
-                if (!userFound || userFound.password !== password) {
-                    alert("Invalid username or password!");
-                } else {
-                    currentUsername = username; 
-                    localStorage.setItem('nexus_logged_user', currentUsername);
-                    checkAuthState();
-                }
-            }
         });
 
         function startGlobalDataListener() {
