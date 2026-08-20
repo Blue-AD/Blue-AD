@@ -3,88 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus - Chat Portal</title>
+    <title>Nexus - Profile Settings Portal</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; box-sizing: border-box; width: 100vw; min-height: 100vh; display: flex; flex-direction: column; }
-        .brand-header { position: sticky; top: 0; z-index: 1000; background-color: #007bff; color: white; padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); }
-        .brand-header h1 { margin: 0; font-size: 22px; font-weight: bold; flex-grow: 1; text-align: center; }
-        .profile-icon-btn, .logout-btn { background: none; border: none; color: white; cursor: pointer; font-size: 16px; font-weight: bold; display: flex; align-items: center; justify-content: center; padding: 5px 10px; background: rgba(255,255,255,0.2); border-radius: 4px; }
-        .main-container { padding: 15px; max-width: 600px; margin: 0 auto; box-sizing: border-box; width: 100%; flex-grow: 1; display: flex; flex-direction: column; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; box-sizing: border-box; width: 100vw; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        
+        .brand-header { position: sticky; top: 0; z-index: 1000; background-color: #007bff; color: white; padding: 20px 20px 12px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); flex-shrink: 0; }
+        .brand-top-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .brand-header h1 { margin: 0; font-size: 24px; font-weight: bold; text-align: center; flex-grow: 1; }
+        
+        /* ක්ලික් කළ හැකි පරිශීලක නාම සංදර්ශකය (Clickable Profile Badge) */
+        .user-display-badge { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: bold; background: rgba(255, 255, 255, 0.18); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.3); cursor: pointer; transition: background 0.2s; }
+        .user-display-badge:hover { background: rgba(255, 255, 255, 0.3); }
+        .user-display-badge svg { width: 16px; height: 16px; fill: currentColor; }
+
+        .search-bar-container { width: 100%; max-width: 500px; margin-top: 4px; }
+        .search-input { width: 100%; padding: 9px 14px; border-radius: 20px; border: none; font-size: 14px; outline: none; box-sizing: border-box; background: rgba(255, 255, 255, 0.9); color: #333; }
+        .search-input:focus { background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .main-container { padding: 15px 15px 75px 15px; max-width: 600px; margin: 0 auto; box-sizing: border-box; width: 100%; flex-grow: 1; display: flex; flex-direction: column; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(135deg, #007bff, #0056b3); display: flex; justify-content: space-around; padding: 8px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
+        .nav-item { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 12px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color 0.2s; position: relative; }
+        .nav-item.active { color: white; }
+        .nav-icon { width: 22px; height: 22px; fill: currentColor; }
+
+        .nav-notification-dot { position: absolute; top: 1px; right: 26%; width: 9px; height: 9px; background-color: #00e5ff; border-radius: 50%; border: 1.5px solid #0056b3; display: none; }
+        .nav-notification-dot.show { display: block; }
+
         .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
-        .fullscreen-form-box { background: #fff; padding: 22px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); width: 100%; max-width: 400px; position: relative; }
+        .fullscreen-form-box { background: #fff; padding: 22px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); width: 100%; max-width: 400px; position: relative; max-height: 90vh; overflow-y: auto; }
         .hidden { display: none !important; }
-        input, button.form-submit { display: block; width: 100%; margin-bottom: 12px; padding: 10px 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        input.auth-input, button.form-submit { display: block; width: 100%; margin-bottom: 12px; padding: 10px 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
         button.form-submit { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
         .auth-switch { text-align: center; margin-top: 12px; font-size: 13px; color: #007bff; cursor: pointer; font-weight: bold; }
         
-        /* Chat UI - Larger WhatsApp Style Contact List */
-        .chat-user-item { padding: 16px 20px; background: #fff; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s; }
-        .chat-user-item:hover { background: #f1f5f9; }
-        .user-avatar { width: 58px; height: 58px; border-radius: 50%; background-color: #cbd5e1; display: flex; align-items: center; justify-content: center; font-size: 26px; color: #fff; margin-right: 16px; flex-shrink: 0; overflow: hidden; }
-        .user-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .user-name { font-weight: bold; color: #111; font-size: 18px; margin: 0 0 4px 0; }
-        .user-status { font-size: 14px; color: #555; margin: 0; }
-        .contact-badge { font-size: 12px; font-weight: bold; color: #666; background: #e2e8f0; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .avatar-selection-label { font-size: 13px; font-weight: bold; color: #444; margin-bottom: 6px; display: block; }
+        .avatar-options-grid { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 15px; }
+        .avatar-option-item { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; object-fit: cover; background: #e2e8f0; transition: transform 0.2s, border-color 0.2s; }
+        .avatar-option-item:hover { transform: scale(1.08); }
+        .avatar-option-item.selected { border-color: #007bff; transform: scale(1.1); box-shadow: 0 0 8px rgba(0,123,255,0.5); }
 
-        .chat-box-container { display: flex; flex-direction: column; height: 75vh; border: 1px solid #ddd; border-radius: 8px; background: #fff; overflow: hidden; margin-top: 10px; }
-        .chat-header-bar { background: #e9ecef; padding: 10px 15px; display: flex; align-items: center; gap: 10px; font-weight: bold; border-bottom: 1px solid #ddd; }
-        .back-to-list-btn { background: #6c757d; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .section-view { display: flex; flex-direction: column; flex-grow: 1; }
+        .list-card-item { padding: 14px 18px; background: #fff; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s; position: relative; user-select: none; }
+        .list-card-item:hover { background: #f1f5f9; }
+        
+        .item-avatar { width: 48px; height: 48px; border-radius: 50%; background-color: #cbd5e1; object-fit: cover; margin-right: 14px; flex-shrink: 0; }
+        .item-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .item-title { font-weight: bold; color: #111; font-size: 16px; margin: 0 0 3px 0; }
+        .item-sub { font-size: 13px; color: #555; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 230px; }
+        
+        .unread-badge { background-color: #007bff; color: white; font-size: 11px; font-weight: bold; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .delete-chat-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; display: none; }
+        .list-card-item.show-delete .delete-chat-btn { display: block; }
+
+        #chatRoomView { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #fff; z-index: 1500; }
+        .chat-box-container { display: flex; flex-direction: column; width: 100%; height: 100%; background: #fff; overflow: hidden; }
+        
+        .chat-header-bar { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 12px 20px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .back-to-list-btn { background: rgba(255, 255, 255, 0.25); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        
+        .chat-header-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid white; flex-shrink: 0; }
+        .chat-user-details { display: flex; flex-direction: column; }
+        .chat-receiver-name { font-size: 17px; font-weight: bold; }
+        .chat-receiver-lastseen { font-size: 12px; color: #e2e8f0; margin-top: 1px; }
+
         .chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8f9fa; }
-        .chat-msg { max-width: 75%; padding: 10px 14px; border-radius: 10px; font-size: 14px; word-break: break-word; }
+        .chat-msg { max-width: 75%; padding: 10px 14px; border-radius: 10px; font-size: 14px; word-break: break-word; position: relative; }
         .chat-msg.sent { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
         .chat-msg.received { background-color: #e2e8f0; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .chat-input-area { display: flex; padding: 10px; background: #fff; border-top: 1px solid #ddd; gap: 8px; }
+        
+        .msg-footer { display: flex; justify-content: flex-end; align-items: center; gap: 4px; font-size: 10px; margin-top: 4px; color: rgba(255,255,255,0.8); }
+        .chat-msg.received .msg-footer { color: #666; justify-content: flex-start; }
+        .tick-mark { font-weight: bold; font-size: 12px; }
+        .tick-mark.read { color: #4facfe; }
+
+        .chat-input-area { display: flex; padding: 12px 15px; background: #fff; border-top: 1px solid #ddd; gap: 10px; flex-shrink: 0; box-sizing: border-box; }
     </style>
 </head>
 <body>
 
     <div class="brand-header">
-        <span id="loggedInUserDisplay" style="font-size: 14px; font-weight: bold;">👤 Guest</span>
-        <h1>Nexus Chat</h1>
-        <button id="logoutBtn" class="logout-btn hidden">Logout</button>
-    </div>
+        <div class="brand-top-row">
+            <div id="loggedInUserDisplay" class="user-display-badge">
+                <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+                <span id="headerUsernameText">Guest</span>
+            </div>
+            <h1>Nexus Chat</h1>
+            <div style="width: 70px;"></div> <!-- Balances header alignment -->
+        </div>
+        <div class="search-bar-container" id="searchBarContainer">
+            <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search contacts...">
+        </div>
+    </div>  
 
     <div class="main-container">
-        <!-- Chat List View -->
-        <div id="chatSectionList">
-            <h3 style="color: #333; margin-top: 5px;">Contacts</h3>
-            <div id="chatUserListContainer" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff;">
-                <p style="text-align: center; color: #777; padding: 20px;">Loading users...</p>
+        <div id="contactsSection" class="section-view">
+            <h3 style="color: #333; margin: 5px 0 10px 0; font-size: 16px;">Contacts</h3>
+            <div id="contactsListContainer" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff;">
+                <p style="text-align: center; color: #777; padding: 20px;">Loading contacts...</p>
             </div>
         </div>
 
-        <!-- Chat Room View -->
-        <div id="chatRoomView" class="hidden">
-            <div class="chat-box-container">
-                <div class="chat-header-bar">
-                    <button type="button" class="back-to-list-btn" id="backToListBtn">← Back</button>
-                    <span id="chatRoomTitle">Chat</span>
-                </div>
-                <div id="chatMessagesBox" class="chat-messages"></div>
-                <div class="chat-input-area">
-                    <input type="text" id="chatMessageInput" placeholder="Type a message..." style="margin-bottom:0;">
-                    <button type="button" id="sendChatBtn" class="form-submit" style="width:auto; margin-bottom:0; padding: 10px 20px;">Send</button>
-                </div>
+        <div id="inboxSection" class="section-view hidden">
+            <h3 style="color: #333; margin: 5px 0 10px 0; font-size: 16px;">Inbox Chats</h3>
+            <p style="font-size: 11px; color: #666; margin: 0 0 8px 0;">💡 Tip: Press & hold on a chat item for **2 seconds** to reveal the delete button.</p>
+            <div id="inboxListContainer" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff;">
+                <p style="text-align: center; color: #777; padding: 20px;">No messages in inbox.</p>
             </div>
         </div>
     </div>
 
-    <!-- Auth Overlay (Login / Register) -->
+    <div id="chatRoomView" class="hidden">
+        <div class="chat-box-container">
+            <div class="chat-header-bar">
+                <button type="button" class="back-to-list-btn" id="backToListBtn">← Back</button>
+                <img id="chatHeaderAvatar" class="chat-header-avatar" src="" alt="DP">
+                <div class="chat-user-details">
+                    <span id="chatRoomTitle" class="chat-receiver-name">Chat</span>
+                    <span id="chatReceiverLastSeen" class="chat-receiver-lastseen">online</span>
+                </div>
+            </div>
+            <div id="chatMessagesBox" class="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chatMessageInput" placeholder="Type a message..." style="margin-bottom:0; flex-grow:1; padding: 11px 14px; border:1px solid #ccc; border-radius:6px; outline:none; font-size:15px;">
+                <button type="button" id="sendChatBtn" class="form-submit" style="width:auto; margin-bottom:0; padding: 11px 22px; font-size:15px;">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-nav" id="bottomNav">
+        <button class="nav-item active" id="navContactsBtn">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            Contacts
+        </button>
+        <button class="nav-item" id="navInboxBtn">
+            <svg class="nav-icon" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+            Inbox
+            <span class="nav-notification-dot" id="inboxNotificationDot"></span>
+        </button>
+    </div>
+
+    <!-- Login / Register Modal Overlay -->
     <div id="authOverlay" class="fullscreen-overlay hidden">
         <div class="fullscreen-form-box">
             <h2 id="authHeading" style="margin-top:0; color:#007bff; text-align:center;">Register</h2>
             <form id="authForm">
-                <input type="text" id="authUsername" placeholder="Username" required>
-                <input type="password" id="authPassword" placeholder="Password" required>
+                <input type="text" id="authUsername" class="auth-input" placeholder="Username" required>
+                <input type="password" id="authPassword" class="auth-input" placeholder="Password" required>
+                
+                <div id="avatarSelectionContainer">
+                    <span class="avatar-selection-label">Choose your Profile Avatar (DP):</span>
+                    <div class="avatar-options-grid" id="avatarOptionsGrid">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="avatar-option-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Avatar 1">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Avatar 2">
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" alt="Avatar 3">
+                        <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" alt="Avatar 4">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Zack" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Zack" alt="Avatar 5">
+                    </div>
+                </div>
+
                 <button type="submit" id="authSubmitBtn" class="form-submit">Register</button>
             </form>
             <div id="authSwitchText" class="auth-switch">Already have an account? Login</div>
         </div>
     </div>
 
+    <!-- Profile Edit Modal Overlay -->
+    <div id="profileEditOverlay" class="fullscreen-overlay hidden">
+        <div class="fullscreen-form-box">
+            <h2 style="margin-top:0; color:#007bff; text-align:center;">Edit Profile</h2>
+            <form id="profileEditForm">
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <img id="editCurrentAvatarPreview" src="" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff; background: #e2e8f0;" alt="Current DP">
+                </div>
+                <label style="font-size: 13px; font-weight: bold; color: #444; display: block; margin-bottom: 4px;">Username (Cannot be changed):</label>
+                <input type="text" id="editUsernameInput" class="auth-input" disabled style="background:#e9ecef; color:#666;">
+
+                <label style="font-size: 13px; font-weight: bold; color: #444; display: block; margin-bottom: 4px;">New Password (Optional):</label>
+                <input type="password" id="editPasswordInput" class="auth-input" placeholder="Leave blank to keep old password">
+
+                <span class="avatar-selection-label">Change Profile Avatar (DP):</span>
+                <div class="avatar-options-grid" id="editAvatarOptionsGrid">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="edit-avatar-option-item avatar-option-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Avatar 1">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Avatar 2">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" alt="Avatar 3">
+                    <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" alt="Avatar 4">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Zack" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Zack" alt="Avatar 5">
+                </div>
+
+                <button type="submit" class="form-submit">Save Changes</button>
+            </form>
+            <button type="button" id="profileLogoutBtn" class="form-submit" style="background-color: #dc3545; margin-top: 5px;">Logout</button>
+            <button type="button" id="closeProfileModalBtn" class="form-submit" style="background-color: #6c757d; margin-top: 5px;">Cancel</button>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, serverTimestamp, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, serverTimestamp, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA0huAGXtGHRsRHtVivcLnG-yS3CD6t8Jo",
@@ -98,28 +214,76 @@
         const db = getFirestore(initializeApp(firebaseConfig));
 
         let currentUsername = localStorage.getItem('nexus_logged_user') || null;
+        let currentUserDocId = null;
+        let currentUserData = null;
         let isRegistering = true;
         let activeChatReceiver = null;
+        let currentTab = 'contacts';
+        let searchQuery = '';
+        let selectedAvatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
+        let editSelectedAvatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
+
         let unsubscribeChat = null;
+        let unsubscribeGlobal = null;
+        let globalUsersSnap = null;
+        let globalChatsSnap = null;
 
         const authOverlay = document.getElementById('authOverlay');
+        const profileEditOverlay = document.getElementById('profileEditOverlay');
         const loggedInUserDisplay = document.getElementById('loggedInUserDisplay');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const chatUserListContainer = document.getElementById('chatUserListContainer');
-        const chatSectionList = document.getElementById('chatSectionList');
+        const headerUsernameText = document.getElementById('headerUsernameText');
+        const contactsSection = document.getElementById('contactsSection');
+        const inboxSection = document.getElementById('inboxSection');
         const chatRoomView = document.getElementById('chatRoomView');
+        const contactsListContainer = document.getElementById('contactsListContainer');
+        const inboxListContainer = document.getElementById('inboxListContainer');
+        const searchInput = document.getElementById('searchInput');
+        const searchBarContainer = document.getElementById('searchBarContainer');
+        const bottomNav = document.getElementById('bottomNav');
+        const inboxNotificationDot = document.getElementById('inboxNotificationDot');
+        const avatarSelectionContainer = document.getElementById('avatarSelectionContainer');
+
+        document.querySelectorAll('#avatarOptionsGrid .avatar-option-item').forEach(img => {
+            img.addEventListener('click', (e) => {
+                document.querySelectorAll('#avatarOptionsGrid .avatar-option-item').forEach(i => i.classList.remove('selected'));
+                e.target.classList.add('selected');
+                selectedAvatarUrl = e.target.getAttribute('data-url');
+            });
+        });
+
+        document.querySelectorAll('#editAvatarOptionsGrid .edit-avatar-option-item').forEach(img => {
+            img.addEventListener('click', (e) => {
+                document.querySelectorAll('#editAvatarOptionsGrid .edit-avatar-option-item').forEach(i => i.classList.remove('selected'));
+                e.target.classList.add('selected');
+                editSelectedAvatarUrl = e.target.getAttribute('data-url');
+            });
+        });
+
+        async function updateLastSeenStatus() {
+            if (!currentUsername) return;
+            const usersSnap = await getDocs(collection(db, "users"));
+            usersSnap.forEach(async (d) => {
+                if (d.data().username === currentUsername) {
+                    await updateDoc(doc(db, "users", d.id), { lastSeen: serverTimestamp() });
+                }
+            });
+        }
+        setInterval(updateLastSeenStatus, 30000);
 
         async function checkAuthState() {
             if (!currentUsername) {
                 authOverlay.classList.remove('hidden');
-                logoutBtn.classList.add('hidden');
-                loggedInUserDisplay.textContent = "👤 Guest";
+                headerUsernameText.textContent = "Guest";
+                searchBarContainer.classList.add('hidden');
+                bottomNav.classList.add('hidden');
             } else {
                 const usersSnap = await getDocs(collection(db, "users"));
                 let exists = false;
-                usersSnap.forEach(d => {
+                usersSnap.forEach(d => { 
                     if (d.data().username === currentUsername) {
                         exists = true;
+                        currentUserDocId = d.id;
+                        currentUserData = d.data();
                     }
                 });
 
@@ -128,31 +292,87 @@
                     currentUsername = null;
                     localStorage.removeItem('nexus_logged_user');
                     if(unsubscribeChat) unsubscribeChat();
-                    chatRoomView.classList.add('hidden');
-                    chatSectionList.classList.remove('hidden');
-                    authOverlay.classList.remove('hidden');
-                    logoutBtn.classList.add('hidden');
-                    loggedInUserDisplay.textContent = "👤 Guest";
+                    if(unsubscribeGlobal) unsubscribeGlobal();
+                    location.reload();
                     return;
                 }
 
                 authOverlay.classList.add('hidden');
-                logoutBtn.classList.remove('hidden');
-                loggedInUserDisplay.textContent = `👤 ${currentUsername}`;
-                loadChatUsers();
+                headerUsernameText.textContent = currentUsername;
+                searchBarContainer.classList.remove('hidden');
+                bottomNav.classList.remove('hidden');
+                updateLastSeenStatus();
+                startGlobalDataListener();
             }
         }
         checkAuthState();
 
-        function updateAuthUI() {
-            document.getElementById('authHeading').textContent = isRegistering ? "Register" : "Login";
-            document.getElementById('authSubmitBtn').textContent = isRegistering ? "Register" : "Login";
-            document.getElementById('authSwitchText').textContent = isRegistering ? "Already have an account? Login" : "Don't have an account? Register";
-        }
+        // Open Profile Edit Modal on Username click
+        loggedInUserDisplay.addEventListener('click', async () => {
+            if (!currentUsername) return;
+            const usersSnap = await getDocs(collection(db, "users"));
+            usersSnap.forEach(d => {
+                if (d.data().username === currentUsername) {
+                    currentUserDocId = d.id;
+                    currentUserData = d.data();
+                }
+            });
+
+            document.getElementById('editUsernameInput').value = currentUsername;
+            document.getElementById('editPasswordInput').value = "";
+            editSelectedAvatarUrl = currentUserData.avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
+            document.getElementById('editCurrentAvatarPreview').src = editSelectedAvatarUrl;
+
+            document.querySelectorAll('#editAvatarOptionsGrid .edit-avatar-option-item').forEach(i => {
+                if (i.getAttribute('data-url') === editSelectedAvatarUrl) {
+                    i.classList.add('selected');
+                } else {
+                    i.classList.remove('selected');
+                }
+            });
+
+            profileEditOverlay.classList.remove('hidden');
+        });
+
+        document.getElementById('closeProfileModalBtn').addEventListener('click', () => {
+            profileEditOverlay.classList.add('hidden');
+        });
+
+        document.getElementById('profileLogoutBtn').addEventListener('click', () => {
+            currentUsername = null; 
+            localStorage.removeItem('nexus_logged_user');
+            if(unsubscribeChat) unsubscribeChat();
+            if(unsubscribeGlobal) unsubscribeGlobal();
+            location.reload();
+        });
+
+        document.getElementById('profileEditForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            if (!currentUserDocId) return;
+            const newPassword = document.getElementById('editPasswordInput').value.trim();
+            
+            let updatePayload = { avatarUrl: editSelectedAvatarUrl };
+            if (newPassword.length > 0) {
+                updatePayload.password = newPassword;
+            }
+
+            await updateDoc(doc(db, "users", currentUserDocId), updatePayload);
+            alert("Profile updated successfully!");
+            profileEditOverlay.classList.add('hidden');
+            location.reload();
+        });
 
         document.getElementById('authSwitchText').addEventListener('click', () => { 
             isRegistering = !isRegistering; 
-            updateAuthUI(); 
+            document.getElementById('authHeading').textContent = isRegistering ? "Register" : "Login";
+            document.getElementById('authSubmitBtn').textContent = isRegistering ? "Register" : "Login";
+            document.getElementById('authSwitchText').textContent = isRegistering ? "Already have an account? Login" : "Don't have an account? Register";
+            
+            if (isRegistering) {
+                avatarSelectionContainer.classList.remove('hidden');
+            } else {
+                avatarSelectionContainer.classList.add('hidden');
+            }
         });
 
         document.getElementById('authForm').addEventListener('submit', async (e) => {
@@ -167,11 +387,16 @@
                 if (userFound) {
                     alert("Username already taken!");
                 } else {
-                    await addDoc(collection(db, "users"), { username, password, createdAt: serverTimestamp() });
+                    await addDoc(collection(db, "users"), { 
+                        username, 
+                        password, 
+                        avatarUrl: selectedAvatarUrl, 
+                        createdAt: serverTimestamp(), 
+                        lastSeen: serverTimestamp() 
+                    });
                     currentUsername = username; 
                     localStorage.setItem('nexus_logged_user', currentUsername);
                     checkAuthState();
-                    alert("Registered successfully!");
                 }
             } else {
                 if (!userFound || userFound.password !== password) {
@@ -180,59 +405,294 @@
                     currentUsername = username; 
                     localStorage.setItem('nexus_logged_user', currentUsername);
                     checkAuthState();
-                    alert("Logged in successfully!");
                 }
             }
         });
 
-        logoutBtn.addEventListener('click', () => {
-            currentUsername = null; 
-            localStorage.removeItem('nexus_logged_user');
-            if(unsubscribeChat) unsubscribeChat();
-            checkAuthState();
-        });
+        function startGlobalDataListener() {
+            if(unsubscribeGlobal) unsubscribeGlobal();
+            unsubscribeGlobal = onSnapshot(collection(db, "users"), (uSnap) => {
+                globalUsersSnap = uSnap;
+                onSnapshot(collection(db, "chats"), (cSnap) => {
+                    globalChatsSnap = cSnap;
+                    renderCurrentView();
+                    checkUnreadInboxNotifications(cSnap);
+                    
+                    if (activeChatReceiver) {
+                        uSnap.forEach(d => {
+                            if (d.data().username === activeChatReceiver) {
+                                document.getElementById('chatReceiverLastSeen').textContent = formatLastSeen(d.data().lastSeen);
+                            }
+                        });
+                    }
+                });
+            });
+        }
 
-        async function loadChatUsers() {
-            chatUserListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>Loading users...</p>";
-            const snap = await getDocs(collection(db, "users"));
-            chatUserListContainer.innerHTML = "";
-            let count = 0;
-            snap.forEach(d => {
-                let u = d.data().username;
-                if (u && u !== currentUsername) {
-                    count++;
-                    chatUserListContainer.innerHTML += `
-                        <div class="chat-user-item" onclick="openChatRoom('${u}')">
-                            <div class="user-avatar">👤</div>
-                            <div class="user-info">
-                                <h4 class="user-name">${u}</h4>
-                                <p class="user-status">Hey there! I am using Nexus.</p>
-                            </div>
-                            <span class="contact-badge">MOBILE</span>
-                        </div>`;
+        function checkUnreadInboxNotifications(cSnap) {
+            let hasUnread = false;
+            cSnap.forEach(docSnap => {
+                let m = docSnap.data();
+                let isDeleted = m.deletedFor && m.deletedFor.includes(currentUsername);
+                if (!isDeleted && m.receiver === currentUsername && !m.isRead) {
+                    hasUnread = true;
                 }
             });
-            if (count === 0) {
-                chatUserListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>No other users found to chat.</p>";
+
+            if (hasUnread) {
+                inboxNotificationDot.classList.add('show');
+            } else {
+                inboxNotificationDot.classList.remove('show');
             }
         }
 
-        window.openChatRoom = function(receiver) {
+        function formatLastSeen(timestamp) {
+            if (!timestamp) return "offline";
+            let date = timestamp.toDate();
+            let now = new Date();
+            let diffSeconds = Math.floor((now - date) / 1000);
+
+            if (diffSeconds < 60) return "online";
+            if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)}m ago`;
+            if (diffSeconds < 86400) return `Last seen today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            return `Last seen ${date.toLocaleDateString()}`;
+        }
+
+        function renderCurrentView() {
+            if (!globalUsersSnap || !globalChatsSnap) return;
+            if (currentTab === 'contacts') {
+                renderContactsList(globalUsersSnap, globalChatsSnap);
+            } else {
+                renderInboxList(globalUsersSnap, globalChatsSnap);
+            }
+        }
+
+        function renderContactsList(usersSnap, chatsSnap) {
+            contactsListContainer.innerHTML = "";
+            let count = 0;
+            
+            let activeInboxUsers = new Set();
+            chatsSnap.forEach(docSnap => {
+                let m = docSnap.data();
+                let isDeleted = m.deletedFor && m.deletedFor.includes(currentUsername);
+                if (!isDeleted && (m.sender === currentUsername || m.receiver === currentUsername)) {
+                    if (m.sender === currentUsername) activeInboxUsers.add(m.receiver);
+                    if (m.receiver === currentUsername) activeInboxUsers.add(m.sender);
+                }
+            });
+
+            let unreadCounts = {};
+            chatsSnap.forEach(docSnap => {
+                let m = docSnap.data();
+                if (m.receiver === currentUsername && !m.isRead) {
+                    unreadCounts[m.sender] = (unreadCounts[m.sender] || 0) + 1;
+                }
+            });
+
+            usersSnap.forEach(d => {
+                let uData = d.data();
+                let u = uData.username;
+                let avatar = uData.avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
+                
+                if (u && u !== currentUsername) {
+                    if (searchQuery && !u.toLowerCase().includes(searchQuery.toLowerCase())) return;
+                    if (activeInboxUsers.has(u)) return;
+
+                    count++;
+                    let statusText = formatLastSeen(uData.lastSeen);
+                    let unreadNum = unreadCounts[u] || 0;
+                    let badgeHTML = unreadNum > 0 ? `<div class="unread-badge">${unreadNum}</div>` : '';
+
+                    contactsListContainer.innerHTML += `
+                        <div class="list-card-item" onclick="openChatRoom('${u}', '${avatar}')">
+                            <img src="${avatar}" class="item-avatar" alt="DP">
+                            <div class="item-info">
+                                <h4 class="item-title">${u}</h4>
+                                <p class="item-sub">${statusText}</p>
+                            </div>
+                            ${badgeHTML}
+                        </div>`;
+                }
+            });
+
+            if (count === 0) {
+                contactsListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>No contacts available.</p>";
+            }
+        }
+
+        function renderInboxList(usersSnap, chatsSnap) {
+            inboxListContainer.innerHTML = "";
+            let chatPartners = new Map();
+            let userAvatars = {};
+
+            usersSnap.forEach(d => {
+                userAvatars[d.data().username] = d.data().avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
+            });
+
+            chatsSnap.forEach(docSnap => {
+                let m = docSnap.data();
+                let isDeleted = m.deletedFor && m.deletedFor.includes(currentUsername);
+                if (!isDeleted && (m.sender === currentUsername || m.receiver === currentUsername)) {
+                    let partner = m.sender === currentUsername ? m.receiver : m.sender;
+                    let msgTime = m.createdAt ? m.createdAt.toDate() : new Date(0);
+                    if (!chatPartners.has(partner) || chatPartners.get(partner).time < msgTime) {
+                        chatPartners.set(partner, {
+                            partner: partner,
+                            lastText: (m.sender === currentUsername ? "You: " : "") + m.text,
+                            time: msgTime
+                        });
+                    }
+                }
+            });
+
+            let partnersArr = Array.from(chatPartners.values()).sort((a, b) => b.time - a.time);
+            let count = 0;
+
+            partnersArr.forEach(item => {
+                let partner = item.partner;
+                if (searchQuery && !partner.toLowerCase().includes(searchQuery.toLowerCase())) return;
+                count++;
+
+                let partnerAvatar = userAvatars[partner] || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
+
+                let unreadNum = 0;
+                chatsSnap.forEach(docSnap => {
+                    let m = docSnap.data();
+                    if (m.sender === partner && m.receiver === currentUsername && !m.isRead) {
+                        unreadNum++;
+                    }
+                });
+                let badgeHTML = unreadNum > 0 ? `<div class="unread-badge">${unreadNum}</div>` : '';
+
+                let itemElem = document.createElement('div');
+                itemElem.className = 'list-card-item';
+                itemElem.innerHTML = `
+                    <div style="display:flex; align-items:center; flex-grow:1;">
+                        <img src="${partnerAvatar}" class="item-avatar" alt="DP">
+                        <div class="item-info">
+                            <h4 class="item-title">${partner}</h4>
+                            <p class="item-sub">${item.lastText}</p>
+                        </div>
+                    </div>
+                    <div style="display:flex; align-items:center; gap: 8px;">
+                        ${badgeHTML}
+                        <button class="delete-chat-btn">Delete</button>
+                    </div>`;
+
+                itemElem.querySelector(':scope > div:first-child').addEventListener('click', () => {
+                    openChatRoom(partner, partnerAvatar);
+                });
+
+                let pressTimer = null;
+                const startLongPress = () => {
+                    pressTimer = setTimeout(() => {
+                        itemElem.classList.toggle('show-delete');
+                    }, 2000);
+                };
+                const cancelLongPress = () => {
+                    if (pressTimer) {
+                        clearTimeout(pressTimer);
+                        pressTimer = null;
+                    }
+                };
+
+                itemElem.addEventListener('mousedown', startLongPress);
+                itemElem.addEventListener('mouseup', cancelLongPress);
+                itemElem.addEventListener('mouseleave', cancelLongPress);
+
+                itemElem.addEventListener('touchstart', startLongPress);
+                itemElem.addEventListener('touchend', cancelLongPress);
+
+                itemElem.querySelector('.delete-chat-btn').addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    deleteChatWithUser(partner);
+                });
+
+                inboxListContainer.appendChild(itemElem);
+            });
+
+            if (count === 0) {
+                inboxListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>Inbox is empty. Start chatting from Contacts!</p>";
+            }
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            searchQuery = e.target.value.trim();
+            renderCurrentView();
+        });
+
+        document.getElementById('navContactsBtn').addEventListener('click', () => {
+            currentTab = 'contacts';
+            document.getElementById('navContactsBtn').classList.add('active');
+            document.getElementById('navInboxBtn').classList.remove('active');
+            contactsSection.classList.remove('hidden');
+            inboxSection.classList.add('hidden');
+            chatRoomView.classList.add('hidden');
+            renderCurrentView();
+        });
+
+        document.getElementById('navInboxBtn').addEventListener('click', () => {
+            currentTab = 'inbox';
+            document.getElementById('navInboxBtn').classList.add('active');
+            document.getElementById('navContactsBtn').classList.remove('active');
+            inboxSection.classList.remove('hidden');
+            contactsSection.classList.add('hidden');
+            chatRoomView.classList.add('hidden');
+            renderCurrentView();
+        });
+
+        window.openChatRoom = async function(receiver, avatarUrl) {
             activeChatReceiver = receiver;
-            document.getElementById('chatRoomTitle').textContent = `Chat with ${receiver}`;
-            chatSectionList.classList.add('hidden');
+            document.getElementById('chatRoomTitle').textContent = receiver;
+            document.getElementById('chatHeaderAvatar').src = avatarUrl;
+            
+            const usersSnap = await getDocs(collection(db, "users"));
+            usersSnap.forEach(d => {
+                if (d.data().username === receiver) {
+                    document.getElementById('chatReceiverLastSeen').textContent = formatLastSeen(d.data().lastSeen);
+                }
+            });
+
             chatRoomView.classList.remove('hidden');
             
             if(unsubscribeChat) unsubscribeChat();
-            unsubscribeChat = onSnapshot(query(collection(db, "chats"), orderBy("createdAt", "asc")), (snapshot) => {
+            unsubscribeChat = onSnapshot(query(collection(db, "chats"), orderBy("createdAt", "asc")), async (snapshot) => {
                 let box = document.getElementById('chatMessagesBox');
                 box.innerHTML = "";
+                let batchUpdates = [];
+
                 snapshot.forEach(d => {
                     let m = d.data();
-                    if ((m.sender === currentUsername && m.receiver === receiver) || (m.sender === receiver && m.receiver === currentUsername)) {
-                        box.innerHTML += `<div class="chat-msg ${m.sender === currentUsername ? 'sent' : 'received'}">${m.text}</div>`;
+                    let msgId = d.id;
+                    let isDeleted = m.deletedFor && m.deletedFor.includes(currentUsername);
+                    
+                    if (!isDeleted && ((m.sender === currentUsername && m.receiver === receiver) || (m.sender === receiver && m.receiver === currentUsername))) {
+                        
+                        if (m.receiver === currentUsername && m.sender === receiver && !m.isRead) {
+                            batchUpdates.push(updateDoc(doc(db, "chats", msgId), { isRead: true }));
+                        }
+
+                        let timeStr = m.createdAt ? m.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+                        let tickHTML = '';
+                        if (m.sender === currentUsername) {
+                            let isReadClass = m.isRead ? 'tick-mark read' : 'tick-mark';
+                            tickHTML = `<span class="${isReadClass}">✓✓</span>`;
+                        }
+
+                        box.innerHTML += `
+                            <div class="chat-msg ${m.sender === currentUsername ? 'sent' : 'received'}">
+                                ${m.text}
+                                <div class="msg-footer">
+                                    <span style="font-size:10px; opacity:0.8;">${timeStr}</span>
+                                    ${tickHTML}
+                                </div>
+                            </div>`;
                     }
                 });
+
+                if (batchUpdates.length > 0) {
+                    await Promise.all(batchUpdates);
+                }
                 box.scrollTop = box.scrollHeight;
             });
         }
@@ -241,8 +701,13 @@
             activeChatReceiver = null;
             if(unsubscribeChat) unsubscribeChat();
             chatRoomView.classList.add('hidden');
-            chatSectionList.classList.remove('hidden');
-            loadChatUsers();
+            
+            currentTab = 'inbox';
+            document.getElementById('navInboxBtn').classList.add('active');
+            document.getElementById('navContactsBtn').classList.remove('active');
+            inboxSection.classList.remove('hidden');
+            contactsSection.classList.add('hidden');
+            renderCurrentView();
         });
 
         document.getElementById('sendChatBtn').addEventListener('click', async () => {
@@ -253,9 +718,30 @@
                 sender: currentUsername, 
                 receiver: activeChatReceiver, 
                 text, 
+                isRead: false,
+                deletedFor: [],
                 createdAt: serverTimestamp() 
             });
         });
+
+        window.deleteChatWithUser = async function(partner) {
+            if (confirm(`Do you want to remove chat with "${partner}" from inbox?`)) {
+                const chatsSnap = await getDocs(collection(db, "chats"));
+                let updates = [];
+                chatsSnap.forEach(d => {
+                    let m = d.data();
+                    if ((m.sender === currentUsername && m.receiver === partner) || (m.sender === partner && m.receiver === currentUsername)) {
+                        let deletedFor = m.deletedFor || [];
+                        if (!deletedFor.includes(currentUsername)) {
+                            deletedFor.push(currentUsername);
+                            updates.push(updateDoc(doc(db, "chats", d.id), { deletedFor }));
+                        }
+                    }
+                });
+                await Promise.all(updates);
+                renderCurrentView();
+            }
+        }
     </script>
 </body>
 </html>
