@@ -55,8 +55,8 @@
         .delete-chat-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; display: none; }
         .list-card-item.show-delete .delete-chat-btn { display: block; }
 
-        /* Fixed Chat Room Layout (Prevents jumping and hiding input) */
-        #chatRoomView { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #fff; z-index: 1500; overflow: hidden; }
+        /* Fixed Chat Room Layout Fixes */
+        #chatRoomView { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #fff; z-index: 1500; overflow: hidden; }
         .chat-box-container { display: flex; flex-direction: column; width: 100%; height: 100%; background: #fff; overflow: hidden; }
         
         .chat-header-bar { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 12px 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -67,7 +67,7 @@
         .chat-receiver-name { font-size: 16px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         .chat-receiver-lastseen { font-size: 11px; color: #e2e8f0; margin-top: 1px; }
 
-        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8f9fa; -webkit-overflow-scrolling: touch; }
+        .chat-messages { flex: 1 1 auto; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8f9fa; -webkit-overflow-scrolling: touch; min-height: 0; }
         .chat-msg { max-width: 75%; padding: 10px 14px; border-radius: 10px; font-size: 14px; word-break: break-word; position: relative; }
         .chat-msg.sent { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
         .chat-msg.received { background-color: #e2e8f0; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
@@ -697,6 +697,10 @@
         }
 
         document.getElementById('backToListBtn').addEventListener('click', () => {
+            activeChatRoomCleanUp();
+        });
+
+        function activeChatRoomCleanUp() {
             activeChatReceiver = null;
             if(unsubscribeChat) unsubscribeChat();
             chatRoomView.classList.add('hidden');
@@ -707,7 +711,7 @@
             inboxSection.classList.remove('hidden');
             contactsSection.classList.add('hidden');
             renderCurrentView();
-        });
+        }
 
         document.getElementById('sendChatBtn').addEventListener('click', async () => {
             let text = document.getElementById('chatMessageInput').value.trim();
@@ -721,6 +725,12 @@
                 deletedFor: [],
                 createdAt: serverTimestamp() 
             });
+        });
+
+        document.getElementById('chatMessageInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                document.getElementById('sendChatBtn').click();
+            }
         });
 
         window.deleteChatWithUser = async function(partner) {
