@@ -735,7 +735,7 @@
                     let updatedAt = data.updatedAt ? data.updatedAt.toMillis() : 0;
                     let now = Date.now();
                     
-                    if (now - updatedAt < 3000) { // Active within 3 seconds
+                    if (now - updatedAt < 3000) {
                         if (!isGroupChatActive && activeChatReceiver) {
                             if (data.user === activeChatReceiver && data.target === currentUsername) {
                                 isTypingFound = true;
@@ -785,21 +785,12 @@
             if (!currentUsername) return;
             const typingDocId = isGroupChatActive ? `group_${currentUsername}` : `${currentUsername}_${activeChatReceiver}`;
             
-            await updateDoc(doc(db, "typingStatus", typingDocId), {
+            const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+            await setDoc(doc(db, "typingStatus", typingDocId), {
                 user: currentUsername,
                 target: isGroupChatActive ? "group" : activeChatReceiver,
                 isGroup: isGroupChatActive,
                 updatedAt: serverTimestamp()
-            }).catch(async () => {
-                // If doc doesn't exist yet, create via set or addDoc setup (using setDoc equivalent via addDoc or standard handle)
-                // We can use direct update/set with docId:
-                const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                await setDoc(doc(db, "typingStatus", typingDocId), {
-                    user: currentUsername,
-                    target: isGroupChatActive ? "group" : activeChatReceiver,
-                    isGroup: isGroupChatActive,
-                    updatedAt: serverTimestamp()
-                });
             });
         });
 
