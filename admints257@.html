@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus - Admin Control Panel</title>
+    <title>Nexus - Admin Panel</title>
     <style>
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; }
@@ -23,25 +23,22 @@
         .tab-btn { flex: 1; padding: 10px; background: #e9ecef; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; color: #555; }
         .tab-btn.active { background: #007bff; color: white; }
 
-        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0, 0, 0, 0.6); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 15px; }
-        .fullscreen-form-box { background: #fff; padding: 22px; border-radius: 12px; width: 100%; max-width: 380px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-        input, button.form-submit { display: block; width: 100%; margin-bottom: 12px; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
-        button.form-submit { background-color: #dc3545; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .login-box { width: 100%; max-width: 360px; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .auth-input, .form-submit { display: block; width: 100%; margin-bottom: 12px; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        .form-submit { background-color: #dc3545; color: white; border: none; cursor: pointer; font-weight: bold; }
         .hidden { display: none !important; }
     </style>
 </head>
 <body>
 
     <!-- Admin Login Overlay -->
-    <div id="adminAuthOverlay" class="fullscreen-overlay">
-        <div class="fullscreen-form-box">
-            <h2 style="color:#007bff; text-align:center; margin-top:0; font-size: 22px;">Nexus Admin Login</h2>
-            <form id="adminAuthForm">
-                <input type="text" id="adminUser" placeholder="Admin Username" required>
-                <input type="password" id="adminPass" placeholder="Password" required>
-                <button type="submit" class="form-submit" style="background-color:#007bff; margin-bottom: 0;">Login as Admin</button>
-            </form>
-        </div>
+    <div id="adminLoginOverlay" class="login-box">
+        <h2 style="margin-top:0; color:#dc3545; text-align:center; font-size: 22px;">Admin Login</h2>
+        <form id="adminLoginForm">
+            <input type="text" id="adminUser" class="auth-input" placeholder="Admin Username" required>
+            <input type="password" id="adminPass" class="auth-input" placeholder="Admin Password" required>
+            <button type="submit" class="form-submit">Login as Admin</button>
+        </form>
     </div>
 
     <!-- Main Admin Dashboard -->
@@ -85,51 +82,41 @@
         };
         const db = getFirestore(initializeApp(firebaseConfig));
 
-        let currentAdmin = localStorage.getItem('nexus_admin_user') || null;
-
-        const adminAuthOverlay = document.getElementById('adminAuthOverlay');
+        const adminLoginOverlay = document.getElementById('adminLoginOverlay');
         const adminMainPanel = document.getElementById('adminMainPanel');
         const adminUsersSection = document.getElementById('adminUsersSection');
         const adminGroupChatSection = document.getElementById('adminGroupChatSection');
 
-        if (currentAdmin) {
-            adminAuthOverlay.classList.add('hidden');
-            adminMainPanel.classList.remove('hidden');
-            loadAdminUsers();
-            loadAdminGroupMessages();
-        }
-
-        document.getElementById('adminAuthForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const username = document.getElementById('adminUser').value.trim().toLowerCase();
-            const password = document.getElementById('adminPass').value;
-
-            if (username === 'admin' || username === 'administrator') {
-                const usersSnap = await getDocs(collection(db, "users"));
-                let foundAdmin = false;
-                usersSnap.forEach(d => {
-                    if (d.data().username === username && d.data().password === password) foundAdmin = true;
-                });
-
-                if (foundAdmin || password === "12345") {
-                    currentAdmin = username;
-                    localStorage.setItem('nexus_admin_user', currentAdmin);
-                    adminAuthOverlay.classList.add('hidden');
-                    adminMainPanel.classList.remove('hidden');
-                    loadAdminUsers();
-                    loadAdminGroupMessages();
-                    alert("Admin Login Successful!");
-                } else {
-                    alert("Incorrect Admin password!");
-                }
+        function checkAdminSession() {
+            if (localStorage.getItem('nexus_admin_logged') === 'true') {
+                adminLoginOverlay.classList.add('hidden');
+                adminMainPanel.classList.remove('hidden');
+                loadAdminUsers();
+                loadAdminGroupMessages();
             } else {
-                alert("Access Denied! Only admins can login here.");
+                adminLoginOverlay.classList.remove('hidden');
+                adminMainPanel.classList.add('hidden');
+            }
+        }
+        checkAdminSession();
+
+        document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const u = document.getElementById('adminUser').value.trim();
+            const p = document.getElementById('adminPass').value;
+
+            // මෙහි ඔබට අවශ්‍ය ඇඩ්මින්ගේ Username සහ Password වෙනස් කරගත හැක (දැන් admin / admin123 ලෙස ඇත)
+            if (u === 'admin' && p === 'admin123') {
+                localStorage.setItem('nexus_admin_logged', 'true');
+                checkAdminSession();
+            } else {
+                alert("Invalid Admin Username or Password!");
             }
         });
 
         document.getElementById('adminLogoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('nexus_admin_user');
-            location.reload();
+            localStorage.removeItem('nexus_admin_logged');
+            checkAdminSession();
         });
 
         document.getElementById('tabUsersBtn').addEventListener('click', () => {
@@ -163,16 +150,13 @@
                     let avatar = u.avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
                     let gender = u.gender || "N/A";
                     let country = u.country || "N/A";
-                    let deleteBtn = "";
-                    if (u.username !== 'admin' && u.username !== 'administrator') {
-                        deleteBtn = `<button class="delete-btn" onclick="deleteUserAccount('${u.id}', '${u.username}')">Delete</button>`;
-                    }
+                    let deleteBtn = `<button class="delete-btn" onclick="deleteUserAccount('${u.id}', '${u.username}')">Delete</button>`;
 
                     adminUsersSection.innerHTML += `
                         <div class="dashboard-card">
                             <div class="admin-user-info">
                                 <img src="${avatar}" class="admin-user-dp" alt="DP">
-                            <div style="overflow:hidden;">
+                                <div style="overflow:hidden;">
                                     <h4 style="margin: 0 0 3px 0; color: #333; font-size: 15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${u.username}</h4>
                                     <p style="margin: 0 0 2px 0; color: #555; font-size: 12px;">Gender: ${gender} | Country: ${country}</p>
                                     <p style="margin: 0; color: #666; font-size: 12px;">Password: ${u.password}</p>
