@@ -1,82 +1,65 @@
 <!DOCTYPE html>
 <html lang="si">
 <head>
-    <meta name="google-site-verification" content="0FXFCJytz6qsnsFHNOr70sQmoaqCsx8UbkQYnPMoaMo" />
-    <title>Nexus - Profile Settings Portal</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Nexus - Chat Portal</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; box-sizing: border-box; width: 100vw; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; flex-direction: column; }
         
-        .brand-header { position: sticky; top: 0; z-index: 1000; background-color: #007bff; color: white; padding: 15px 20px 10px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); flex-shrink: 0; }
-        .brand-top-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-        .brand-header h1 { margin: 0; font-size: 22px; font-weight: bold; text-align: center; flex-grow: 1; }
+        .brand-header { flex-shrink: 0; background-color: #007bff; color: white; padding: 10px 15px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.15); z-index: 100; }
+        .brand-top-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+        .brand-header h1 { margin: 0; font-size: 18px; font-weight: bold; }
         
-        .user-display-badge { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: bold; background: rgba(255, 255, 255, 0.18); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.3); cursor: pointer; transition: background 0.2s; }
-        .user-display-badge:hover { background: rgba(255, 255, 255, 0.3); }
-        .user-display-badge svg { width: 16px; height: 16px; fill: currentColor; }
+        .user-display-badge { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: bold; background: rgba(255, 255, 255, 0.2); padding: 4px 10px; border-radius: 15px; cursor: pointer; }
+        .user-display-badge svg { width: 14px; height: 14px; fill: currentColor; }
 
-        .search-bar-container { width: 100%; max-width: 500px; margin-top: 2px; }
-        .search-input { width: 100%; padding: 8px 14px; border-radius: 20px; border: none; font-size: 14px; outline: none; box-sizing: border-box; background: rgba(255, 255, 255, 0.9); color: #333; }
-        .search-input:focus { background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .search-bar-container { width: 100%; max-width: 500px; }
+        .search-input { width: 100%; padding: 6px 12px; border-radius: 15px; border: none; font-size: 13px; outline: none; background: rgba(255, 255, 255, 0.9); }
         
-        .main-container { padding: 15px; max-width: 600px; margin: 0 auto; box-sizing: border-box; width: 100%; flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 75px; }
+        .main-container { flex: 1; width: 100%; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; overflow: hidden; padding: 10px 15px 60px 15px; }
+        .section-view { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(135deg, #007bff, #0056b3); display: flex; justify-content: space-around; padding: 8px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
-        .nav-item { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 12px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color 0.2s; position: relative; }
+        .scrollable-list { flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
+        
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #007bff; display: flex; justify-content: space-around; padding: 8px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
+        .nav-item { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; position: relative; }
         .nav-item.active { color: white; }
-        .nav-icon { width: 22px; height: 22px; fill: currentColor; }
-
-        .nav-notification-dot { position: absolute; top: 1px; right: 26%; width: 9px; height: 9px; background-color: #00e5ff; border-radius: 50%; border: 1.5px solid #0056b3; display: none; }
+        .nav-icon { width: 20px; height: 20px; fill: currentColor; }
+        .nav-notification-dot { position: absolute; top: 0; right: 28%; width: 8px; height: 8px; background-color: #00e5ff; border-radius: 50%; display: none; }
         .nav-notification-dot.show { display: block; }
 
-        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
-        .fullscreen-form-box { background: #fff; padding: 22px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); width: 100%; max-width: 400px; position: relative; max-height: 90vh; overflow-y: auto; }
+        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0, 0, 0, 0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 15px; }
+        .fullscreen-form-box { background: #fff; padding: 20px; border-radius: 12px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
         .hidden { display: none !important; }
-        input.auth-input, button.form-submit { display: block; width: 100%; margin-bottom: 12px; padding: 10px 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        input.auth-input, button.form-submit { display: block; width: 100%; margin-bottom: 10px; padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
         button.form-submit { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
-        .auth-switch { text-align: center; margin-top: 12px; font-size: 13px; color: #007bff; cursor: pointer; font-weight: bold; }
         
-        .avatar-selection-label { font-size: 13px; font-weight: bold; color: #444; margin-bottom: 6px; display: block; }
-        .avatar-options-grid { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 15px; }
-        .avatar-option-item { width: 50px; height: 50px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; object-fit: cover; background: #e2e8f0; transition: transform 0.2s, border-color 0.2s; }
-        .avatar-option-item:hover { transform: scale(1.08); }
-        .avatar-option-item.selected { border-color: #007bff; transform: scale(1.1); box-shadow: 0 0 8px rgba(0,123,255,0.5); }
+        .avatar-options-grid { display: flex; justify-content: space-between; gap: 6px; margin-bottom: 12px; }
+        .avatar-option-item { width: 45px; height: 45px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; object-fit: cover; background: #e2e8f0; }
+        .avatar-option-item.selected { border-color: #007bff; transform: scale(1.05); }
 
-        .section-view { display: flex; flex-direction: column; flex-grow: 1; }
-        .list-card-item { padding: 14px 18px; background: #fff; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; transition: background 0.2s; position: relative; user-select: none; }
+        .list-card-item { padding: 12px 15px; background: #fff; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
         .list-card-item:hover { background: #f1f5f9; }
+        .item-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-right: 12px; flex-shrink: 0; background: #cbd5e1; }
+        .item-info { flex-grow: 1; overflow: hidden; }
+        .item-title { font-weight: bold; color: #111; font-size: 15px; margin: 0 0 2px 0; }
+        .item-sub { font-size: 12px; color: #555; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .item-avatar { width: 48px; height: 48px; border-radius: 50%; background-color: #cbd5e1; object-fit: cover; margin-right: 14px; flex-shrink: 0; }
-        .item-info { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
-        .item-title { font-weight: bold; color: #111; font-size: 16px; margin: 0 0 3px 0; }
-        .item-sub { font-size: 13px; color: #555; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 230px; }
-        
-        .unread-badge { background-color: #007bff; color: white; font-size: 11px; font-weight: bold; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-        .delete-chat-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; display: none; }
+        .unread-badge { background-color: #007bff; color: white; font-size: 10px; font-weight: bold; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .delete-chat-btn { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; display: none; }
         .list-card-item.show-delete .delete-chat-btn { display: block; }
 
-        /* Fixed Chat Room Layout Fixes */
-        #chatRoomView { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; width: 100vw; height: 100dvh; background: #fff; z-index: 1500; overflow: hidden; }
-        .chat-box-container { display: flex; flex-direction: column; width: 100%; height: 100%; background: #fff; overflow: hidden; }
-        
-        .chat-header-bar { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 12px 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .back-to-list-btn { background: rgba(255, 255, 255, 0.25); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 7px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
-        
-        .chat-header-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid white; flex-shrink: 0; }
-        .chat-user-details { display: flex; flex-direction: column; overflow: hidden; }
-        .chat-receiver-name { font-size: 16px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .chat-receiver-lastseen { font-size: 11px; color: #e2e8f0; margin-top: 1px; }
-
-        .chat-messages { flex: 1 1 auto; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8f9fa; -webkit-overflow-scrolling: touch; min-height: 0; }
-        .chat-msg { max-width: 75%; padding: 10px 14px; border-radius: 10px; font-size: 14px; word-break: break-word; position: relative; }
-        .chat-msg.sent { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .chat-msg.received { background-color: #e2e8f0; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
-        
-        .msg-footer { display: flex; justify-content: flex-end; align-items: center; gap: 4px; font-size: 10px; margin-top: 4px; color: rgba(255,255,255,0.8); }
-        .chat-msg.received .msg-footer { color: #666; justify-content: flex-start; }
-        .tick-mark { font-weight: bold; font-size: 12px; }
-        .tick-mark.read { color: #4facfe; }
-
-        .chat-input-area { display: flex; padding: 10px 15px; background: #fff; border-top: 1px solid #ddd; gap: 8px; flex-shrink: 0; align-items: center; box-sizing: border-box; }
+        #chatRoomView { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: #fff; z-index: 1500; display: flex; flex-direction: column; overflow: hidden; }
+        .chat-header-bar { background: #007bff; color: white; padding: 10px 15px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .back-to-list-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
+        .chat-header-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid white; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8f9fa; }
+        .chat-msg { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 13px; word-break: break-word; }
+        .chat-msg.sent { background-color: #007bff; color: white; align-self: flex-end; }
+        .chat-msg.received { background-color: #e2e8f0; color: #333; align-self: flex-start; }
+        .chat-input-area { display: flex; padding: 10px 15px; background: #fff; border-top: 1px solid #ddd; gap: 8px; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -88,7 +71,7 @@
                 <span id="headerUsernameText">Guest</span>
             </div>
             <h1>Nexus Chat</h1>
-            <div style="width: 70px;"></div>
+            <div style="width: 50px;"></div>
         </div>
         <div class="search-bar-container" id="searchBarContainer">
             <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search contacts...">
@@ -97,36 +80,35 @@
 
     <div class="main-container">
         <div id="contactsSection" class="section-view">
-            <h3 style="color: #333; margin: 5px 0 10px 0; font-size: 16px;">Contacts</h3>
-            <div id="contactsListContainer" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff;">
+            <h3 style="color: #333; margin: 5px 0 8px 0; font-size: 15px;">Contacts</h3>
+            <div id="contactsListContainer" class="scrollable-list">
                 <p style="text-align: center; color: #777; padding: 20px;">Loading contacts...</p>
             </div>
         </div>
 
         <div id="inboxSection" class="section-view hidden">
-            <h3 style="color: #333; margin: 5px 0 10px 0; font-size: 16px;">Inbox Chats</h3>
-            <p style="font-size: 11px; color: #666; margin: 0 0 8px 0;">💡 Tip: Press & hold on a chat item for **2 seconds** to reveal the delete button.</p>
-            <div id="inboxListContainer" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden; background: #fff;">
+            <h3 style="color: #333; margin: 5px 0 4px 0; font-size: 15px;">Inbox Chats</h3>
+            <p style="font-size: 11px; color: #666; margin: 0 0 6px 0;">💡 Tip: Press & hold item for 2s to delete.</p>
+            <div id="inboxListContainer" class="scrollable-list">
                 <p style="text-align: center; color: #777; padding: 20px;">No messages in inbox.</p>
             </div>
         </div>
     </div>
 
+    <!-- Chat Room View -->
     <div id="chatRoomView" class="hidden">
-        <div class="chat-box-container">
-            <div class="chat-header-bar">
-                <button type="button" class="back-to-list-btn" id="backToListBtn">← Back</button>
-                <img id="chatHeaderAvatar" class="chat-header-avatar" src="" alt="DP">
-                <div class="chat-user-details">
-                    <span id="chatRoomTitle" class="chat-receiver-name">Chat</span>
-                    <span id="chatReceiverLastSeen" class="chat-receiver-lastseen">online</span>
-                </div>
+        <div class="chat-header-bar">
+            <button type="button" class="back-to-list-btn" id="backToListBtn">← Back</button>
+            <img id="chatHeaderAvatar" class="chat-header-avatar" src="" alt="DP">
+            <div style="display:flex; flex-direction:column; overflow:hidden;">
+                <span id="chatRoomTitle" style="font-size: 15px; font-weight: bold; white-space: nowrap;">Chat</span>
+                <span id="chatReceiverLastSeen" style="font-size: 10px; color: #e2e8f0;">online</span>
             </div>
-            <div id="chatMessagesBox" class="chat-messages"></div>
-            <div class="chat-input-area">
-                <input type="text" id="chatMessageInput" placeholder="Type a message..." style="margin-bottom:0; flex-grow:1; padding: 10px 14px; border:1px solid #ccc; border-radius:6px; outline:none; font-size:15px;">
-                <button type="button" id="sendChatBtn" class="form-submit" style="width:auto; margin-bottom:0; padding: 10px 20px; font-size:15px;">Send</button>
-            </div>
+        </div>
+        <div id="chatMessagesBox" class="chat-messages"></div>
+        <div class="chat-input-area">
+            <input type="text" id="chatMessageInput" placeholder="Type a message..." style="margin-bottom:0; flex:1; padding: 8px 12px; border:1px solid #ccc; border-radius:6px; outline:none; font-size:14px;">
+            <button type="button" id="sendChatBtn" class="form-submit" style="width:auto; margin-bottom:0; padding: 8px 16px;">Send</button>
         </div>
     </div>
 
@@ -142,58 +124,50 @@
         </button>
     </div>
 
-    <!-- Login / Register Modal Overlay -->
+    <!-- Auth Modal -->
     <div id="authOverlay" class="fullscreen-overlay hidden">
         <div class="fullscreen-form-box">
-            <h2 id="authHeading" style="margin-top:0; color:#007bff; text-align:center;">Register</h2>
+            <h2 id="authHeading" style="margin-top:0; color:#007bff; text-align:center; font-size: 20px;">Register</h2>
             <form id="authForm">
                 <input type="text" id="authUsername" class="auth-input" placeholder="Username" required>
                 <input type="password" id="authPassword" class="auth-input" placeholder="Password" required>
                 
                 <div id="avatarSelectionContainer">
-                    <span class="avatar-selection-label">Choose your Profile Avatar (DP):</span>
+                    <label style="font-size: 12px; font-weight: bold; color: #444; margin-bottom: 4px; display: block;">Choose Avatar:</label>
                     <div class="avatar-options-grid" id="avatarOptionsGrid">
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="avatar-option-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Avatar 1">
-                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Avatar 2">
-                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" alt="Avatar 3">
-                        <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" alt="Avatar 4">
-                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Zack" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Zack" alt="Avatar 5">
+                        <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="avatar-option-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Av1">
+                        <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Av2">
+                        <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" alt="Av3">
+                        <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" alt="Av4">
                     </div>
                 </div>
-
                 <button type="submit" id="authSubmitBtn" class="form-submit">Register</button>
             </form>
-            <div id="authSwitchText" class="auth-switch">Already have an account? Login</div>
+            <div id="authSwitchText" style="text-align: center; margin-top: 10px; font-size: 12px; color: #007bff; cursor: pointer; font-weight: bold;">Already have an account? Login</div>
         </div>
     </div>
 
-    <!-- Profile Edit Modal Overlay -->
+    <!-- Profile Edit Modal -->
     <div id="profileEditOverlay" class="fullscreen-overlay hidden">
         <div class="fullscreen-form-box">
-            <h2 style="margin-top:0; color:#007bff; text-align:center;">Edit Profile</h2>
+            <h2 style="margin-top:0; color:#007bff; text-align:center; font-size: 20px;">Edit Profile</h2>
             <form id="profileEditForm">
-                <div style="text-align: center; margin-bottom: 12px;">
-                    <img id="editCurrentAvatarPreview" src="" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff; background: #e2e8f0;" alt="Current DP">
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <img id="editCurrentAvatarPreview" src="" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff;" alt="DP">
                 </div>
-                <label style="font-size: 13px; font-weight: bold; color: #444; display: block; margin-bottom: 4px;">Username (Cannot be changed):</label>
                 <input type="text" id="editUsernameInput" class="auth-input" disabled style="background:#e9ecef; color:#666;">
-
-                <label style="font-size: 13px; font-weight: bold; color: #444; display: block; margin-bottom: 4px;">New Password (Optional):</label>
-                <input type="password" id="editPasswordInput" class="auth-input" placeholder="Leave blank to keep old password">
-
-                <span class="avatar-selection-label">Change Profile Avatar (DP):</span>
+                <input type="password" id="editPasswordInput" class="auth-input" placeholder="New Password (Optional)">
+                <label style="font-size: 12px; font-weight: bold; color: #444; margin-bottom: 4px; display: block;">Change Avatar:</label>
                 <div class="avatar-options-grid" id="editAvatarOptionsGrid">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="edit-avatar-option-item avatar-option-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Avatar 1">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Avatar 2">
-                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" alt="Avatar 3">
-                    <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" alt="Avatar 4">
-                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Zack" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Zack" alt="Avatar 5">
+                    <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="edit-avatar-option-item avatar-option-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Av1">
+                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Av2">
+                    <img src="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/adventurer/svg?seed=Bandit" alt="Av3">
+                    <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" alt="Av4">
                 </div>
-
                 <button type="submit" class="form-submit">Save Changes</button>
             </form>
-            <button type="button" id="profileLogoutBtn" class="form-submit" style="background-color: #dc3545; margin-top: 5px;">Logout</button>
-            <button type="button" id="closeProfileModalBtn" class="form-submit" style="background-color: #6c757d; margin-top: 5px;">Cancel</button>
+            <button type="button" id="profileLogoutBtn" class="form-submit" style="background-color: #dc3545; margin-bottom: 6px;">Logout</button>
+            <button type="button" id="closeProfileModalBtn" class="form-submit" style="background-color: #6c757d; margin-bottom: 0;">Cancel</button>
         </div>
     </div>
 
@@ -348,11 +322,8 @@
             e.preventDefault();
             if (!currentUserDocId) return;
             const newPassword = document.getElementById('editPasswordInput').value.trim();
-            
             let updatePayload = { avatarUrl: editSelectedAvatarUrl };
-            if (newPassword.length > 0) {
-                updatePayload.password = newPassword;
-            }
+            if (newPassword.length > 0) updatePayload.password = newPassword;
 
             await updateDoc(doc(db, "users", currentUserDocId), updatePayload);
             alert("Profile updated successfully!");
@@ -365,12 +336,8 @@
             document.getElementById('authHeading').textContent = isRegistering ? "Register" : "Login";
             document.getElementById('authSubmitBtn').textContent = isRegistering ? "Register" : "Login";
             document.getElementById('authSwitchText').textContent = isRegistering ? "Already have an account? Login" : "Don't have an account? Register";
-            
-            if (isRegistering) {
-                avatarSelectionContainer.classList.remove('hidden');
-            } else {
-                avatarSelectionContainer.classList.add('hidden');
-            }
+            if (isRegistering) avatarSelectionContainer.classList.remove('hidden');
+            else avatarSelectionContainer.classList.add('hidden');
         });
 
         document.getElementById('authForm').addEventListener('submit', async (e) => {
@@ -385,13 +352,7 @@
                 if (userFound) {
                     alert("Username already taken!");
                 } else {
-                    await addDoc(collection(db, "users"), { 
-                        username, 
-                        password, 
-                        avatarUrl: selectedAvatarUrl, 
-                        createdAt: serverTimestamp(), 
-                        lastSeen: serverTimestamp() 
-                    });
+                    await addDoc(collection(db, "users"), { username, password, avatarUrl: selectedAvatarUrl, createdAt: serverTimestamp(), lastSeen: serverTimestamp() });
                     currentUsername = username; 
                     localStorage.setItem('nexus_logged_user', currentUsername);
                     checkAuthState();
@@ -432,43 +393,31 @@
             cSnap.forEach(docSnap => {
                 let m = docSnap.data();
                 let isDeleted = m.deletedFor && m.deletedFor.includes(currentUsername);
-                if (!isDeleted && m.receiver === currentUsername && !m.isRead) {
-                    hasUnread = true;
-                }
+                if (!isDeleted && m.receiver === currentUsername && !m.isRead) hasUnread = true;
             });
-
-            if (hasUnread) {
-                inboxNotificationDot.classList.add('show');
-            } else {
-                inboxNotificationDot.classList.remove('show');
-            }
+            if (hasUnread) inboxNotificationDot.classList.add('show');
+            else inboxNotificationDot.classList.remove('show');
         }
 
         function formatLastSeen(timestamp) {
             if (!timestamp) return "offline";
             let date = timestamp.toDate();
-            let now = new Date();
-            let diffSeconds = Math.floor((now - date) / 1000);
-
+            let diffSeconds = Math.floor((new Date() - date) / 1000);
             if (diffSeconds < 60) return "online";
             if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)}m ago`;
-            if (diffSeconds < 86400) return `Last seen today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-            return `Last seen ${date.toLocaleDateString()}`;
+            if (diffSeconds < 86400) return `Today at ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+            return date.toLocaleDateString();
         }
 
         function renderCurrentView() {
             if (!globalUsersSnap || !globalChatsSnap) return;
-            if (currentTab === 'contacts') {
-                renderContactsList(globalUsersSnap, globalChatsSnap);
-            } else {
-                renderInboxList(globalUsersSnap, globalChatsSnap);
-            }
+            if (currentTab === 'contacts') renderContactsList(globalUsersSnap, globalChatsSnap);
+            else renderInboxList(globalUsersSnap, globalChatsSnap);
         }
 
         function renderContactsList(usersSnap, chatsSnap) {
             contactsListContainer.innerHTML = "";
             let count = 0;
-            
             let activeInboxUsers = new Set();
             chatsSnap.forEach(docSnap => {
                 let m = docSnap.data();
@@ -476,14 +425,6 @@
                 if (!isDeleted && (m.sender === currentUsername || m.receiver === currentUsername)) {
                     if (m.sender === currentUsername) activeInboxUsers.add(m.receiver);
                     if (m.receiver === currentUsername) activeInboxUsers.add(m.sender);
-                }
-            });
-
-            let unreadCounts = {};
-            chatsSnap.forEach(docSnap => {
-                let m = docSnap.data();
-                if (m.receiver === currentUsername && !m.isRead) {
-                    unreadCounts[m.sender] = (unreadCounts[m.sender] || 0) + 1;
                 }
             });
 
@@ -495,27 +436,19 @@
                 if (u && u !== currentUsername) {
                     if (searchQuery && !u.toLowerCase().includes(searchQuery.toLowerCase())) return;
                     if (activeInboxUsers.has(u)) return;
-
                     count++;
-                    let statusText = formatLastSeen(uData.lastSeen);
-                    let unreadNum = unreadCounts[u] || 0;
-                    let badgeHTML = unreadNum > 0 ? `<div class="unread-badge">${unreadNum}</div>` : '';
 
                     contactsListContainer.innerHTML += `
                         <div class="list-card-item" onclick="openChatRoom('${u}', '${avatar}')">
                             <img src="${avatar}" class="item-avatar" alt="DP">
                             <div class="item-info">
                                 <h4 class="item-title">${u}</h4>
-                                <p class="item-sub">${statusText}</p>
+                                <p class="item-sub">${formatLastSeen(uData.lastSeen)}</p>
                             </div>
-                            ${badgeHTML}
                         </div>`;
                 }
             });
-
-            if (count === 0) {
-                contactsListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>No contacts available.</p>";
-            }
+            if (count === 0) contactsListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>No contacts available.</p>";
         }
 
         function renderInboxList(usersSnap, chatsSnap) {
@@ -523,9 +456,7 @@
             let chatPartners = new Map();
             let userAvatars = {};
 
-            usersSnap.forEach(d => {
-                userAvatars[d.data().username] = d.data().avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
-            });
+            usersSnap.forEach(d => { userAvatars[d.data().username] = d.data().avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix"; });
 
             chatsSnap.forEach(docSnap => {
                 let m = docSnap.data();
@@ -534,11 +465,7 @@
                     let partner = m.sender === currentUsername ? m.receiver : m.sender;
                     let msgTime = m.createdAt ? m.createdAt.toDate() : new Date(0);
                     if (!chatPartners.has(partner) || chatPartners.get(partner).time < msgTime) {
-                        chatPartners.set(partner, {
-                            partner: partner,
-                            lastText: (m.sender === currentUsername ? "You: " : "") + m.text,
-                            time: msgTime
-                        });
+                        chatPartners.set(partner, { partner, lastText: (m.sender === currentUsername ? "You: " : "") + m.text, time: msgTime });
                     }
                 }
             });
@@ -551,55 +478,25 @@
                 if (searchQuery && !partner.toLowerCase().includes(searchQuery.toLowerCase())) return;
                 count++;
 
-                let partnerAvatar = userAvatars[partner] || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
-
-                let unreadNum = 0;
-                chatsSnap.forEach(docSnap => {
-                    let m = docSnap.data();
-                    if (m.sender === partner && m.receiver === currentUsername && !m.isRead) {
-                        unreadNum++;
-                    }
-                });
-                let badgeHTML = unreadNum > 0 ? `<div class="unread-badge">${unreadNum}</div>` : '';
-
                 let itemElem = document.createElement('div');
                 itemElem.className = 'list-card-item';
                 itemElem.innerHTML = `
-                    <div style="display:flex; align-items:center; flex-grow:1;">
-                        <img src="${partnerAvatar}" class="item-avatar" alt="DP">
+                    <div style="display:flex; align-items:center; flex:1; overflow:hidden;">
+                        <img src="${userAvatars[partner] || ''}" class="item-avatar" alt="DP">
                         <div class="item-info">
                             <h4 class="item-title">${partner}</h4>
                             <p class="item-sub">${item.lastText}</p>
                         </div>
                     </div>
-                    <div style="display:flex; align-items:center; gap: 8px;">
-                        ${badgeHTML}
-                        <button class="delete-chat-btn">Delete</button>
-                    </div>`;
+                    <button class="delete-chat-btn" style="margin-left: 6px;">Delete</button>`;
 
-                itemElem.querySelector(':scope > div:first-child').addEventListener('click', () => {
-                    openChatRoom(partner, partnerAvatar);
-                });
+                itemElem.querySelector(':scope > div:first-child').addEventListener('click', () => openChatRoom(partner, userAvatars[partner]));
 
                 let pressTimer = null;
-                const startLongPress = () => {
-                    pressTimer = setTimeout(() => {
-                        itemElem.classList.toggle('show-delete');
-                    }, 2000);
-                };
-                const cancelLongPress = () => {
-                    if (pressTimer) {
-                        clearTimeout(pressTimer);
-                        pressTimer = null;
-                    }
-                };
-
-                itemElem.addEventListener('mousedown', startLongPress);
-                itemElem.addEventListener('mouseup', cancelLongPress);
-                itemElem.addEventListener('mouseleave', cancelLongPress);
-
-                itemElem.addEventListener('touchstart', startLongPress);
-                itemElem.addEventListener('touchend', cancelLongPress);
+                itemElem.addEventListener('mousedown', () => pressTimer = setTimeout(() => itemElem.classList.toggle('show-delete'), 2000));
+                itemElem.addEventListener('mouseup', () => clearTimeout(pressTimer));
+                itemElem.addEventListener('touchstart', () => pressTimer = setTimeout(() => itemElem.classList.toggle('show-delete'), 2000));
+                itemElem.addEventListener('touchend', () => clearTimeout(pressTimer));
 
                 itemElem.querySelector('.delete-chat-btn').addEventListener('click', (e) => {
                     e.stopPropagation();
@@ -608,16 +505,10 @@
 
                 inboxListContainer.appendChild(itemElem);
             });
-
-            if (count === 0) {
-                inboxListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>Inbox is empty. Start chatting from Contacts!</p>";
-            }
+            if (count === 0) inboxListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>Inbox is empty.</p>";
         }
 
-        searchInput.addEventListener('input', (e) => {
-            searchQuery = e.target.value.trim();
-            renderCurrentView();
-        });
+        searchInput.addEventListener('input', (e) => { searchQuery = e.target.value.trim(); renderCurrentView(); });
 
         document.getElementById('navContactsBtn').addEventListener('click', () => {
             currentTab = 'contacts';
@@ -643,14 +534,6 @@
             activeChatReceiver = receiver;
             document.getElementById('chatRoomTitle').textContent = receiver;
             document.getElementById('chatHeaderAvatar').src = avatarUrl;
-            
-            const usersSnap = await getDocs(collection(db, "users"));
-            usersSnap.forEach(d => {
-                if (d.data().username === receiver) {
-                    document.getElementById('chatReceiverLastSeen').textContent = formatLastSeen(d.data().lastSeen);
-                }
-            });
-
             chatRoomView.classList.remove('hidden');
             
             if(unsubscribeChat) unsubscribeChat();
@@ -661,79 +544,42 @@
 
                 snapshot.forEach(d => {
                     let m = d.data();
-                    let msgId = d.id;
                     let isDeleted = m.deletedFor && m.deletedFor.includes(currentUsername);
-                    
                     if (!isDeleted && ((m.sender === currentUsername && m.receiver === receiver) || (m.sender === receiver && m.receiver === currentUsername))) {
-                        
                         if (m.receiver === currentUsername && m.sender === receiver && !m.isRead) {
-                            batchUpdates.push(updateDoc(doc(db, "chats", msgId), { isRead: true }));
+                            batchUpdates.push(updateDoc(doc(db, "chats", d.id), { isRead: true }));
                         }
-
-                        let timeStr = m.createdAt ? m.createdAt.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
-                        let tickHTML = '';
-                        if (m.sender === currentUsername) {
-                            let isReadClass = m.isRead ? 'tick-mark read' : 'tick-mark';
-                            tickHTML = `<span class="${isReadClass}">✓✓</span>`;
-                        }
-
-                        box.innerHTML += `
-                            <div class="chat-msg ${m.sender === currentUsername ? 'sent' : 'received'}">
-                                ${m.text}
-                                <div class="msg-footer">
-                                    <span style="font-size:10px; opacity:0.8;">${timeStr}</span>
-                                    ${tickHTML}
-                                </div>
-                            </div>`;
+                        box.innerHTML += `<div class="chat-msg ${m.sender === currentUsername ? 'sent' : 'received'}">${m.text}</div>`;
                     }
                 });
-
-                if (batchUpdates.length > 0) {
-                    await Promise.all(batchUpdates);
-                }
+                if (batchUpdates.length > 0) await Promise.all(batchUpdates);
                 box.scrollTop = box.scrollHeight;
             });
         }
 
         document.getElementById('backToListBtn').addEventListener('click', () => {
-            activeChatRoomCleanUp();
-        });
-
-        function activeChatRoomCleanUp() {
             activeChatReceiver = null;
             if(unsubscribeChat) unsubscribeChat();
             chatRoomView.classList.add('hidden');
-            
             currentTab = 'inbox';
             document.getElementById('navInboxBtn').classList.add('active');
             document.getElementById('navContactsBtn').classList.remove('active');
             inboxSection.classList.remove('hidden');
             contactsSection.classList.add('hidden');
             renderCurrentView();
-        }
+        });
 
         document.getElementById('sendChatBtn').addEventListener('click', async () => {
             let text = document.getElementById('chatMessageInput').value.trim();
             if (!text || !activeChatReceiver) return;
             document.getElementById('chatMessageInput').value = "";
-            await addDoc(collection(db, "chats"), { 
-                sender: currentUsername, 
-                receiver: activeChatReceiver, 
-                text, 
-                isRead: false,
-                deletedFor: [],
-                createdAt: serverTimestamp() 
-            });
+            await addDoc(collection(db, "chats"), { sender: currentUsername, receiver: activeChatReceiver, text, isRead: false, deletedFor: [], createdAt: serverTimestamp() });
         });
 
-        document.getElementById('chatMessageInput').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                document.getElementById('sendChatBtn').click();
-            }
-        });
+        document.getElementById('chatMessageInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('sendChatBtn').click(); });
 
         window.deleteChatWithUser = async function(partner) {
-            if (confirm(`Do you want to remove chat with "${partner}" from inbox?`)) {
+            if (confirm(`Remove chat with "${partner}"?`)) {
                 const chatsSnap = await getDocs(collection(db, "chats"));
                 let updates = [];
                 chatsSnap.forEach(d => {
