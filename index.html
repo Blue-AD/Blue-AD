@@ -406,6 +406,7 @@
             e.preventDefault();
             const username = document.getElementById('authUsername').value.trim().toLowerCase();
             const password = document.getElementById('authPassword').value;
+
             const usersSnap = await getDocs(collection(db, "users"));
             let userFound = null;
             usersSnap.forEach(d => { if (d.data().username === username) userFound = d.data(); });
@@ -486,7 +487,6 @@
         function renderContactsList(usersSnap, chatsSnap, groupSnap) {
             contactsListContainer.innerHTML = "";
             
-            // Check if there are unread messages in Group Chat for current user
             let hasUnreadGroupMsg = false;
             let lastSeenGroupTime = localStorage.getItem(`nexus_group_last_seen_${currentUsername}`) || 0;
             
@@ -500,7 +500,6 @@
                 }
             });
 
-            // 1. Render Group Chat Banner at the top of Contacts
             let groupAvatar = "https://api.dicebear.com/7.x/identicon/svg?seed=NexusCommunity";
             if (!searchQuery || "nexus community group".includes(searchQuery.toLowerCase())) {
                 contactsListContainer.innerHTML += `
@@ -693,7 +692,6 @@
             document.getElementById('chatReceiverLastSeen').textContent = "Anonymous Group";
             chatRoomView.classList.remove('hidden');
 
-            // Save current time as last seen for group chat (removes unread dot)
             localStorage.setItem(`nexus_group_last_seen_${currentUsername}`, Date.now());
             let dot = document.getElementById('groupUnreadDot');
             if (dot) dot.classList.remove('show');
@@ -732,7 +730,6 @@
 
             if (isGroupChatActive) {
                 await addDoc(collection(db, "groupChats"), { sender: currentUsername, text, createdAt: serverTimestamp() });
-                // Automatically update last seen time when sender sends a message
                 localStorage.setItem(`nexus_group_last_seen_${currentUsername}`, Date.now());
             } else if (activeChatReceiver) {
                 await addDoc(collection(db, "chats"), { sender: currentUsername, receiver: activeChatReceiver, text, isRead: false, deletedFor: [], createdAt: serverTimestamp() });
