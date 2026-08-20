@@ -2,25 +2,24 @@
 <html lang="si">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nexus - Profile Settings Portal</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; box-sizing: border-box; width: 100vw; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; box-sizing: border-box; width: 100vw; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         
-        .brand-header { position: sticky; top: 0; z-index: 1000; background-color: #007bff; color: white; padding: 20px 20px 12px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); flex-shrink: 0; }
-        .brand-top-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .brand-header h1 { margin: 0; font-size: 24px; font-weight: bold; text-align: center; flex-grow: 1; }
+        .brand-header { position: sticky; top: 0; z-index: 1000; background-color: #007bff; color: white; padding: 15px 20px 10px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 3px 6px rgba(0,0,0,0.15); flex-shrink: 0; }
+        .brand-top-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .brand-header h1 { margin: 0; font-size: 22px; font-weight: bold; text-align: center; flex-grow: 1; }
         
-        /* ක්ලික් කළ හැකි පරිශීලක නාම සංදර්ශකය (Clickable Profile Badge) */
         .user-display-badge { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: bold; background: rgba(255, 255, 255, 0.18); padding: 5px 12px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.3); cursor: pointer; transition: background 0.2s; }
         .user-display-badge:hover { background: rgba(255, 255, 255, 0.3); }
         .user-display-badge svg { width: 16px; height: 16px; fill: currentColor; }
 
-        .search-bar-container { width: 100%; max-width: 500px; margin-top: 4px; }
-        .search-input { width: 100%; padding: 9px 14px; border-radius: 20px; border: none; font-size: 14px; outline: none; box-sizing: border-box; background: rgba(255, 255, 255, 0.9); color: #333; }
+        .search-bar-container { width: 100%; max-width: 500px; margin-top: 2px; }
+        .search-input { width: 100%; padding: 8px 14px; border-radius: 20px; border: none; font-size: 14px; outline: none; box-sizing: border-box; background: rgba(255, 255, 255, 0.9); color: #333; }
         .search-input:focus { background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         
-        .main-container { padding: 15px 15px 75px 15px; max-width: 600px; margin: 0 auto; box-sizing: border-box; width: 100%; flex-grow: 1; display: flex; flex-direction: column; }
+        .main-container { padding: 15px; max-width: 600px; margin: 0 auto; box-sizing: border-box; width: 100%; flex-grow: 1; display: flex; flex-direction: column; overflow-y: auto; padding-bottom: 75px; }
         
         .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: linear-gradient(135deg, #007bff, #0056b3); display: flex; justify-content: space-around; padding: 8px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
         .nav-item { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 12px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; transition: color 0.2s; position: relative; }
@@ -56,18 +55,19 @@
         .delete-chat-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: bold; cursor: pointer; display: none; }
         .list-card-item.show-delete .delete-chat-btn { display: block; }
 
-        #chatRoomView { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #fff; z-index: 1500; }
+        /* Fixed Chat Room Layout (Prevents jumping and hiding input) */
+        #chatRoomView { display: flex; flex-direction: column; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #fff; z-index: 1500; overflow: hidden; }
         .chat-box-container { display: flex; flex-direction: column; width: 100%; height: 100%; background: #fff; overflow: hidden; }
         
-        .chat-header-bar { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 12px 20px; display: flex; align-items: center; gap: 14px; border-bottom: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .back-to-list-btn { background: rgba(255, 255, 255, 0.25); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 7px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .chat-header-bar { background: linear-gradient(135deg, #007bff, #0056b3); color: white; padding: 12px 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid rgba(255,255,255,0.2); flex-shrink: 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .back-to-list-btn { background: rgba(255, 255, 255, 0.25); color: white; border: 1px solid rgba(255,255,255,0.4); padding: 7px 12px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: bold; display: flex; align-items: center; gap: 4px; }
         
-        .chat-header-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid white; flex-shrink: 0; }
-        .chat-user-details { display: flex; flex-direction: column; }
-        .chat-receiver-name { font-size: 17px; font-weight: bold; }
-        .chat-receiver-lastseen { font-size: 12px; color: #e2e8f0; margin-top: 1px; }
+        .chat-header-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1px solid white; flex-shrink: 0; }
+        .chat-user-details { display: flex; flex-direction: column; overflow: hidden; }
+        .chat-receiver-name { font-size: 16px; font-weight: bold; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-receiver-lastseen { font-size: 11px; color: #e2e8f0; margin-top: 1px; }
 
-        .chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8f9fa; }
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8f9fa; -webkit-overflow-scrolling: touch; }
         .chat-msg { max-width: 75%; padding: 10px 14px; border-radius: 10px; font-size: 14px; word-break: break-word; position: relative; }
         .chat-msg.sent { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
         .chat-msg.received { background-color: #e2e8f0; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; }
@@ -77,7 +77,7 @@
         .tick-mark { font-weight: bold; font-size: 12px; }
         .tick-mark.read { color: #4facfe; }
 
-        .chat-input-area { display: flex; padding: 12px 15px; background: #fff; border-top: 1px solid #ddd; gap: 10px; flex-shrink: 0; box-sizing: border-box; }
+        .chat-input-area { display: flex; padding: 10px 15px; background: #fff; border-top: 1px solid #ddd; gap: 8px; flex-shrink: 0; align-items: center; box-sizing: border-box; }
     </style>
 </head>
 <body>
@@ -89,7 +89,7 @@
                 <span id="headerUsernameText">Guest</span>
             </div>
             <h1>Nexus Chat</h1>
-            <div style="width: 70px;"></div> <!-- Balances header alignment -->
+            <div style="width: 70px;"></div>
         </div>
         <div class="search-bar-container" id="searchBarContainer">
             <input type="text" id="searchInput" class="search-input" placeholder="🔍 Search contacts...">
@@ -125,8 +125,8 @@
             </div>
             <div id="chatMessagesBox" class="chat-messages"></div>
             <div class="chat-input-area">
-                <input type="text" id="chatMessageInput" placeholder="Type a message..." style="margin-bottom:0; flex-grow:1; padding: 11px 14px; border:1px solid #ccc; border-radius:6px; outline:none; font-size:15px;">
-                <button type="button" id="sendChatBtn" class="form-submit" style="width:auto; margin-bottom:0; padding: 11px 22px; font-size:15px;">Send</button>
+                <input type="text" id="chatMessageInput" placeholder="Type a message..." style="margin-bottom:0; flex-grow:1; padding: 10px 14px; border:1px solid #ccc; border-radius:6px; outline:none; font-size:15px;">
+                <button type="button" id="sendChatBtn" class="form-submit" style="width:auto; margin-bottom:0; padding: 10px 20px; font-size:15px;">Send</button>
             </div>
         </div>
     </div>
@@ -307,7 +307,6 @@
         }
         checkAuthState();
 
-        // Open Profile Edit Modal on Username click
         loggedInUserDisplay.addEventListener('click', async () => {
             if (!currentUsername) return;
             const usersSnap = await getDocs(collection(db, "users"));
