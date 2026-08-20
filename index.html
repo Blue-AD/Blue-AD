@@ -8,58 +8,59 @@
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; flex-direction: column; }
         
-        .brand-header { flex-shrink: 0; background-color: #007bff; color: white; padding: 10px 15px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.15); z-index: 100; }
-        .brand-top-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .brand-header h1 { margin: 0; font-size: 18px; font-weight: bold; }
+        /* Brand Header එක තවත් හොඳින් විශාල කර ඇත */
+        .brand-header { flex-shrink: 0; background-color: #007bff; color: white; padding: 28px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 12px rgba(0,0,0,0.25); z-index: 100; }
+        .brand-top-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+        .brand-header h1 { margin: 0; font-size: 28px; font-weight: bold; letter-spacing: 0.8px; }
         
-        .user-display-badge { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: bold; background: rgba(255, 255, 255, 0.2); padding: 4px 10px; border-radius: 15px; cursor: pointer; }
-        .user-display-badge svg { width: 14px; height: 14px; fill: currentColor; }
+        .user-display-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; background: rgba(255, 255, 255, 0.25); padding: 8px 16px; border-radius: 24px; cursor: pointer; }
+        .user-display-badge svg { width: 18px; height: 18px; fill: currentColor; }
 
-        .search-bar-container { width: 100%; max-width: 500px; }
-        .search-input { width: 100%; padding: 6px 12px; border-radius: 15px; border: none; font-size: 13px; outline: none; background: rgba(255, 255, 255, 0.9); }
+        .search-bar-container { width: 100%; max-width: 520px; }
+        .search-input { width: 100%; padding: 12px 18px; border-radius: 24px; border: none; font-size: 15px; outline: none; background: rgba(255, 255, 255, 0.95); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
         
-        .main-container { flex: 1; width: 100%; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; overflow: hidden; padding: 10px 15px 60px 15px; }
+        .main-container { flex: 1; width: 100%; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; overflow: hidden; padding: 12px 15px 65px 15px; }
         .section-view { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
         
         .scrollable-list { flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #007bff; display: flex; justify-content: space-around; padding: 8px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
-        .nav-item { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 11px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px; position: relative; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #007bff; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
+        .nav-item { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 12px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; }
         .nav-item.active { color: white; }
-        .nav-icon { width: 20px; height: 20px; fill: currentColor; }
-        .nav-notification-dot { position: absolute; top: 0; right: 28%; width: 8px; height: 8px; background-color: #00e5ff; border-radius: 50%; display: none; }
+        .nav-icon { width: 22px; height: 22px; fill: currentColor; }
+        .nav-notification-dot { position: absolute; top: 0; right: 28%; width: 9px; height: 9px; background-color: #00e5ff; border-radius: 50%; display: none; }
         .nav-notification-dot.show { display: block; }
 
         .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0, 0, 0, 0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 15px; }
-        .fullscreen-form-box { background: #fff; padding: 20px; border-radius: 12px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .fullscreen-form-box { background: #fff; padding: 22px; border-radius: 12px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
         .hidden { display: none !important; }
-        input.auth-input, button.form-submit { display: block; width: 100%; margin-bottom: 10px; padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
+        input.auth-input, button.form-submit { display: block; width: 100%; margin-bottom: 12px; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
         button.form-submit { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
         
-        .avatar-options-grid { display: flex; justify-content: space-between; gap: 6px; margin-bottom: 12px; }
-        .avatar-option-item { width: 45px; height: 45px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; object-fit: cover; background: #e2e8f0; }
+        .avatar-options-grid { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+        .avatar-option-item { width: 48px; height: 48px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; object-fit: cover; background: #e2e8f0; }
         .avatar-option-item.selected { border-color: #007bff; transform: scale(1.05); }
 
-        .list-card-item { padding: 12px 15px; background: #fff; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+        .list-card-item { padding: 14px 16px; background: #fff; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
         .list-card-item:hover { background: #f1f5f9; }
-        .item-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; margin-right: 12px; flex-shrink: 0; background: #cbd5e1; }
+        .item-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; margin-right: 14px; flex-shrink: 0; background: #cbd5e1; }
         .item-info { flex-grow: 1; overflow: hidden; }
-        .item-title { font-weight: bold; color: #111; font-size: 15px; margin: 0 0 2px 0; }
-        .item-sub { font-size: 12px; color: #555; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .item-title { font-weight: bold; color: #111; font-size: 16px; margin: 0 0 3px 0; }
+        .item-sub { font-size: 13px; color: #555; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .unread-badge { background-color: #007bff; color: white; font-size: 10px; font-weight: bold; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-        .delete-chat-btn { background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer; display: none; }
+        .unread-badge { background-color: #007bff; color: white; font-size: 11px; font-weight: bold; width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .delete-chat-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; display: none; }
         .list-card-item.show-delete .delete-chat-btn { display: block; }
 
         #chatRoomView { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: #fff; z-index: 1500; display: flex; flex-direction: column; overflow: hidden; }
-        .chat-header-bar { background: #007bff; color: white; padding: 10px 15px; display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-        .back-to-list-btn { background: rgba(255,255,255,0.2); color: white; border: none; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-size: 13px; font-weight: bold; }
-        .chat-header-avatar { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; border: 1px solid white; }
-        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; background: #f8f9fa; }
-        .chat-msg { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 13px; word-break: break-word; }
+        .chat-header-bar { background: #007bff; color: white; padding: 22px 18px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+        .back-to-list-btn { background: rgba(255,255,255,0.25); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; }
+        .chat-header-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid white; }
+        .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f8f9fa; }
+        .chat-msg { max-width: 75%; padding: 10px 14px; border-radius: 8px; font-size: 14px; word-break: break-word; }
         .chat-msg.sent { background-color: #007bff; color: white; align-self: flex-end; }
         .chat-msg.received { background-color: #e2e8f0; color: #333; align-self: flex-start; }
-        .chat-input-area { display: flex; padding: 10px 15px; background: #fff; border-top: 1px solid #ddd; gap: 8px; flex-shrink: 0; }
+        .chat-input-area { display: flex; padding: 12px 16px; background: #fff; border-top: 1px solid #ddd; gap: 10px; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -80,15 +81,15 @@
 
     <div class="main-container">
         <div id="contactsSection" class="section-view">
-            <h3 style="color: #333; margin: 5px 0 8px 0; font-size: 15px;">Contacts</h3>
+            <h3 style="color: #333; margin: 6px 0 10px 0; font-size: 16px;">Contacts</h3>
             <div id="contactsListContainer" class="scrollable-list">
                 <p style="text-align: center; color: #777; padding: 20px;">Loading contacts...</p>
             </div>
         </div>
 
         <div id="inboxSection" class="section-view hidden">
-            <h3 style="color: #333; margin: 5px 0 4px 0; font-size: 15px;">Inbox Chats</h3>
-            <p style="font-size: 11px; color: #666; margin: 0 0 6px 0;">💡 Tip: Press & hold item for 2s to delete.</p>
+            <h3 style="color: #333; margin: 6px 0 4px 0; font-size: 16px;">Inbox Chats</h3>
+            <p style="font-size: 12px; color: #666; margin: 0 0 8px 0;">💡 Tip: Press & hold item for 2s to delete.</p>
             <div id="inboxListContainer" class="scrollable-list">
                 <p style="text-align: center; color: #777; padding: 20px;">No messages in inbox.</p>
             </div>
@@ -101,14 +102,14 @@
             <button type="button" class="back-to-list-btn" id="backToListBtn">← Back</button>
             <img id="chatHeaderAvatar" class="chat-header-avatar" src="" alt="DP">
             <div style="display:flex; flex-direction:column; overflow:hidden;">
-                <span id="chatRoomTitle" style="font-size: 15px; font-weight: bold; white-space: nowrap;">Chat</span>
-                <span id="chatReceiverLastSeen" style="font-size: 10px; color: #e2e8f0;">online</span>
+                <span id="chatRoomTitle" style="font-size: 16px; font-weight: bold; white-space: nowrap;">Chat</span>
+                <span id="chatReceiverLastSeen" style="font-size: 11px; color: #e2e8f0;">online</span>
             </div>
         </div>
         <div id="chatMessagesBox" class="chat-messages"></div>
         <div class="chat-input-area">
-            <input type="text" id="chatMessageInput" placeholder="Type a message..." style="margin-bottom:0; flex:1; padding: 8px 12px; border:1px solid #ccc; border-radius:6px; outline:none; font-size:14px;">
-            <button type="button" id="sendChatBtn" class="form-submit" style="width:auto; margin-bottom:0; padding: 8px 16px;">Send</button>
+            <input type="text" id="chatMessageInput" placeholder="Type a message..." style="margin-bottom:0; flex:1; padding: 10px 14px; border:1px solid #ccc; border-radius:6px; outline:none; font-size:15px;">
+            <button type="button" id="sendChatBtn" class="form-submit" style="width:auto; margin-bottom:0; padding: 10px 18px;">Send</button>
         </div>
     </div>
 
@@ -127,13 +128,13 @@
     <!-- Auth Modal -->
     <div id="authOverlay" class="fullscreen-overlay hidden">
         <div class="fullscreen-form-box">
-            <h2 id="authHeading" style="margin-top:0; color:#007bff; text-align:center; font-size: 20px;">Register</h2>
+            <h2 id="authHeading" style="margin-top:0; color:#007bff; text-align:center; font-size: 22px;">Register</h2>
             <form id="authForm">
                 <input type="text" id="authUsername" class="auth-input" placeholder="Username" required>
                 <input type="password" id="authPassword" class="auth-input" placeholder="Password" required>
                 
                 <div id="avatarSelectionContainer">
-                    <label style="font-size: 12px; font-weight: bold; color: #444; margin-bottom: 4px; display: block;">Choose Avatar:</label>
+                    <label style="font-size: 13px; font-weight: bold; color: #444; margin-bottom: 6px; display: block;">Choose Avatar:</label>
                     <div class="avatar-options-grid" id="avatarOptionsGrid">
                         <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="avatar-option-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Av1">
                         <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="avatar-option-item" data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Av2">
@@ -143,21 +144,21 @@
                 </div>
                 <button type="submit" id="authSubmitBtn" class="form-submit">Register</button>
             </form>
-            <div id="authSwitchText" style="text-align: center; margin-top: 10px; font-size: 12px; color: #007bff; cursor: pointer; font-weight: bold;">Already have an account? Login</div>
+            <div id="authSwitchText" style="text-align: center; margin-top: 12px; font-size: 13px; color: #007bff; cursor: pointer; font-weight: bold;">Already have an account? Login</div>
         </div>
     </div>
 
     <!-- Profile Edit Modal -->
     <div id="profileEditOverlay" class="fullscreen-overlay hidden">
         <div class="fullscreen-form-box">
-            <h2 style="margin-top:0; color:#007bff; text-align:center; font-size: 20px;">Edit Profile</h2>
+            <h2 style="margin-top:0; color:#007bff; text-align:center; font-size: 22px;">Edit Profile</h2>
             <form id="profileEditForm">
-                <div style="text-align: center; margin-bottom: 10px;">
-                    <img id="editCurrentAvatarPreview" src="" style="width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff;" alt="DP">
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <img id="editCurrentAvatarPreview" src="" style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff;" alt="DP">
                 </div>
                 <input type="text" id="editUsernameInput" class="auth-input" disabled style="background:#e9ecef; color:#666;">
                 <input type="password" id="editPasswordInput" class="auth-input" placeholder="New Password (Optional)">
-                <label style="font-size: 12px; font-weight: bold; color: #444; margin-bottom: 4px; display: block;">Change Avatar:</label>
+                <label style="font-size: 13px; font-weight: bold; color: #444; margin-bottom: 6px; display: block;">Change Avatar:</label>
                 <div class="avatar-options-grid" id="editAvatarOptionsGrid">
                     <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="edit-avatar-option-item avatar-option-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Av1">
                     <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" class="edit-avatar-option-item avatar-option-item" data-url="https://api.dicebear.com/7.x/avataaars/svg?seed=Aneka" alt="Av2">
@@ -166,7 +167,7 @@
                 </div>
                 <button type="submit" class="form-submit">Save Changes</button>
             </form>
-            <button type="button" id="profileLogoutBtn" class="form-submit" style="background-color: #dc3545; margin-bottom: 6px;">Logout</button>
+            <button type="button" id="profileLogoutBtn" class="form-submit" style="background-color: #dc3545; margin-bottom: 8px;">Logout</button>
             <button type="button" id="closeProfileModalBtn" class="form-submit" style="background-color: #6c757d; margin-bottom: 0;">Cancel</button>
         </div>
     </div>
@@ -488,7 +489,7 @@
                             <p class="item-sub">${item.lastText}</p>
                         </div>
                     </div>
-                    <button class="delete-chat-btn" style="margin-left: 6px;">Delete</button>`;
+                    <button class="delete-chat-btn" style="margin-left: 8px;">Delete</button>`;
 
                 itemElem.querySelector(':scope > div:first-child').addEventListener('click', () => openChatRoom(partner, userAvatars[partner]));
 
