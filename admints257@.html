@@ -1,23 +1,27 @@
 <!DOCTYPE html>
 <html lang="si">
 <head>
-    <meta name="google-site-verification" content="0FXFCJytz6qsnsFHNOr70sQmoaqCsx8UbkQYnPMoaMo" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Nexus - Admin Control Panel</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f6f9; box-sizing: border-box; width: 100vw; min-height: 100vh; padding: 20px; }
-        .admin-container { max-width: 600px; margin: 0 auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; }
         
-        .admin-title-row { display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; margin-bottom: 15px; }
-        .admin-title-row svg { width: 26px; height: 26px; fill: #dc3545; }
-        .admin-title-row h2 { margin: 0; color: #dc3545; border-bottom: none; padding-bottom: 0; }
+        .admin-container { width: 100%; max-width: 600px; height: 100%; max-height: 90vh; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
+        
+        .admin-title-row { display: flex; align-items: center; gap: 8px; border-bottom: 2px solid #eee; padding-bottom: 8px; margin-bottom: 10px; flex-shrink: 0; }
+        .admin-title-row svg { width: 22px; height: 22px; fill: #dc3545; }
+        .admin-title-row h2 { margin: 0; color: #dc3545; font-size: 18px; }
 
-        .dashboard-card { background: #f8f9fa; border: 1px solid #e9ecef; padding: 12px 15px; border-radius: 8px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-        .admin-user-info { display: flex; align-items: center; gap: 12px; }
-        .admin-user-dp { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 1px solid #ccc; background: #e2e8f0; }
-        .delete-btn { background-color: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
-        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: rgba(0, 0, 0, 0.6); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 15px; box-sizing: border-box; }
-        .fullscreen-form-box { background: #fff; padding: 25px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
-        input, button.form-submit { display: block; width: 100%; margin-bottom: 12px; padding: 10px 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
+        .dashboard-card { background: #f8f9fa; border: 1px solid #e9ecef; padding: 10px 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        .admin-user-info { display: flex; align-items: center; gap: 10px; overflow: hidden; }
+        .admin-user-dp { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 1px solid #ccc; background: #e2e8f0; flex-shrink: 0; }
+        .delete-btn { background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 12px; flex-shrink: 0; }
+        
+        .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0, 0, 0, 0.6); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 15px; }
+        .fullscreen-form-box { background: #fff; padding: 20px; border-radius: 12px; width: 100%; max-width: 380px; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        input, button.form-submit { display: block; width: 100%; margin-bottom: 10px; padding: 9px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; }
         button.form-submit { background-color: #dc3545; color: white; border: none; cursor: pointer; font-weight: bold; }
         .hidden { display: none !important; }
     </style>
@@ -27,28 +31,27 @@
     <!-- Admin Login Overlay -->
     <div id="adminAuthOverlay" class="fullscreen-overlay">
         <div class="fullscreen-form-box">
-            <h2 style="color:#007bff; text-align:center;">Nexus Admin Login</h2>
+            <h2 style="color:#007bff; text-align:center; margin-top:0; font-size: 20px;">Nexus Admin Login</h2>
             <form id="adminAuthForm">
-                <input type="text" id="adminUser" placeholder="Admin Username (admin)" required>
+                <input type="text" id="adminUser" placeholder="Admin Username" required>
                 <input type="password" id="adminPass" placeholder="Password" required>
-                <button type="submit" class="form-submit" style="background-color:#007bff;">Login as Admin</button>
+                <button type="submit" class="form-submit" style="background-color:#007bff; margin-bottom: 0;">Login as Admin</button>
             </form>
         </div>
     </div>
 
     <!-- Main Admin Dashboard -->
     <div id="adminMainPanel" class="admin-container hidden">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <div class="admin-title-row">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;">
+            <div class="admin-title-row" style="border:none; margin:0; padding:0;">
                 <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
-                <h2>Nexus Admin Panel</h2>
+                <h2>Admin Control Panel</h2>
             </div>
             <button id="adminLogoutBtn" class="delete-btn" style="background-color: #6c757d;">Logout</button>
         </div>
-        <p style="font-size: 13px; color: #666;">මෙම පැනලය හරහා පරිශීලකයින්ගේ නවීන Profile Pictures (DP) සමග ලැයිස්තුව බලා ඔවුන්ගේ ගිණුම් ඉවත් කළ හැක.</p>
+        <p style="font-size: 12px; color: #666; margin: 8px 0; flex-shrink: 0;">Registered Users List & Management:</p>
         
-        <h4 style="margin-top: 20px; color: #333;">Registered Users List:</h4>
-        <div id="adminUsersContainer" style="max-height: 60vh; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+        <div id="adminUsersContainer" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; border: 1px solid #eee; border-radius: 8px; padding: 6px; background: #fafafa;">
             <p style="text-align: center; color: #777;">Loading users...</p>
         </div>
     </div>
@@ -89,9 +92,7 @@
                 const usersSnap = await getDocs(collection(db, "users"));
                 let foundAdmin = false;
                 usersSnap.forEach(d => {
-                    if (d.data().username === username && d.data().password === password) {
-                        foundAdmin = true;
-                    }
+                    if (d.data().username === username && d.data().password === password) foundAdmin = true;
                 });
 
                 if (foundAdmin || password === "12345") {
@@ -115,7 +116,7 @@
         });
 
         async function loadAdminUsers() {
-            adminUsersContainer.innerHTML = "<p style='text-align: center; color: #777;'>Loading users...</p>";
+            adminUsersContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>Loading users...</p>";
             try {
                 const usersSnap = await getDocs(collection(db, "users"));
                 adminUsersContainer.innerHTML = "";
@@ -123,7 +124,7 @@
                 usersSnap.forEach(d => { userList.push({ id: d.id, ...d.data() }); });
 
                 if (userList.length === 0) {
-                    adminUsersContainer.innerHTML = "<p style='text-align: center; color: #777;'>No users found.</p>";
+                    adminUsersContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>No users found.</p>";
                     return;
                 }
 
@@ -131,16 +132,16 @@
                     let avatar = u.avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
                     let deleteBtn = "";
                     if (u.username !== 'admin' && u.username !== 'administrator') {
-                        deleteBtn = `<button class="delete-btn" onclick="deleteUserAccount('${u.id}', '${u.username}')">Delete Account</button>`;
+                        deleteBtn = `<button class="delete-btn" onclick="deleteUserAccount('${u.id}', '${u.username}')">Delete</button>`;
                     }
 
                     adminUsersContainer.innerHTML += `
                         <div class="dashboard-card">
                             <div class="admin-user-info">
                                 <img src="${avatar}" class="admin-user-dp" alt="DP">
-                                <div>
-                                    <h4 style="margin: 0 0 3px 0; color: #333; font-size: 15px;">${u.username}</h4>
-                                    <p style="margin: 0; color: #666; font-size: 12px;">Password: ${u.password}</p>
+                                <div style="overflow:hidden;">
+                                    <h4 style="margin: 0 0 2px 0; color: #333; font-size: 14px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${u.username}</h4>
+                                    <p style="margin: 0; color: #666; font-size: 11px;">Password: ${u.password}</p>
                                 </div>
                             </div>
                             <div>${deleteBtn}</div>
@@ -149,7 +150,7 @@
                 });
             } catch (err) {
                 console.error("Error loading users:", err);
-                adminUsersContainer.innerHTML = "<p style='text-align: center; color: #dc3545;'>Error loading users.</p>";
+                adminUsersContainer.innerHTML = "<p style='text-align: center; color: #dc3545; padding: 20px;'>Error loading users.</p>";
             }
         }
 
