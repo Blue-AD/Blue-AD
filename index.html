@@ -3,12 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus Chat - Connect & Chat</title>
+    <title>Nexus Chat - User Panel</title>
     <style>
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; flex-direction: column; }
         
-        /* Enhanced Modern Bright Blue Theme Landing Page */
+        #waitingScreen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
+            background: linear-gradient(135deg, #007bff 0%, #004085 100%);
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            z-index: 5000; color: white; transition: opacity 0.4s ease;
+        }
+        .waiting-logo { font-size: 32px; font-weight: 900; letter-spacing: 1px; margin-bottom: 20px; text-transform: uppercase; }
+        .spinner {
+            width: 50px; height: 50px; border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #ffffff; border-radius: 50%;
+            animation: spin 1s linear infinite; margin-bottom: 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .waiting-text { font-size: 14px; opacity: 0.9; }
+
         #landingPageView { 
             width: 100vw; height: 100vh; height: 100dvh; 
             background: linear-gradient(135deg, #007bff 0%, #004085 100%); 
@@ -17,62 +31,41 @@
             overflow-y: auto;
         }
         .landing-container { max-width: 460px; width: 100%; display: flex; flex-direction: column; align-items: center; margin: auto; padding: 15px 0; }
-        
-        .nexus-brand-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 3px; background: rgba(255, 255, 255, 0.2); padding: 6px 16px; border-radius: 20px; margin-bottom: 12px; font-weight: bold; border: 1px solid rgba(255, 255, 255, 0.3); color: #ffffff; }
-        .landing-title { font-size: 32px; margin: 0 0 8px 0; font-weight: 900; letter-spacing: 0.5px; color: #ffffff; }
-        .landing-desc { font-size: 14px; margin: 0 0 16px 0; opacity: 0.9; line-height: 1.5; color: #e9ecef; }
-
-        /* Feature Highlights Badges */
-        .landing-features { display: flex; justify-content: center; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
-        .feature-badge { background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.25); padding: 5px 12px; border-radius: 12px; font-size: 11px; font-weight: 600; color: #fff; }
-
-        /* Clean White Card Matching the App UI */
+        .nexus-brand-tag { font-size: 12px; text-transform: uppercase; letter-spacing: 3px; background: rgba(255, 255, 255, 0.2); padding: 6px 16px; border-radius: 20px; margin-bottom: 12px; font-weight: bold; border: 1px solid rgba(255, 255, 255, 0.3); }
+        .landing-title { font-size: 32px; margin: 0 0 8px 0; font-weight: 900; }
+        .landing-desc { font-size: 14px; margin: 0 0 16px 0; opacity: 0.9; line-height: 1.5; }
         .landing-card { width: 100%; background: #ffffff; border: 1px solid #e2e8f0; padding: 24px 22px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.25); text-align: left; color: #333333; }
         
-        .landing-input, .landing-select { width: 100%; padding: 12px 14px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; background: #f8f9fa; color: #333; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
-        .landing-input::placeholder { color: #8d99ae; }
+        .landing-input, .landing-select { width: 100%; padding: 12px 14px; margin-bottom: 12px; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 14px; background: #f8f9fa; color: #333; outline: none; }
         .landing-input:focus, .landing-select:focus { border-color: #007bff; box-shadow: 0 0 0 3px rgba(0,123,255,0.2); background: #ffffff; }
-        .landing-select option { background: #ffffff; color: #333; }
-
+        
         .landing-avatar-grid { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 15px; }
-        .landing-avatar-item { width: 48px; height: 48px; border-radius: 50%; cursor: pointer; border: 2px solid #cbd5e1; object-fit: cover; background: #f1f5f9; transition: transform 0.2s, border-color 0.2s; }
+        .landing-avatar-item { width: 48px; height: 48px; border-radius: 50%; cursor: pointer; border: 2px solid #cbd5e1; object-fit: cover; background: #f1f5f9; }
         .landing-avatar-item.selected { border-color: #007bff; transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,123,255,0.3); }
 
-        .landing-submit-btn { width: 100%; padding: 13px; background: #007bff; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,123,255,0.4); transition: transform 0.2s, background 0.2s; }
-        .landing-submit-btn:hover { background: #0056b3; transform: translateY(-1px); }
-
+        .landing-submit-btn { width: 100%; padding: 13px; background: #007bff; color: white; border: none; border-radius: 12px; font-size: 15px; font-weight: bold; cursor: pointer; }
         .landing-switch-text { text-align: center; margin-top: 15px; font-size: 13px; color: #64748b; cursor: pointer; font-weight: 500; }
         .landing-switch-text span { color: #007bff; text-decoration: underline; font-weight: bold; }
 
-        /* Brand Header */
         .brand-header { flex-shrink: 0; background-color: #007bff; color: white; padding: 22px 20px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 5px 12px rgba(0,0,0,0.25); z-index: 100; }
         .brand-top-row { width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-        .brand-header h1 { margin: 0; font-size: 26px; font-weight: bold; letter-spacing: 0.8px; }
-        
+        .brand-header h1 { margin: 0; font-size: 26px; font-weight: bold; }
         .user-display-badge { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: bold; background: rgba(255, 255, 255, 0.25); padding: 8px 16px; border-radius: 24px; cursor: pointer; }
         .user-display-badge svg { width: 18px; height: 18px; fill: currentColor; }
 
         .search-filter-wrapper { width: 100%; max-width: 520px; display: flex; align-items: center; gap: 8px; position: relative; }
-        .search-bar-container { flex: 1; }
-        .search-input { width: 100%; padding: 12px 18px; border-radius: 24px; border: none; font-size: 15px; outline: none; background: rgba(255, 255, 255, 0.95); box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
-        
-        /* Gender Filter Button & Dropdown */
-        .gender-filter-btn { background: rgba(255, 255, 255, 0.25); border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; flex-shrink: 0; transition: background 0.2s; position: relative; }
-        .gender-filter-btn:hover { background: rgba(255, 255, 255, 0.4); }
+        .search-input { width: 100%; padding: 12px 18px; border-radius: 24px; border: none; font-size: 15px; outline: none; background: rgba(255, 255, 255, 0.95); }
+        .gender-filter-btn { background: rgba(255, 255, 255, 0.25); border: none; width: 44px; height: 44px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; color: white; position: relative; }
         .gender-filter-btn svg { width: 20px; height: 20px; fill: currentColor; }
-        
-        .gender-dropdown-menu { position: absolute; top: 52px; right: 0; background: white; color: #333; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.2); width: 160px; overflow: hidden; z-index: 1000; display: none; }
+        .gender-dropdown-menu { position: absolute; top: 52px; right: 0; background: white; color: #333; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.2); width: 160px; display: none; z-index: 1000; }
         .gender-dropdown-menu.show { display: block; }
-        .gender-dropdown-item { padding: 10px 16px; font-size: 14px; cursor: pointer; font-weight: 500; border-bottom: 1px solid #f1f5f9; transition: background 0.15s; }
-        .gender-dropdown-item:hover { background: #f8f9fa; color: #007bff; }
-        .gender-dropdown-item:last-child { border-bottom: none; }
+        .gender-dropdown-item { padding: 10px 16px; font-size: 14px; cursor: pointer; border-bottom: 1px solid #f1f5f9; }
 
         .main-container { flex: 1; width: 100%; max-width: 600px; margin: 0 auto; display: flex; flex-direction: column; overflow: hidden; padding: 12px 15px 65px 15px; }
         .section-view { display: flex; flex-direction: column; height: 100%; overflow: hidden; }
-        
         .scrollable-list { flex: 1; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff; }
         
-        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #007bff; display: flex; justify-content: space-around; padding: 10px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.15); z-index: 1000; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #007bff; display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000; }
         .nav-item { background: none; border: none; color: rgba(255,255,255,0.6); font-size: 12px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 3px; position: relative; }
         .nav-item.active { color: white; }
         .nav-icon { width: 22px; height: 22px; fill: currentColor; }
@@ -80,57 +73,52 @@
         .nav-notification-dot.show { display: block; }
 
         .fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0, 0, 0, 0.5); z-index: 2000; display: flex; justify-content: center; align-items: center; padding: 15px; }
-        .fullscreen-form-box { background: #fff; padding: 22px; border-radius: 12px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .fullscreen-form-box { background: #fff; padding: 22px; border-radius: 12px; width: 100%; max-width: 380px; max-height: 90vh; overflow-y: auto; }
         .hidden { display: none !important; }
         input.auth-input, select.auth-input, button.form-submit { display: block; width: 100%; margin-bottom: 12px; padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 15px; }
         button.form-submit { background-color: #007bff; color: white; border: none; cursor: pointer; font-weight: bold; }
         
         .avatar-options-grid { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
         .avatar-option-item { width: 48px; height: 48px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; object-fit: cover; background: #e2e8f0; }
-        .avatar-option-item.selected { border-color: #007bff; transform: scale(1.05); }
+        .avatar-option-item.selected { border-color: #007bff; }
 
-        .list-card-item { padding: 14px 16px; background: #fff; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; position: relative; }
+        .list-card-item { padding: 14px 16px; background: #fff; border-bottom: 1px solid #e2e8f0; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
         .list-card-item:hover { background: #f1f5f9; }
         .item-avatar { width: 46px; height: 46px; border-radius: 50%; object-fit: cover; margin-right: 14px; flex-shrink: 0; background: #cbd5e1; }
         .item-info { flex-grow: 1; overflow: hidden; }
         .item-title-wrapper { display: flex; align-items: baseline; gap: 6px; margin-bottom: 3px; flex-wrap: wrap; }
         .item-title { font-weight: bold; color: #111; font-size: 16px; margin: 0; }
-        .item-meta-tag { font-size: 11px; color: #555; background: #e2e8f0; padding: 1px 6px; border-radius: 4px; font-weight: normal; }
+        .item-meta-tag { font-size: 11px; color: #555; background: #e2e8f0; padding: 1px 6px; border-radius: 4px; }
         .item-sub { font-size: 13px; color: #555; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        
-        .unread-dot { width: 12px; height: 12px; background-color: #007bff; border-radius: 50%; margin-left: 10px; flex-shrink: 0; display: none; }
-        .unread-dot.show { display: block; }
-
         .delete-chat-btn { background: #dc3545; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; font-weight: bold; cursor: pointer; display: none; }
-        .list-card-item.show-delete .delete-chat_btn { display: block; }
+        .list-card-item.show-delete .delete-chat-btn { display: block; }
 
         #chatRoomView { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: #fff; z-index: 1500; display: flex; flex-direction: column; overflow: hidden; }
-        .chat-header-bar { background: #007bff; color: white; padding: 22px 18px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.15); }
+        .chat-header-bar { background: #007bff; color: white; padding: 22px 18px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
         .back-to-list-btn { background: rgba(255,255,255,0.25); color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: bold; }
         .chat-header-avatar { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; border: 1px solid white; }
         .chat-messages { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #f8f9fa; }
-        .chat-msg { max-width: 75%; padding: 10px 14px; border-radius: 8px; font-size: 14px; word-break: break-word; position: relative; display: flex; flex-direction: column; gap: 4px; }
+        .chat-msg { max-width: 75%; padding: 10px 14px; border-radius: 8px; font-size: 14px; word-break: break-word; display: flex; flex-direction: column; gap: 4px; }
         .chat-msg.sent { background-color: #007bff; color: white; align-self: flex-end; }
         .chat-msg.received { background-color: #e2e8f0; color: #333; align-self: flex-start; }
-        .chat-msg-delete-btn { background: rgba(0,0,0,0.2); color: white; border: none; border-radius: 4px; font-size: 10px; padding: 2px 6px; cursor: pointer; align-self: flex-end; margin-top: 4px; }
+        .chat-msg-delete-btn { background: rgba(0,0,0,0.2); color: white; border: none; border-radius: 4px; font-size: 10px; padding: 2px 6px; cursor: pointer; align-self: flex-end; }
         .chat-input-area { display: flex; padding: 12px 16px; background: #fff; border-top: 1px solid #ddd; gap: 10px; flex-shrink: 0; }
     </style>
 </head>
 <body>
 
-    <!-- Modern English Landing Page -->
-    <div id="landingPageView">
+    <div id="waitingScreen">
+        <div class="waiting-logo">Nexus Chat</div>
+        <div class="spinner"></div>
+        <div class="waiting-text">Loading application data...</div>
+    </div>
+
+    <div id="landingPageView" class="hidden">
         <div class="landing-container">
             <div class="nexus-brand-tag">Welcome to Nexus Chat</div>
             <h1 class="landing-title" id="landingMainHeading">Create Account</h1>
             <p class="landing-desc" id="landingMainDesc">Connect with friends instantly, chat in real-time, and join global community spaces effortlessly.</p>
             
-            <div class="landing-features">
-                <span class="feature-badge">⚡ Real-time Messaging</span>
-                <span class="feature-badge">🌍 Global Community</span>
-                <span class="feature-badge">🔒 Secure & Fast</span>
-            </div>
-
             <div class="landing-card">
                 <form id="landingAuthForm">
                     <input type="text" id="landingUsername" class="landing-input" placeholder="Username" required>
@@ -153,7 +141,6 @@
                             <option value="Canada">Canada</option>
                             <option value="Other">Other</option>
                         </select>
-
                         <label style="font-size: 12px; font-weight: bold; margin-bottom: 6px; display: block; color: #475569;">Choose Avatar:</label>
                         <div class="landing-avatar-grid" id="landingAvatarOptionsGrid">
                             <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="landing-avatar-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Av1">
@@ -162,7 +149,6 @@
                             <img src="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" class="landing-avatar-item" data-url="https://api.dicebear.com/7.x/fun-emoji/svg?seed=Smile" alt="Av4">
                         </div>
                     </div>
-
                     <button type="submit" id="landingSubmitBtn" class="landing-submit-btn">Register Now</button>
                 </form>
                 <div class="landing-switch-text" id="landingSwitchText">Already have an account? <span>Login</span></div>
@@ -194,14 +180,11 @@
     </div>  
 
     <div class="main-container">
-        <!-- Contacts Section -->
         <div id="contactsSection" class="section-view">
             <div id="contactsListContainer" class="scrollable-list">
                 <p style="text-align: center; color: #777; padding: 20px;">Loading contacts...</p>
             </div>
         </div>
-
-        <!-- Inbox Section -->
         <div id="inboxSection" class="section-view hidden">
             <div id="inboxListContainer" class="scrollable-list">
                 <p style="text-align: center; color: #777; padding: 20px;">No messages in inbox.</p>
@@ -209,7 +192,6 @@
         </div>
     </div>
 
-    <!-- Chat Room View -->
     <div id="chatRoomView" class="hidden">
         <div class="chat-header-bar">
             <button type="button" class="back-to-list-btn" id="backToListBtn">← Back</button>
@@ -238,7 +220,6 @@
         </button>
     </div>
 
-    <!-- Profile Edit Modal -->
     <div id="profileEditOverlay" class="fullscreen-overlay hidden">
         <div class="fullscreen-form-box">
             <h2 style="margin-top:0; color:#007bff; text-align:center; font-size: 22px;">Edit Profile</h2>
@@ -248,7 +229,6 @@
                 </div>
                 <input type="text" id="editUsernameInput" class="auth-input" disabled style="background:#e9ecef; color:#666;">
                 <input type="password" id="editPasswordInput" class="auth-input" placeholder="New Password (Optional)">
-                
                 <select id="editGender" class="auth-input" required>
                     <option value="" disabled>Select Gender</option>
                     <option value="Male">Male</option>
@@ -265,7 +245,6 @@
                     <option value="Canada">Canada</option>
                     <option value="Other">Other</option>
                 </select>
-
                 <label style="font-size: 13px; font-weight: bold; color: #444; margin-bottom: 6px; display: block;">Change Avatar:</label>
                 <div class="avatar-options-grid" id="editAvatarOptionsGrid">
                     <img src="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" class="edit-avatar-option-item avatar-option-item selected" data-url="https://api.dicebear.com/7.x/bottts/svg?seed=Felix" alt="Av1">
@@ -295,25 +274,16 @@
         };
         const db = getFirestore(initializeApp(firebaseConfig));
 
-        let currentUsername = null;
-        let currentUserDocId = null;
-        let currentUserData = null;
-        let isLandingRegistering = true;
-        let activeChatReceiver = null;
-        let isGroupChatActive = false;
-        let currentTab = 'contacts';
-        let searchQuery = '';
-        let selectedGenderFilter = 'All';
+        let currentUsername = null, currentUserDocId = null, currentUserData = null;
+        let isLandingRegistering = true, activeChatReceiver = null, isGroupChatActive = false, currentTab = 'contacts';
+        let searchQuery = '', selectedGenderFilter = 'All';
         let selectedAvatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
         let editSelectedAvatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
 
-        let unsubscribeChat = null;
-        let unsubscribeGlobal = null;
-        let unsubscribeTyping = null;
-        let globalUsersSnap = null;
-        let globalChatsSnap = null;
-        let globalGroupChatsSnap = null;
+        let unsubscribeChat = null, unsubscribeGlobal = null, unsubscribeTyping = null;
+        let globalUsersSnap = null, globalChatsSnap = null, globalGroupChatsSnap = null;
 
+        const waitingScreen = document.getElementById('waitingScreen');
         const landingPageView = document.getElementById('landingPageView');
         const profileEditOverlay = document.getElementById('profileEditOverlay');
         const loggedInUserDisplay = document.getElementById('loggedInUserDisplay');
@@ -336,28 +306,20 @@
 
         landingSwitchText.addEventListener('click', () => {
             isLandingRegistering = !isLandingRegistering;
-            updateLandingFormState();
-        });
-
-        function updateLandingFormState() {
             if (isLandingRegistering) {
                 landingMainHeading.textContent = "Create Account";
                 landingMainDesc.textContent = "Connect with friends instantly, chat in real-time, and join global community spaces effortlessly.";
                 landingSubmitBtn.textContent = "Register Now";
                 landingRegisterExtraFields.classList.remove('hidden');
-                document.getElementById('landingGender').setAttribute('required', 'true');
-                document.getElementById('landingCountry').setAttribute('required', 'true');
                 landingSwitchText.innerHTML = "Already have an account? <span>Login</span>";
             } else {
                 landingMainHeading.textContent = "Welcome Back";
                 landingMainDesc.textContent = "Log in to your account and continue your conversations seamlessly.";
                 landingSubmitBtn.textContent = "Login Now";
                 landingRegisterExtraFields.classList.add('hidden');
-                document.getElementById('landingGender').removeAttribute('required');
-                document.getElementById('landingCountry').removeAttribute('required');
                 landingSwitchText.innerHTML = "Don't have an account? <span>Register</span>";
             }
-        }
+        });
 
         document.querySelectorAll('#landingAvatarOptionsGrid .landing-avatar-item').forEach(img => {
             img.addEventListener('click', (e) => {
@@ -378,14 +340,8 @@
         const genderFilterToggleBtn = document.getElementById('genderFilterToggleBtn');
         const genderDropdownMenu = document.getElementById('genderDropdownMenu');
 
-        genderFilterToggleBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            genderDropdownMenu.classList.toggle('show');
-        });
-
-        window.addEventListener('click', () => {
-            genderDropdownMenu.classList.remove('show');
-        });
+        genderFilterToggleBtn.addEventListener('click', (e) => { e.stopPropagation(); genderDropdownMenu.classList.toggle('show'); });
+        window.addEventListener('click', () => genderDropdownMenu.classList.remove('show'));
 
         document.querySelectorAll('.gender-dropdown-item').forEach(item => {
             item.addEventListener('click', (e) => {
@@ -399,45 +355,39 @@
             if (!currentUsername) return;
             const usersSnap = await getDocs(collection(db, "users"));
             usersSnap.forEach(async (d) => {
-                if (d.data().username === currentUsername) {
-                    await updateDoc(doc(db, "users", d.id), { lastSeen: serverTimestamp() });
-                }
+                if (d.data().username === currentUsername) await updateDoc(doc(db, "users", d.id), { lastSeen: serverTimestamp() });
             });
         }
         setInterval(updateLastSeenStatus, 30000);
 
         async function checkAuthState() {
             let savedUser = localStorage.getItem('nexus_logged_user');
-
             if (!savedUser) {
+                waitingScreen.style.opacity = '0';
+                setTimeout(() => waitingScreen.classList.add('hidden'), 400);
                 landingPageView.classList.remove('hidden');
                 headerUsernameText.textContent = "Guest";
                 searchBarContainer.classList.add('hidden');
                 bottomNav.classList.add('hidden');
             } else {
-                landingPageView.classList.add('hidden');
                 currentUsername = savedUser;
                 const usersSnap = await getDocs(collection(db, "users"));
                 let exists = false;
                 usersSnap.forEach(d => { 
-                    if (d.data().username === currentUsername) {
-                        exists = true;
-                        currentUserDocId = d.id;
-                        currentUserData = d.data();
-                    }
+                    if (d.data().username === currentUsername) { exists = true; currentUserDocId = d.id; currentUserData = d.data(); }
                 });
-
+                waitingScreen.style.opacity = '0';
+                setTimeout(() => waitingScreen.classList.add('hidden'), 400);
                 if (!exists) {
-                    alert("Your account has been deleted by an administrator.");
-                    currentUsername = null;
                     localStorage.removeItem('nexus_logged_user');
-                    if(unsubscribeChat) unsubscribeChat();
-                    if(unsubscribeGlobal) unsubscribeGlobal();
-                    if(unsubscribeTyping) unsubscribeTyping();
-                    location.reload();
+                    currentUsername = null;
+                    landingPageView.classList.remove('hidden');
+                    headerUsernameText.textContent = "Guest";
+                    searchBarContainer.classList.add('hidden');
+                    bottomNav.classList.add('hidden');
                     return;
                 }
-
+                landingPageView.classList.add('hidden');
                 headerUsernameText.textContent = currentUsername;
                 searchBarContainer.classList.remove('hidden');
                 bottomNav.classList.remove('hidden');
@@ -451,7 +401,6 @@
             e.preventDefault();
             const username = document.getElementById('landingUsername').value.trim().toLowerCase();
             const password = document.getElementById('landingPassword').value;
-
             const usersSnap = await getDocs(collection(db, "users"));
             let userFound = null;
             usersSnap.forEach(d => { if (d.data().username === username) userFound = d.data(); });
@@ -459,22 +408,13 @@
             if (isLandingRegistering) {
                 const gender = document.getElementById('landingGender').value;
                 const country = document.getElementById('landingCountry').value;
-
                 if (userFound) {
                     alert("Username already taken!");
                 } else {
-                    await addDoc(collection(db, "users"), { 
-                        username, 
-                        password, 
-                        gender, 
-                        country, 
-                        avatarUrl: selectedAvatarUrl, 
-                        createdAt: serverTimestamp(), 
-                        lastSeen: serverTimestamp() 
-                    });
+                    await addDoc(collection(db, "users"), { username, password, gender, country, avatarUrl: selectedAvatarUrl, createdAt: serverTimestamp(), lastSeen: serverTimestamp() });
                     currentUsername = username; 
                     localStorage.setItem('nexus_logged_user', currentUsername);
-                    checkAuthState();
+                    location.reload();
                 }
             } else {
                 if (!userFound || userFound.password !== password) {
@@ -482,7 +422,7 @@
                 } else {
                     currentUsername = username; 
                     localStorage.setItem('nexus_logged_user', currentUsername);
-                    checkAuthState();
+                    location.reload();
                 }
             }
         });
@@ -490,42 +430,21 @@
         loggedInUserDisplay.addEventListener('click', async () => {
             if (!currentUsername) return;
             const usersSnap = await getDocs(collection(db, "users"));
-            usersSnap.forEach(d => {
-                if (d.data().username === currentUsername) {
-                    currentUserDocId = d.id;
-                    currentUserData = d.data();
-                }
-            });
+            usersSnap.forEach(d => { if (d.data().username === currentUsername) { currentUserDocId = d.id; currentUserData = d.data(); } });
 
             document.getElementById('editUsernameInput').value = currentUsername;
             document.getElementById('editPasswordInput').value = "";
             document.getElementById('editGender').value = currentUserData.gender || "";
             document.getElementById('editCountry').value = currentUserData.country || "";
-
             editSelectedAvatarUrl = currentUserData.avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
             document.getElementById('editCurrentAvatarPreview').src = editSelectedAvatarUrl;
-
-            document.querySelectorAll('#editAvatarOptionsGrid .edit-avatar-option-item').forEach(i => {
-                if (i.getAttribute('data-url') === editSelectedAvatarUrl) {
-                    i.classList.add('selected');
-                } else {
-                    i.classList.remove('selected');
-                }
-            });
 
             profileEditOverlay.classList.remove('hidden');
         });
 
-        document.getElementById('closeProfileModalBtn').addEventListener('click', () => {
-            profileEditOverlay.classList.add('hidden');
-        });
-
+        document.getElementById('closeProfileModalBtn').addEventListener('click', () => profileEditOverlay.classList.add('hidden'));
         document.getElementById('profileLogoutBtn').addEventListener('click', () => {
-            currentUsername = null; 
             localStorage.removeItem('nexus_logged_user');
-            if(unsubscribeChat) unsubscribeChat();
-            if(unsubscribeGlobal) unsubscribeGlobal();
-            if(unsubscribeTyping) unsubscribeTyping();
             location.reload();
         });
 
@@ -536,11 +455,7 @@
             const newGender = document.getElementById('editGender').value;
             const newCountry = document.getElementById('editCountry').value;
 
-            let updatePayload = { 
-                avatarUrl: editSelectedAvatarUrl,
-                gender: newGender,
-                country: newCountry
-            };
+            let updatePayload = { avatarUrl: editSelectedAvatarUrl, gender: newGender, country: newCountry };
             if (newPassword.length > 0) updatePayload.password = newPassword;
 
             await updateDoc(doc(db, "users", currentUserDocId), updatePayload);
@@ -558,21 +473,9 @@
                     onSnapshot(collection(db, "groupChats"), (gSnap) => {
                         globalGroupChatsSnap = gSnap;
                         renderCurrentView();
-                        checkUnreadInboxNotifications(cSnap);
                     });
                 });
             });
-        }
-
-        function checkUnreadInboxNotifications(cSnap) {
-            let hasUnread = false;
-            cSnap.forEach(docSnap => {
-                let m = docSnap.data();
-                let isDeleted = m.deletedFor && m.deletedFor.includes(currentUsername);
-                if (!isDeleted && m.receiver === currentUsername && !m.isRead) hasUnread = true;
-            });
-            if (hasUnread) inboxNotificationDot.classList.add('show');
-            else inboxNotificationDot.classList.remove('show');
         }
 
         function formatLastSeen(timestamp) {
@@ -593,35 +496,19 @@
 
         function renderContactsList(usersSnap, chatsSnap, groupSnap) {
             contactsListContainer.innerHTML = "";
-            
-            let hasUnreadGroupMsg = false;
-            let lastSeenGroupTime = localStorage.getItem(`nexus_group_last_seen_${currentUsername}`) || 0;
-            
-            groupSnap.forEach(docSnap => {
-                let m = docSnap.data();
-                if (m.sender !== currentUsername && m.createdAt) {
-                    let msgTime = m.createdAt.toMillis();
-                    if (msgTime > Number(lastSeenGroupTime)) {
-                        hasUnreadGroupMsg = true;
-                    }
-                }
-            });
-
             let groupAvatar = "https://api.dicebear.com/7.x/identicon/svg?seed=NexusCommunity";
-            if ((!searchQuery || "nexus community group".includes(searchQuery.toLowerCase())) && selectedGenderFilter === 'All') {
-                contactsListContainer.innerHTML += `
-                    <div class="list-card-item" style="background: #e6f2ff;" onclick="openGroupChatRoom()">
-                        <img src="${groupAvatar}" class="item-avatar" alt="Group DP">
-                        <div class="item-info">
-                            <div class="item-title-wrapper">
-                                <h4 class="item-title" style="color: #007bff;">Nexus Community Group</h4>
-                                <span class="item-meta-tag" style="background: #007bff; color: white;">Public</span>
-                            </div>
-                            <p class="item-sub" style="font-weight: bold; color: #333;">Public Group Chat (Tap to join)</p>
+            
+            contactsListContainer.innerHTML += `
+                <div class="list-card-item" style="background: #e6f2ff;" onclick="openGroupChatRoom()">
+                    <img src="${groupAvatar}" class="item-avatar" alt="Group DP">
+                    <div class="item-info">
+                        <div class="item-title-wrapper">
+                            <h4 class="item-title" style="color: #007bff;">Nexus Community Group</h4>
+                            <span class="item-meta-tag" style="background: #007bff; color: white;">Public</span>
                         </div>
-                        <div class="unread-dot ${hasUnreadGroupMsg ? 'show' : ''}" id="groupUnreadDot"></div>
-                    </div>`;
-            }
+                        <p class="item-sub" style="font-weight: bold; color: #333;">Public Group Chat (Tap to join)</p>
+                    </div>
+                </div>`;
 
             let activeInboxUsers = new Set();
             chatsSnap.forEach(docSnap => {
@@ -637,17 +524,12 @@
                 let uData = d.data();
                 let u = uData.username;
                 let avatar = uData.avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
-                let gender = uData.gender || "";
-                let country = uData.country || "";
+                let gender = uData.gender || "", country = uData.country || "";
                 
                 if (u && u !== currentUsername) {
                     if (searchQuery && !u.toLowerCase().includes(searchQuery.toLowerCase())) return;
                     if (selectedGenderFilter !== 'All' && gender !== selectedGenderFilter) return;
                     if (activeInboxUsers.has(u)) return;
-
-                    let tagsHtml = '';
-                    if (gender) tagsHtml += `<span class="item-meta-tag">${gender}</span>`;
-                    if (country) tagsHtml += `<span class="item-meta-tag">${country}</span>`;
 
                     contactsListContainer.innerHTML += `
                         <div class="list-card-item" onclick="openChatRoom('${u}', '${avatar}')">
@@ -655,7 +537,8 @@
                             <div class="item-info">
                                 <div class="item-title-wrapper">
                                     <h4 class="item-title">${u}</h4>
-                                    ${tagsHtml}
+                                    <span class="item-meta-tag">${gender}</span>
+                                    <span class="item-meta-tag">${country}</span>
                                 </div>
                                 <p class="item-sub">${formatLastSeen(uData.lastSeen)}</p>
                             </div>
@@ -666,17 +549,9 @@
 
         function renderInboxList(usersSnap, chatsSnap) {
             inboxListContainer.innerHTML = "";
-            let chatPartners = new Map();
-            let userInfoMap = {};
+            let chatPartners = new Map(), userInfoMap = {};
 
-            usersSnap.forEach(d => { 
-                userInfoMap[d.data().username] = {
-                    avatar: d.data().avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix",
-                    gender: d.data().gender || "",
-                    country: d.data().country || "",
-                    lastSeen: d.data().lastSeen
-                };
-            });
+            usersSnap.forEach(d => { userInfoMap[d.data().username] = { avatar: d.data().avatarUrl, gender: d.data().gender, country: d.data().country, lastSeen: d.data().lastSeen }; });
 
             chatsSnap.forEach(docSnap => {
                 let m = docSnap.data();
@@ -685,249 +560,88 @@
                     let partner = m.sender === currentUsername ? m.receiver : m.sender;
                     let msgTime = m.createdAt ? m.createdAt.toDate() : new Date(0);
                     if (!chatPartners.has(partner) || chatPartners.get(partner).time < msgTime) {
-                        chatPartners.set(partner, { partner, lastText: (m.sender === currentUsername ? "You: " : "") + m.text, time: msgTime });
+                        chatPartners.set(partner, { partner, time: msgTime });
                     }
                 }
             });
 
             let partnersArr = Array.from(chatPartners.values()).sort((a, b) => b.time - a.time);
-            let count = 0;
-
             partnersArr.forEach(item => {
-                let partner = item.partner;
-                let pInfo = userInfoMap[partner] || {};
-
-                if (searchQuery && !partner.toLowerCase().includes(searchQuery.toLowerCase())) return;
-                if (selectedGenderFilter !== 'All' && pInfo.gender !== selectedGenderFilter) return;
-                count++;
-
-                let tagsHtml = '';
-                if (pInfo.gender) tagsHtml += `<span class="item-meta-tag">${pInfo.gender}</span>`;
-                if (pInfo.country) tagsHtml += `<span class="item-meta-tag">${pInfo.country}</span>`;
-
+                let partner = item.partner, pInfo = userInfoMap[partner] || {};
                 let itemElem = document.createElement('div');
                 itemElem.className = 'list-card-item';
                 itemElem.innerHTML = `
                     <div style="display:flex; align-items:center; flex:1; overflow:hidden;">
                         <img src="${pInfo.avatar || ''}" class="item-avatar" alt="DP">
                         <div class="item-info">
-                            <div class="item-title-wrapper">
-                                <h4 class="item-title">${partner}</h4>
-                                ${tagsHtml}
-                            </div>
+                            <div class="item-title-wrapper"><h4 class="item-title">${partner}</h4></div>
                             <p class="item-sub">${formatLastSeen(pInfo.lastSeen)}</p>
                         </div>
                     </div>
-                    <button class="delete-chat-btn" style="margin-left: 8px;">Delete</button>`;
+                    <button class="delete-chat-btn">Delete</button>`;
 
                 itemElem.querySelector(':scope > div:first-child').addEventListener('click', () => openChatRoom(partner, pInfo.avatar));
-
-                let pressTimer = null;
-                itemElem.addEventListener('mousedown', () => pressTimer = setTimeout(() => itemElem.classList.toggle('show-delete'), 2000));
-                itemElem.addEventListener('mouseup', () => clearTimeout(pressTimer));
-                itemElem.addEventListener('touchstart', () => pressTimer = setTimeout(() => itemElem.classList.toggle('show-delete'), 2000));
-                itemElem.addEventListener('touchend', () => clearTimeout(pressTimer));
-
-                itemElem.querySelector('.delete-chat-btn').addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    deleteChatWithUser(partner);
-                });
-
+                itemElem.querySelector('.delete-chat-btn').addEventListener('click', (e) => { e.stopPropagation(); deleteChatWithUser(partner); });
                 inboxListContainer.appendChild(itemElem);
             });
-            if (count === 0) inboxListContainer.innerHTML = "<p style='text-align: center; color: #777; padding: 20px;'>No chats found.</p>";
         }
 
         searchInput.addEventListener('input', (e) => { searchQuery = e.target.value.trim(); renderCurrentView(); });
-
-        document.getElementById('navContactsBtn').addEventListener('click', () => {
-            currentTab = 'contacts';
-            document.getElementById('navContactsBtn').classList.add('active');
-            document.getElementById('navInboxBtn').classList.remove('active');
-            contactsSection.classList.remove('hidden');
-            inboxSection.classList.add('hidden');
-            chatRoomView.classList.add('hidden');
-            renderCurrentView();
-        });
-
-        document.getElementById('navInboxBtn').addEventListener('click', () => {
-            currentTab = 'inbox';
-            document.getElementById('navInboxBtn').classList.add('active');
-            document.getElementById('navContactsBtn').classList.remove('active');
-            inboxSection.classList.remove('hidden');
-            contactsSection.classList.add('hidden');
-            chatRoomView.classList.add('hidden');
-            renderCurrentView();
-        });
+        document.getElementById('navContactsBtn').addEventListener('click', () => { currentTab = 'contacts'; contactsSection.classList.remove('hidden'); inboxSection.classList.add('hidden'); chatRoomView.classList.add('hidden'); renderCurrentView(); });
+        document.getElementById('navInboxBtn').addEventListener('click', () => { currentTab = 'inbox'; inboxSection.classList.remove('hidden'); contactsSection.classList.add('hidden'); chatRoomView.classList.add('hidden'); renderCurrentView(); });
 
         window.openChatRoom = async function(receiver, avatarUrl) {
-            isGroupChatActive = false;
-            activeChatReceiver = receiver;
+            isGroupChatActive = false; activeChatReceiver = receiver;
             document.getElementById('chatRoomTitle').textContent = receiver;
             document.getElementById('chatHeaderAvatar').src = avatarUrl;
-            
             chatRoomView.classList.remove('hidden');
             
             if(unsubscribeChat) unsubscribeChat();
-            unsubscribeChat = onSnapshot(query(collection(db, "chats"), orderBy("createdAt", "asc")), async (snapshot) => {
+            unsubscribeChat = onSnapshot(query(collection(db, "chats"), orderBy("createdAt", "asc")), (snapshot) => {
                 let box = document.getElementById('chatMessagesBox');
                 box.innerHTML = "";
-                let batchUpdates = [];
-
                 snapshot.forEach(d => {
                     let m = d.data();
                     let isDeleted = m.deletedFor && m.deletedFor.includes(currentUsername);
                     if (!isDeleted && ((m.sender === currentUsername && m.receiver === receiver) || (m.sender === receiver && m.receiver === currentUsername))) {
-                        if (m.receiver === currentUsername && m.sender === receiver && !m.isRead) {
-                            batchUpdates.push(updateDoc(doc(db, "chats", d.id), { isRead: true }));
-                        }
                         let isMyMsg = m.sender === currentUsername;
-                        box.innerHTML += `
-                            <div class="chat-msg ${isMyMsg ? 'sent' : 'received'}">
-                                <span>${m.text}</span>
-                                ${isMyMsg ? `<button class="chat-msg-delete-btn" onclick="deleteSingleChatMessage('${d.id}', false)">Delete</button>` : ''}
-                            </div>`;
+                        box.innerHTML += `<div class="chat-msg ${isMyMsg ? 'sent' : 'received'}"><span>${m.text}</span>${isMyMsg ? `<button class="chat-msg-delete-btn" onclick="deleteSingleChatMessage('${d.id}', false)">Delete</button>` : ''}</div>`;
                     }
                 });
-                if (batchUpdates.length > 0) await Promise.all(batchUpdates);
                 box.scrollTop = box.scrollHeight;
             });
-
-            startTypingListener();
         }
 
         window.openGroupChatRoom = function() {
-            isGroupChatActive = true;
-            activeChatReceiver = null;
+            isGroupChatActive = true; activeChatReceiver = null;
             document.getElementById('chatRoomTitle').textContent = "Nexus Community Group";
             document.getElementById('chatHeaderAvatar').src = "https://api.dicebear.com/7.x/identicon/svg?seed=NexusCommunity";
-            document.getElementById('chatReceiverLastSeen').textContent = "Public Group Chat";
             chatRoomView.classList.remove('hidden');
-
-            localStorage.setItem(`nexus_group_last_seen_${currentUsername}`, Date.now());
-            let dot = document.getElementById('groupUnreadDot');
-            if (dot) dot.classList.remove('show');
 
             if(unsubscribeChat) unsubscribeChat();
             unsubscribeChat = onSnapshot(query(collection(db, "groupChats"), orderBy("createdAt", "asc")), (snapshot) => {
                 let box = document.getElementById('chatMessagesBox');
                 box.innerHTML = "";
-
                 snapshot.forEach(d => {
                     let m = d.data();
                     let isMyMsg = m.sender === currentUsername;
-                    box.innerHTML += `
-                        <div class="chat-msg ${isMyMsg ? 'sent' : 'received'}">
-                            <span style="font-size: 11px; opacity: 0.8; font-weight: bold; margin-bottom: 2px;">${m.sender}</span>
-                            <span>${m.text}</span>
-                            ${isMyMsg ? `<button class="chat-msg-delete-btn" onclick="deleteSingleChatMessage('${d.id}', true)">Delete</button>` : ''}
-                        </div>`;
+                    box.innerHTML += `<div class="chat-msg ${isMyMsg ? 'sent' : 'received'}"><span style="font-size: 11px; font-weight: bold;">${m.sender}</span><span>${m.text}</span>${isMyMsg ? `<button class="chat-msg-delete-btn" onclick="deleteSingleChatMessage('${d.id}', true)">Delete</button>` : ''}</div>`;
                 });
                 box.scrollTop = box.scrollHeight;
             });
-
-            startTypingListener();
         }
 
-        function startTypingListener() {
-            if(unsubscribeTyping) unsubscribeTyping();
-            unsubscribeTyping = onSnapshot(collection(db, "typingStatus"), (snapshot) => {
-                let isTypingFound = false;
-                let typingGroupUser = null;
-
-                snapshot.forEach(docSnap => {
-                    let data = docSnap.data();
-                    let updatedAt = data.updatedAt ? data.updatedAt.toMillis() : 0;
-                    let now = Date.now();
-                    
-                    if (now - updatedAt < 3000) {
-                        if (!isGroupChatActive && activeChatReceiver) {
-                            if (data.user === activeChatReceiver && data.target === currentUsername) {
-                                isTypingFound = true;
-                            }
-                        } else if (isGroupChatActive) {
-                            if (data.isGroup && data.user !== currentUsername) {
-                                typingGroupUser = data.user;
-                            }
-                        }
-                    }
-                });
-
-                let lastSeenElem = document.getElementById('chatReceiverLastSeen');
-                if (!isGroupChatActive) {
-                    if (isTypingFound) {
-                        lastSeenElem.textContent = "typing...";
-                        lastSeenElem.style.color = "#00e5ff";
-                        lastSeenElem.style.fontWeight = "bold";
-                    } else {
-                        lastSeenElem.style.color = "#e2e8f0";
-                        lastSeenElem.style.fontWeight = "normal";
-                        let receiverLastSeenTime = null;
-                        if(globalUsersSnap) {
-                            globalUsersSnap.forEach(d => {
-                                if(d.data().username === activeChatReceiver) {
-                                    receiverLastSeenTime = d.data().lastSeen;
-                                }
-                            });
-                        }
-                        lastSeenElem.textContent = formatLastSeen(receiverLastSeenTime);
-                    }
-                } else {
-                    if (typingGroupUser) {
-                        lastSeenElem.textContent = `${typingGroupUser} is typing...`;
-                        lastSeenElem.style.color = "#00e5ff";
-                        lastSeenElem.style.fontWeight = "bold";
-                    } else {
-                        lastSeenElem.textContent = "Public Group Chat";
-                        lastSeenElem.style.color = "#e2e8f0";
-                        lastSeenElem.style.fontWeight = "normal";
-                    }
-                }
-            });
-        }
-
-        document.getElementById('chatMessageInput').addEventListener('input', async () => {
-            if (!currentUsername) return;
-            const typingDocId = isGroupChatActive ? `group_${currentUsername}` : `${currentUsername}_${activeChatReceiver}`;
-            
-            const { setDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-            await setDoc(doc(db, "typingStatus", typingDocId), {
-                user: currentUsername,
-                target: isGroupChatActive ? "group" : activeChatReceiver,
-                isGroup: isGroupChatActive,
-                updatedAt: serverTimestamp()
-            });
-        });
-
-        document.getElementById('backToListBtn').addEventListener('click', () => {
-            activeChatReceiver = null;
-            isGroupChatActive = false;
-            if(unsubscribeChat) unsubscribeChat();
-            if(unsubscribeTyping) unsubscribeTyping();
-            chatRoomView.classList.add('hidden');
-            renderCurrentView();
-        });
-
+        document.getElementById('backToListBtn').addEventListener('click', () => { chatRoomView.classList.add('hidden'); renderCurrentView(); });
         document.getElementById('sendChatBtn').addEventListener('click', async () => {
             let text = document.getElementById('chatMessageInput').value.trim();
             if (!text) return;
             document.getElementById('chatMessageInput').value = "";
-
-            if (isGroupChatActive) {
-                await addDoc(collection(db, "groupChats"), { sender: currentUsername, text, createdAt: serverTimestamp() });
-                localStorage.setItem(`nexus_group_last_seen_${currentUsername}`, Date.now());
-            } else if (activeChatReceiver) {
-                await addDoc(collection(db, "chats"), { sender: currentUsername, receiver: activeChatReceiver, text, isRead: false, deletedFor: [], createdAt: serverTimestamp() });
-            }
+            if (isGroupChatActive) await addDoc(collection(db, "groupChats"), { sender: currentUsername, text, createdAt: serverTimestamp() });
+            else if (activeChatReceiver) await addDoc(collection(db, "chats"), { sender: currentUsername, receiver: activeChatReceiver, text, isRead: false, deletedFor: [], createdAt: serverTimestamp() });
         });
 
-        document.getElementById('chatMessageInput').addEventListener('keydown', (e) => { if (e.key === 'Enter') document.getElementById('sendChatBtn').click(); });
-
         window.deleteSingleChatMessage = async function(msgId, isGroup) {
-            if (confirm("Are you sure you want to delete this message?")) {
-                let colName = isGroup ? "groupChats" : "chats";
-                await deleteDoc(doc(db, colName, msgId));
-            }
+            if (confirm("Delete this message?")) await deleteDoc(doc(db, isGroup ? "groupChats" : "chats", msgId));
         }
 
         window.deleteChatWithUser = async function(partner) {
