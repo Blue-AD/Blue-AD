@@ -281,7 +281,7 @@
         let selectedAvatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
         let editSelectedAvatarUrl = "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
 
-        let unsubscribeChat = null, unsubscribeGlobal = null, unsubscribeTyping = null;
+        let unsubscribeChat = null, unsubscribeGlobal = null;
         let globalUsersSnap = null, globalChatsSnap = null, globalGroupChatsSnap = null;
 
         const waitingScreen = document.getElementById('waitingScreen');
@@ -297,7 +297,6 @@
         const searchInput = document.getElementById('searchInput');
         const searchBarContainer = document.getElementById('searchBarContainer');
         const bottomNav = document.getElementById('bottomNav');
-        const inboxNotificationDot = document.getElementById('inboxNotificationDot');
         
         const landingRegisterExtraFields = document.getElementById('landingRegisterExtraFields');
         const landingMainHeading = document.getElementById('landingMainHeading');
@@ -366,36 +365,55 @@
             if (!savedUser) {
                 waitingScreen.style.opacity = '0';
                 setTimeout(() => waitingScreen.classList.add('hidden'), 400);
-                landingPageView.classList.remove('hidden');
-                headerUsernameText.textContent = "Guest";
-                searchBarContainer.classList.add('hidden');
-                bottomNav.classList.add('hidden');
+                showLandingPage();
             } else {
                 currentUsername = savedUser;
+                await fetchUserDataAndStart(savedUser);
+            }
+        }
+
+        async function fetchUserDataAndStart(username) {
+            try {
                 const usersSnap = await getDocs(collection(db, "users"));
-                let exists = false;
+                let userFound = false;
                 usersSnap.forEach(d => { 
-                    if (d.data().username === currentUsername) { exists = true; currentUserDocId = d.id; currentUserData = d.data(); }
+                    if (d.data().username === username) { 
+                        userFound = true; 
+                        currentUserDocId = d.id; 
+                        currentUserData = d.data(); 
+                    }
                 });
+
                 waitingScreen.style.opacity = '0';
                 setTimeout(() => waitingScreen.classList.add('hidden'), 400);
-                if (!exists) {
+
+                if (!userFound) {
                     localStorage.removeItem('nexus_logged_user');
-                    currentUsername = null;
-                    landingPageView.classList.remove('hidden');
-                    headerUsernameText.textContent = "Guest";
-                    searchBarContainer.classList.add('hidden');
-                    bottomNav.classList.add('hidden');
+                    showLandingPage();
                     return;
                 }
+
                 landingPageView.classList.add('hidden');
                 headerUsernameText.textContent = currentUsername;
                 searchBarContainer.classList.remove('hidden');
                 bottomNav.classList.remove('hidden');
                 updateLastSeenStatus();
                 startGlobalDataListener();
+            } catch (error) {
+                console.error("Auth error:", error);
+                waitingScreen.style.opacity = '0';
+                setTimeout(() => waitingScreen.classList.add('hidden'), 400);
+                showLandingPage();
             }
         }
+
+        function showLandingPage() {
+            landingPageView.classList.remove('hidden');
+            headerUsernameText.textContent = "Guest";
+            searchBarContainer.classList.add('hidden');
+            bottomNav.classList.add('hidden');
+        }
+
         checkAuthState();
 
         document.getElementById('landingAuthForm').addEventListener('submit', async (e) => {
@@ -404,7 +422,16 @@
             const password = document.getElementById('landingPassword').value;
             const usersSnap = await getDocs(collection(db, "users"));
             let userFound = null;
-            usersSnap.forEach(d => { if (d.data().username === username) userFound = d.data(); });
+            let foundDocId = null;
+            let foundData = null;
+
+            usersSnap.forEach(d => { 
+                if (d.data().username === username) { 
+                    userFound = d.data(); 
+                    foundDocId = d.id;
+                    foundData = d.data();
+                } 
+            });
 
             if (isLandingRegistering) {
                 const gender = document.getElementById('landingGender').value;
@@ -412,18 +439,33 @@
                 if (userFound) {
                     alert("Username already taken!");
                 } else {
-                    await addDoc(collection(db, "users"), { username, password, gender, country, avatarUrl: selectedAvatarUrl, createdAt: serverTimestamp(), lastSeen: serverTimestamp() });
+                    const docRef = await addDoc(collection(db, "users"), { username, password, gender, country, avatarUrl: selectedAvatarUrl, createdAt: serverTimestamp(), lastSeen: serverTimestamp() });
                     currentUsername = username; 
+                    currentUserDocId = docRef.id;
                     localStorage.setItem('nexus_logged_user', currentUsername);
-                    location.reload();
+                    
+                    landingPageView.classList.add('hidden');
+                    headerUsernameText.textContent = currentUsername;
+                    searchBarContainer.classList.remove('hidden');
+                    bottomNav.classList.remove('hidden');
+                    updateLastSeenStatus();
+                    startGlobalDataListener();
                 }
             } else {
                 if (!userFound || userFound.password !== password) {
                     alert("Invalid username or password!");
                 } else {
                     currentUsername = username; 
+                    currentUserDocId = foundDocId;
+                    currentUserData = foundData;
                     localStorage.setItem('nexus_logged_user', currentUsername);
-                    location.reload();
+                    
+                    landingPageView.classList.add('hidden');
+                    headerUsernameText.textContent = currentUsername;
+                    searchBarContainer.classList.remove('hidden');
+                    bottomNav.classList.remove('hidden');
+                    updateLastSeenStatus();
+                    startGlobalDataListener();
                 }
             }
         });
