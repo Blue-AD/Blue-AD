@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="description" content="Nexus Chat User Panel is a real-time messaging interface where you can connect with friends and join global chat spaces.">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nexus Chat:Live chat make a friend & Online chat</title>
+    <title>Nexus Chat: Live chat make a friend & Online chat (Admin)</title>
     <style>
         * { box-sizing: border-box; }
         body { margin: 0; padding: 20px; font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; }
@@ -23,7 +23,6 @@
         .tab-btn.active { background: #007bff; color: white; }
         .hidden { display: none !important; }
 
-        /* Fullscreen Media Lightbox Viewer for Admin */
         #mediaFullscreenModal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
             background: rgba(0, 0, 0, 0.95); z-index: 6000; display: flex; justify-content: center; align-items: center;
@@ -40,14 +39,12 @@
 </head>
 <body>
 
-    <!-- Fullscreen Media Modal -->
     <div id="mediaFullscreenModal" class="hidden">
         <button type="button" class="fullscreen-close-btn" id="closeMediaModalBtn">×</button>
         <div id="fullscreenMediaContainer" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"></div>
     </div>
 
     <div class="admin-container">
-        <!-- Admin Login Screen -->
         <div id="adminLoginBox" style="margin: auto; width: 100%; max-width: 340px;">
             <h2 style="margin-top:0; color:#dc3545; text-align:center; font-size: 22px;">Admin Login</h2>
             <form id="adminLoginForm">
@@ -57,7 +54,6 @@
             </form>
         </div>
 
-        <!-- Main Admin Dashboard -->
         <div id="adminMainPanel" class="hidden" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
                 <div class="admin-title-row" style="border:none; margin:0; padding:0;">
@@ -72,12 +68,10 @@
                 <button id="tabGroupChatBtn" class="tab-btn">Community Group Chat</button>
             </div>
             
-            <!-- Users Section -->
             <div id="adminUsersSection" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; border: 1px solid #eee; border-radius: 8px; padding: 8px; background: #fafafa;">
                 <p style="text-align: center; color: #777;">Loading users...</p>
             </div>
 
-            <!-- Group Chat Section -->
             <div id="adminGroupChatSection" class="hidden" style="flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; border: 1px solid #eee; border-radius: 8px; padding: 8px; background: #fafafa;">
                 <p style="text-align: center; color: #777;">Loading group messages...</p>
             </div>
