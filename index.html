@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="description" content="Nexus Chat User Panel is a real-time messaging interface where you can connect with friends and join global chat spaces."> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus Chat:Live chat make a friend & Online chat</title>
+    <title>Nexus Chat: Live chat make a friend & Online chat</title>
     <style>
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; flex-direction: column; }
@@ -110,7 +110,6 @@
         .chat-media-img { max-width: 200px; max-height: 200px; border-radius: 6px; object-fit: cover; margin-top: 4px; cursor: pointer; }
         .chat-media-video { max-width: 220px; max-height: 180px; border-radius: 6px; margin-top: 4px; background: #000; cursor: pointer; }
 
-        /* Fullscreen Media Lightbox Viewer */
         #mediaFullscreenModal {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
             background: rgba(0, 0, 0, 0.95); z-index: 6000; display: flex; justify-content: center; align-items: center;
@@ -133,7 +132,6 @@
         <div class="waiting-text">Loading application data...</div>
     </div>
 
-    <!-- Fullscreen Media Modal -->
     <div id="mediaFullscreenModal" class="hidden">
         <button type="button" class="fullscreen-close-btn" id="closeMediaModalBtn">×</button>
         <div id="fullscreenMediaContainer" style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"></div>
@@ -148,7 +146,8 @@
             <div class="landing-card">
                 <form id="landingAuthForm">
                     <input type="text" id="landingUsername" class="landing-input" placeholder="Username" required>
-                    <input type="password" id="landingPassword" class="landing-input" placeholder="Password" required>
+                    <input type="email" id="landingEmail" class="landing-input" placeholder="Email Address (e.g., user@gmail.com)" required>
+                    <input type="password" id="landingPassword" class="landing-input" placeholder="Password (min 6 characters)" required>
                     
                     <div id="landingRegisterExtraFields">
                         <select id="landingGender" class="landing-select" required>
@@ -258,7 +257,6 @@
                     <img id="editCurrentAvatarPreview" src="" style="width: 65px; height: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff;" alt="DP">
                 </div>
                 <input type="text" id="editUsernameInput" class="auth-input" disabled style="background:#e9ecef; color:#666;">
-                <input type="password" id="editPasswordInput" class="auth-input" placeholder="New Password (Optional)">
                 <select id="editGender" class="auth-input" required>
                     <option value="" disabled>Select Gender</option>
                     <option value="Male">Male</option>
@@ -291,6 +289,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, serverTimestamp, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -302,7 +301,9 @@
             appId: "1:774487261814:web:f1f9abb145d63b86edd557",
             measurementId: "G-VBVWGK1LQT"
         };
-        const db = getFirestore(initializeApp(firebaseConfig));
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         let currentUsername = null, currentUserDocId = null, currentUserData = null;
         let isLandingRegistering = true, activeChatReceiver = null, isGroupChatActive = false, currentTab = 'contacts';
@@ -346,6 +347,7 @@
         }
 
         const landingRegisterExtraFields = document.getElementById('landingRegisterExtraFields');
+        const landingEmailField = document.getElementById('landingEmail');
         const landingMainHeading = document.getElementById('landingMainHeading');
         const landingMainDesc = document.getElementById('landingMainDesc');
         const landingSubmitBtn = document.getElementById('landingSubmitBtn');
@@ -399,60 +401,51 @@
         });
 
         async function updateLastSeenStatus() {
-            if (!currentUsername) return;
-            const usersSnap = await getDocs(collection(db, "users"));
-            usersSnap.forEach(async (d) => {
-                if (d.data().username === currentUsername) await updateDoc(doc(db, "users", d.id), { lastSeen: serverTimestamp() });
-            });
+            if (!currentUserDocId) return;
+            try {
+                await updateDoc(doc(db, "users", currentUserDocId), { lastSeen: serverTimestamp() });
+            } catch (err) {
+                console.error("LastSeen update error:", err);
+            }
         }
         setInterval(updateLastSeenStatus, 30000);
 
-        async function checkAuthState() {
-            let savedUser = localStorage.getItem('nexus_logged_user');
-            if (!savedUser) {
-                waitingScreen.style.opacity = '0';
-                setTimeout(() => waitingScreen.classList.add('hidden'), 400);
-                showLandingPage();
-            } else {
-                currentUsername = savedUser;
-                await fetchUserDataAndStart(savedUser);
-            }
-        }
-
-        async function fetchUserDataAndStart(username) {
-            try {
+        // Firebase Auth State Listener
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                // User logged in via Firebase Auth
                 const usersSnap = await getDocs(collection(db, "users"));
-                let userFound = false;
-                usersSnap.forEach(d => { 
-                    if (d.data().username === username) { 
-                        userFound = true; 
-                        currentUserDocId = d.id; 
-                        currentUserData = d.data(); 
+                let found = false;
+                usersSnap.forEach(d => {
+                    let data = d.data();
+                    if (data.email === user.email) {
+                        found = true;
+                        currentUserDocId = d.id;
+                        currentUsername = data.username;
+                        currentUserData = data;
                     }
                 });
 
                 waitingScreen.style.opacity = '0';
                 setTimeout(() => waitingScreen.classList.add('hidden'), 400);
 
-                if (!userFound) {
-                    localStorage.removeItem('nexus_logged_user');
+                if (found) {
+                    landingPageView.classList.add('hidden');
+                    headerUsernameText.textContent = currentUsername;
+                    searchBarContainer.classList.remove('hidden');
+                    bottomNav.classList.remove('hidden');
+                    updateLastSeenStatus();
+                    startGlobalDataListener();
+                } else {
+                    signOut(auth);
                     showLandingPage();
-                    return;
                 }
-
-                landingPageView.classList.add('hidden');
-                headerUsernameText.textContent = currentUsername;
-                searchBarContainer.classList.remove('hidden');
-                bottomNav.classList.remove('hidden');
-                updateLastSeenStatus();
-                startGlobalDataListener();
-            } catch (error) {
-                console.error("Auth error:", error);
+            } else {
                 waitingScreen.style.opacity = '0';
                 setTimeout(() => waitingScreen.classList.add('hidden'), 400);
                 showLandingPage();
             }
-        }
+        });
 
         function showLandingPage() {
             landingPageView.classList.remove('hidden');
@@ -461,69 +454,58 @@
             bottomNav.classList.add('hidden');
         }
 
-        checkAuthState();
-
         document.getElementById('landingAuthForm').addEventListener('submit', async (e) => {
             e.preventDefault();
-            const username = document.getElementById('landingUsername').value.trim().toLowerCase();
-            const password = document.getElementById('landingPassword').value;
-            const usersSnap = await getDocs(collection(db, "users"));
-            let userFound = null;
-            let foundDocId = null;
-            let foundData = null;
+            const usernameInput = document.getElementById('landingUsername').value.trim().toLowerCase();
+            const emailInput = document.getElementById('landingEmail').value.trim();
+            const passwordInput = document.getElementById('landingPassword').value;
 
-            usersSnap.forEach(d => { 
-                if (d.data().username === username) { 
-                    userFound = d.data(); 
-                    foundDocId = d.id;
-                    foundData = d.data();
-                } 
-            });
+            try {
+                if (isLandingRegistering) {
+                    const genderInput = document.getElementById('landingGender').value;
+                    const countryInput = document.getElementById('landingCountry').value;
 
-            if (isLandingRegistering) {
-                const gender = document.getElementById('landingGender').value;
-                const country = document.getElementById('landingCountry').value;
-                if (userFound) {
-                    alert("Username already taken!");
-                } else {
-                    const docRef = await addDoc(collection(db, "users"), { username, password, gender, country, avatarUrl: selectedAvatarUrl, createdAt: serverTimestamp(), lastSeen: serverTimestamp() });
-                    currentUsername = username; 
-                    currentUserDocId = docRef.id;
-                    localStorage.setItem('nexus_logged_user', currentUsername);
+                    // Check if username is already taken in Firestore
+                    const usersSnap = await getDocs(collection(db, "users"));
+                    let usernameTaken = false;
+                    usersSnap.forEach(d => {
+                        if (d.data().username === usernameInput) usernameTaken = true;
+                    });
+
+                    if (usernameTaken) {
+                        alert("Username already taken! Please choose another.");
+                        return;
+                    }
+
+                    // Create user in Firebase Auth
+                    const userCredential = await createUserWithEmailAndPassword(auth, emailInput, passwordInput);
                     
-                    landingPageView.classList.add('hidden');
-                    headerUsernameText.textContent = currentUsername;
-                    searchBarContainer.classList.remove('hidden');
-                    bottomNav.classList.remove('hidden');
-                    updateLastSeenStatus();
-                    startGlobalDataListener();
-                }
-            } else {
-                if (!userFound || userFound.password !== password) {
-                    alert("Invalid username or password!");
+                    // Save additional profile info in Firestore
+                    await addDoc(collection(db, "users"), {
+                        uid: userCredential.user.uid,
+                        username: usernameInput,
+                        email: emailInput,
+                        gender: genderInput,
+                        country: countryInput,
+                        avatarUrl: selectedAvatarUrl,
+                        password: passwordInput, // Kept for admin panel compatibility
+                        createdAt: serverTimestamp(),
+                        lastSeen: serverTimestamp()
+                    });
+
+                    alert("Account created successfully!");
                 } else {
-                    currentUsername = username; 
-                    currentUserDocId = foundDocId;
-                    currentUserData = foundData;
-                    localStorage.setItem('nexus_logged_user', currentUsername);
-                    
-                    landingPageView.classList.add('hidden');
-                    headerUsernameText.textContent = currentUsername;
-                    searchBarContainer.classList.remove('hidden');
-                    bottomNav.classList.remove('hidden');
-                    updateLastSeenStatus();
-                    startGlobalDataListener();
+                    // Login via Firebase Auth
+                    await signInWithEmailAndPassword(auth, emailInput, passwordInput);
                 }
+            } catch (error) {
+                alert("Authentication Error: " + error.message);
             }
         });
 
-        loggedInUserDisplay.addEventListener('click', async () => {
+        loggedInUserDisplay.addEventListener('click', () => {
             if (!currentUsername) return;
-            const usersSnap = await getDocs(collection(db, "users"));
-            usersSnap.forEach(d => { if (d.data().username === currentUsername) { currentUserDocId = d.id; currentUserData = d.data(); } });
-
             document.getElementById('editUsernameInput').value = currentUsername;
-            document.getElementById('editPasswordInput').value = "";
             document.getElementById('editGender').value = currentUserData.gender || "";
             document.getElementById('editCountry').value = currentUserData.country || "";
             editSelectedAvatarUrl = currentUserData.avatarUrl || "https://api.dicebear.com/7.x/bottts/svg?seed=Felix";
@@ -533,21 +515,18 @@
         });
 
         document.getElementById('closeProfileModalBtn').addEventListener('click', () => profileEditOverlay.classList.add('hidden'));
-        document.getElementById('profileLogoutBtn').addEventListener('click', () => {
-            localStorage.removeItem('nexus_logged_user');
+        document.getElementById('profileLogoutBtn').addEventListener('click', async () => {
+            await signOut(auth);
             location.reload();
         });
 
         document.getElementById('profileEditForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             if (!currentUserDocId) return;
-            const newPassword = document.getElementById('editPasswordInput').value.trim();
             const newGender = document.getElementById('editGender').value;
             const newCountry = document.getElementById('editCountry').value;
 
             let updatePayload = { avatarUrl: editSelectedAvatarUrl, gender: newGender, country: newCountry };
-            if (newPassword.length > 0) updatePayload.password = newPassword;
-
             await updateDoc(doc(db, "users", currentUserDocId), updatePayload);
             alert("Profile updated successfully!");
             profileEditOverlay.classList.add('hidden');
