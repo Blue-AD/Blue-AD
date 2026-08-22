@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="description" content="Nexus Chat User Panel is a real-time messaging interface where you can connect with friends and join global chat spaces."> 
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexus Chat: Live chat make a friend & Online chat</title>
+    <title>nexus chat :online chat & live chat make a friend</title>
     <style>
         * { box-sizing: border-box; }
         html, body { margin: 0; padding: 0; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; flex-direction: column; }
@@ -289,7 +289,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, collection, addDoc, getDocs, updateDoc, doc, deleteDoc, serverTimestamp, query, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -304,6 +304,11 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+
+        // Local Persistence සැකසීම (පැය ගණනක්/දින ගණනක් ගියද ලොග් වී තිබීමට)
+        setPersistence(auth, browserLocalPersistence).catch((error) => {
+            console.error("Persistence error:", error);
+        });
 
         let currentUsername = null, currentUserDocId = null, currentUserData = null;
         let isLandingRegistering = true, activeChatReceiver = null, isGroupChatActive = false, currentTab = 'contacts';
@@ -410,35 +415,37 @@
         }
         setInterval(updateLastSeenStatus, 30000);
 
-        // Firebase Auth State Listener
+        // Firebase Auth State Listener (දත්ත සෙවීමේ ගැටළු මඟහරවා ඇත)
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                // User logged in via Firebase Auth
-                const usersSnap = await getDocs(collection(db, "users"));
-                let found = false;
-                usersSnap.forEach(d => {
-                    let data = d.data();
-                    if (data.email === user.email) {
-                        found = true;
-                        currentUserDocId = d.id;
-                        currentUsername = data.username;
-                        currentUserData = data;
+                try {
+                    const usersSnap = await getDocs(collection(db, "users"));
+                    let found = false;
+                    usersSnap.forEach(d => {
+                        let data = d.data();
+                        if (data.email === user.email || data.uid === user.uid) {
+                            found = true;
+                            currentUserDocId = d.id;
+                            currentUsername = data.username;
+                            currentUserData = data;
+                        }
+                    });
+
+                    waitingScreen.style.opacity = '0';
+                    setTimeout(() => waitingScreen.classList.add('hidden'), 400);
+
+                    if (found) {
+                        landingPageView.classList.add('hidden');
+                        headerUsernameText.textContent = currentUsername;
+                        searchBarContainer.classList.remove('hidden');
+                        bottomNav.classList.remove('hidden');
+                        updateLastSeenStatus();
+                        startGlobalDataListener();
+                    } else {
+                        console.log("User document syncing...");
                     }
-                });
-
-                waitingScreen.style.opacity = '0';
-                setTimeout(() => waitingScreen.classList.add('hidden'), 400);
-
-                if (found) {
-                    landingPageView.classList.add('hidden');
-                    headerUsernameText.textContent = currentUsername;
-                    searchBarContainer.classList.remove('hidden');
-                    bottomNav.classList.remove('hidden');
-                    updateLastSeenStatus();
-                    startGlobalDataListener();
-                } else {
-                    signOut(auth);
-                    showLandingPage();
+                } catch (err) {
+                    console.error("Auth state error:", err);
                 }
             } else {
                 waitingScreen.style.opacity = '0';
@@ -465,7 +472,6 @@
                     const genderInput = document.getElementById('landingGender').value;
                     const countryInput = document.getElementById('landingCountry').value;
 
-                    // Check if username is already taken in Firestore
                     const usersSnap = await getDocs(collection(db, "users"));
                     let usernameTaken = false;
                     usersSnap.forEach(d => {
@@ -477,25 +483,39 @@
                         return;
                     }
 
-                    // Create user in Firebase Auth
                     const userCredential = await createUserWithEmailAndPassword(auth, emailInput, passwordInput);
                     
-                    // Save additional profile info in Firestore
-                    await addDoc(collection(db, "users"), {
+                    const docRef = await addDoc(collection(db, "users"), {
                         uid: userCredential.user.uid,
                         username: usernameInput,
                         email: emailInput,
                         gender: genderInput,
                         country: countryInput,
                         avatarUrl: selectedAvatarUrl,
-                        password: passwordInput, // Kept for admin panel compatibility
+                        password: passwordInput,
                         createdAt: serverTimestamp(),
                         lastSeen: serverTimestamp()
                     });
 
+                    currentUserDocId = docRef.id;
+                    currentUsername = usernameInput;
+                    currentUserData = {
+                        uid: userCredential.user.uid,
+                        username: usernameInput,
+                        email: emailInput,
+                        gender: genderInput,
+                        country: countryInput,
+                        avatarUrl: selectedAvatarUrl
+                    };
+
                     alert("Account created successfully!");
+                    landingPageView.classList.add('hidden');
+                    headerUsernameText.textContent = currentUsername;
+                    searchBarContainer.classList.remove('hidden');
+                    bottomNav.classList.remove('hidden');
+                    updateLastSeenStatus();
+                    startGlobalDataListener();
                 } else {
-                    // Login via Firebase Auth
                     await signInWithEmailAndPassword(auth, emailInput, passwordInput);
                 }
             } catch (error) {
